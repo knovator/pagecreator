@@ -6,9 +6,7 @@ import {
   Document,
   Mixed,
 } from 'mongoose';
-export interface Message {
-  message: string;
-}
+
 export interface IPageSchema extends Document {
   name: string;
   code: string;
@@ -41,7 +39,7 @@ export interface ITileSchema extends Document {
 export type CollectionItem = {
   title: string;
   collectionName: string;
-  filters?: { [key: string]: string };
+  filters?: { [key: string]: string | number | boolean };
   searchColumns: string[];
 };
 

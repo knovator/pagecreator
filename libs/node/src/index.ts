@@ -5,7 +5,7 @@ import PageRoutes from './routes/PageRoute';
 import { Widget, Tile, Page } from './models';
 import { IConfig } from '@pagecreator/api-interfaces';
 
-function setConfig(config: IConfig) {
+function setConfig(config: Partial<IConfig>) {
   if (config.logger) {
     defaults.logger = config.logger;
   }

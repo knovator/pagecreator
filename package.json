@@ -5,10 +5,14 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "lint:admin": "nx lint:admin",
+    "build:admin": "nx run admin:build --buildableProjectDepsInPackageJsonType=dependencies"
   },
   "private": true,
   "dependencies": {
+    "@knovator/api": "^0.0.10",
+    "classnames": "^2.3.1",
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
@@ -20,7 +24,12 @@
     "mongoose": "^6.5.3",
     "mongoose-paginate-v2": "^1.7.0",
     "react": "18.2.0",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dom": "18.2.0",
+    "react-dropzone": "^14.2.2",
+    "react-hook-form": "^7.34.2",
+    "react-select": "^5.4.0",
+    "react-transition-group": "^4.4.5",
     "regenerator-runtime": "0.13.7",
     "tslib": "^2.3.0"
   },
@@ -40,7 +49,9 @@
     "@types/jest": "27.4.1",
     "@types/node": "16.11.7",
     "@types/react": "18.0.17",
+    "@types/react-beautiful-dnd": "^13.1.2",
     "@types/react-dom": "18.0.6",
+    "@types/react-transition-group": "^4.4.5",
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
     "babel-jest": "27.5.1",

@@ -2,8 +2,8 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "admin": "libs/admin",
     "api": "apps/api",
-    "api-interfaces": "libs/api-interfaces",
     "node": "libs/node",
     "pagecreator": "apps/pagecreator",
     "pagecreator-e2e": "apps/pagecreator-e2e"

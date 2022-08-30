@@ -5,11 +5,7 @@ import {
   ProjectionType,
   HydratedDocument,
 } from 'mongoose';
-import {
-  IModel,
-  EntityType,
-  ReturnDocument,
-} from '@pagecreator/api-interfaces';
+import { EntityType, IModel, ReturnDocument } from '../types';
 
 // create
 export async function create<T extends EntityType>(

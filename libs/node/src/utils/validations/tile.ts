@@ -1,5 +1,5 @@
 import joi from 'joi';
-import { ITileSchema, TileTypes } from '@pagecreator/api-interfaces';
+import { ITileSchema, TileTypes } from '../../types';
 
 export const create = joi.object<ITileSchema>({
   widgetId: joi.string().required(),

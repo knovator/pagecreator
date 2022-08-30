@@ -1,12 +1,7 @@
 import { Schema, model, Types } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { softDeletePlugin } from '../plugins/softDelete';
-import {
-  IWidgetSchema,
-  WidgetType,
-  SelectionTypes,
-  IModel,
-} from '@pagecreator/api-interfaces';
+import { IModel, IWidgetSchema, SelectionTypes, WidgetType } from '../types';
 
 const WidgetSchema = new Schema<IWidgetSchema>({
   name: String,
@@ -41,6 +36,9 @@ const WidgetSchema = new Schema<IWidgetSchema>({
 WidgetSchema.plugin(softDeletePlugin);
 WidgetSchema.plugin(mongoosePaginate);
 
-const Widget = model('Widget', WidgetSchema) as IModel<IWidgetSchema>;
+const Widget = model(
+  'Widget',
+  WidgetSchema
+) as unknown as IModel<IWidgetSchema>;
 
 export default Widget;

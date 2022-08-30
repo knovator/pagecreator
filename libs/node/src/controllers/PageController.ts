@@ -5,7 +5,7 @@ import {
   successResponse,
   createdDocumentResponse,
 } from './../utils/responseHandlers';
-import { IRequest, IResponse } from '@pagecreator/api-interfaces';
+import { IRequest, IResponse } from '../types';
 
 import { defaults } from '../utils/defaults';
 

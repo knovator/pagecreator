@@ -3,7 +3,7 @@ import WidgetRoutes from './routes/WidgetRoute';
 import TileRoutes from './routes/TileRoute';
 import PageRoutes from './routes/PageRoute';
 import { Widget, Tile, Page } from './models';
-import { IConfig } from '@pagecreator/api-interfaces';
+import { IConfig } from './types';
 
 function setConfig(config: Partial<IConfig>) {
   if (config.logger) {

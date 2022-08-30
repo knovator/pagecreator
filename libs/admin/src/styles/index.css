@@ -1,0 +1,396 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Buttons */
+.khb_btn {
+    @apply rounded-lg font-medium text-center m-1 focus:outline-none focus:ring-4;
+}
+.khb_btn:disabled {
+    @apply cursor-not-allowed;
+}
+.khb_btn-primary {
+    @apply text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
+}
+.khb_btn-primary:disabled {
+    @apply bg-blue-800;
+}
+.khb_btn-secondary:disabled {
+    @apply bg-gray-100;
+}
+.khb_btn-secondary {
+    @apply text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-gray-200;
+}
+.khb_btn-success {
+    @apply text-white bg-green-700 hover:bg-green-800 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800
+}
+.khb_btn-danger {
+    @apply text-white bg-red-700 hover:bg-red-800 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900
+}
+
+.khb_btn-xs {
+    @apply text-xs px-1.5 py-1
+}
+.khb_btn-sm {
+    @apply text-sm px-3 py-2;
+}
+.khb_btn-base {
+    @apply text-sm px-4 py-2.5;
+}
+.khb_btn-lg {
+    @apply text-lg px-5 py-3;
+}
+/* \ End of Buttons */
+
+/* Table */
+.khb_table-container {
+    @apply overflow-hidden bg-white border rounded-lg border-gray-200;
+}
+.khb_table-height {
+    @apply justify-center overflow-auto;
+    height: calc(100vh - 252px);
+}
+.khb_table-wrapper {
+    @apply overflow-x-auto relative shadow-md sm:rounded-lg;
+}
+.khb_table {
+    @apply w-full text-sm text-left text-gray-500 dark:text-gray-400;
+}
+.khb_table-thead {
+    @apply text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400;
+}
+.khb_table-heading {
+    @apply py-3 px-6;
+}
+.khb_table-row {
+    @apply bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600;
+}
+.khb_table-row-heading {
+    @apply py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white;
+}
+.khb_table-row-data {
+    @apply py-3 px-5;
+}
+.khb_table-row-actions {
+    @apply p-0.5;
+}
+/* \ End of Table */
+
+/* Pagination */
+.khb_pagination {
+    @apply flex justify-between items-center py-2 px-5;
+}
+.khb_pagination-total {
+    @apply text-sm font-normal text-gray-500 dark:text-gray-400;
+}
+.khb_pagination-total-showing {
+    @apply font-semibold text-gray-900 dark:text-white;
+}
+.khb_pagination-total-items {
+    @apply font-semibold text-gray-900 dark:text-white;
+}
+.khb_pagination-actions {
+    @apply inline-flex items-center -space-x-px;
+}
+.khb_pagination-pager {
+    @apply flex flex-row items-center px-1;
+}
+.khb_pagination-pager input {
+    @apply my-2 w-16;
+}
+/* \ End of Pagination */
+
+/* Input */
+.khb_input {
+    @apply bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none w-full;
+}
+.khb_input:disabled {
+    @apply bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed;
+}
+.khb_input-error {
+    @apply text-sm text-red-600 dark:text-red-500;
+}
+.khb_input-xs {
+    @apply text-sm p-1.5;
+}
+.khb_input-sm {
+    @apply text-sm p-2;
+}
+.khb_input-base {
+    @apply text-base p-2.5;
+}
+.khb_input-label {
+    @apply block mb-1 text-sm font-medium text-gray-900 dark:text-gray-300;
+}
+.khb_input-label-required {
+    @apply text-red-600;
+}
+/* \ End of Input */
+
+/* Drawer */
+.khb_drawer-wrapper-1 {
+    @apply fixed inset-0 overflow-hidden;
+}
+.khb_drawer-wrapper-2 {
+    @apply absolute inset-0 overflow-hidden;
+}
+.khb_drawer-backdrop {
+    @apply absolute inset-0 transition-opacity bg-black bg-opacity-75 backdrop-blur-sm;
+}
+.khb_drawer-container-1 {
+    @apply fixed inset-y-0 right-0 flex max-w-full pl-10;
+}
+.khb_drawer-container-2 {
+    @apply relative w-screen max-w-3xl;
+}
+.khb_drawer-close-section {
+    @apply absolute top-0 left-0 flex pt-4 pr-2 -ml-8 sm:-ml-10 sm:pr-4;
+}
+.khb_drawer-close-btn {
+    @apply flex items-center justify-center w-8 h-8 transition bg-white rounded-full focus:outline-none hover:rotate-90;
+}
+.khb_sr-only {
+    @apply sr-only;
+}
+.khb_drawer-main {
+    @apply flex flex-col h-full overflow-y-scroll bg-white shadow-xl;
+}
+.khb_drawer-header {
+    @apply px-4 py-6 border-b border-slate-400 sm:px-6 bg-slate-300;
+}
+.khb_drawer-header-title {
+    @apply text-xl font-medium;
+}
+.khb_darwer-content {
+    @apply relative flex-1 px-6 py-6 overflow-auto;
+}
+.khb_drawer-footer {
+    @apply flex items-center justify-end px-4 py-4 border-t bg-slate-50 border-slate-400;
+}
+/* \ End of Drawer */
+
+/* Utility */
+.khb_sr-only {
+    @apply sr-only;
+}
+.khb_grid-item-1of3 {
+    @apply w-1/3 inline-block;
+}
+.khb_grid-item-1of2 {
+    @apply w-1/2 inline-block;
+}
+.khb_padding-right-1 {
+    @apply pr-1;
+}
+.khb_padding-left-1 {
+    @apply pl-1;
+}
+.khb_align-top {
+    @apply align-top;
+}
+.khb_margin-top-0 {
+    @apply !mt-0;
+}
+/* \ End of Utility */
+
+/* Animations */
+.khb_drawer-enter {
+    opacity: 0.1;
+}
+.khb_drawer-enter.khb_drawer-enter-active {
+    opacity: 1;
+    transition: opacity 200ms ease-in;
+}
+.khb_drawer-exit {
+    opacity: 1;
+}
+.khb_drawer-exit.khb_drawer-exit-active {
+    opacity: 0.01;
+    transition: opacity 200ms ease-in;
+}
+/* \ End of Animations */
+
+/* Form */
+.khb_form {
+    @apply grid grid-rows-1 grid-cols-1 gap-y-3;
+}
+/* \ End of Form */
+
+/* Accordian */
+.khb_accordian-header {
+    @apply flex items-center justify-between w-full p-4 font-medium border-2 bg-gray-100 border-gray-300 hover:bg-gray-200;
+}
+.khb_accordian-body {
+    @apply border-2 border-t-0 border-gray-300;
+}
+.khb_accordian-content {
+    @apply p-2.5;
+}
+.khb_accordian-footer {
+    @apply p-1 flex flex-row space-x-1 justify-end border-t-2 border-gray-300 bg-gray-200;
+}
+.khb_tile-items {
+    @apply space-y-1;
+}
+.khb-form-items {
+    @apply space-y-2;
+}
+/* \ End of Accordian */
+
+/* Modal */
+.khb_modal-wrapper-1 {
+    @apply fixed inset-0 z-20 overflow-y-auto;
+}
+.khb_modal-wrapper-2 {
+    @apply flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0 relative;
+}
+.khb_modal-backdrop {
+    @apply absolute inset-0 transition-opacity bg-black bg-opacity-75 backdrop-blur-sm;
+}
+.khb_modal-container-1 {
+    @apply opacity-100 min-h-screen flex justify-center items-center;
+}
+.khb_modal-container-2 {
+    @apply inline-block overflow-hidden text-left align-bottom transition-all transform shadow-xl sm:my-8 sm:align-middle sm:max-w-xl sm:w-full rounded-lg;
+}
+.khb_modal-main {
+    @apply bg-white;
+}
+.khb_modal-header {
+    @apply relative p-4 pb-4 border-b border-gray-200;
+}
+.khb_modal-title {
+    @apply text-sm font-semibold;
+}
+.khb_modal-close {
+    @apply absolute right-5 top-5 focus:outline-none;
+}
+.khb_modal-content {
+    @apply p-4;
+}
+/* \ End of Modal */
+
+/* Delete Modal */
+.khb_delete-header {
+    @apply py-2 px-4 rounded-lg flex items-center gap-3 text-black text-sm bg-red-200;
+}
+.khb_delete-content {
+    @apply mt-3 text-black text-sm;
+}
+.khb_delete-note {
+    @apply mt-3;
+}
+.khb_delete-actions {
+    @apply mt-3 flex flex-row gap-3;
+}
+.khb_delete-input {
+    @apply w-full flex-grow;
+}
+.khb_delete-buttons {
+    @apply col-span-3;
+}
+/* \ End of Delete Modal */
+
+/* Image Upload */
+.khb_img-upload-wrapper-1 {
+    @apply flex justify-center px-6 pt-5 pb-6 mt-1 border-2 border-dashed rounded-md border-slate-400;
+}
+.khb_img-upload-wrapper-2 {
+    @apply space-y-1 text-center;
+}
+.khb_img-wrapper {
+    @apply relative inline-flex;
+}
+.khb_img-wrapper-img {
+    @apply h-24 w-24 object-cover;
+}
+.khb_img-wrapper-del {
+    @apply h-5 w-5 rounded-full bg-red-500 flex items-center justify-center absolute -top-2 -right-2 cursor-pointer;
+}
+.khb_img-text-wrapper {
+    @apply flex text-sm text-gray-600;
+}
+.khb_img-text-label {
+    @apply relative font-medium rounded-md cursor-pointer focus-within:outline-none;
+}
+.khb_img-text-1 {
+    @apply pl-1 text-gray-500;
+}
+.khb_img-text-2 {
+    @apply text-xs text-gray-500;
+}
+.khb_img-upload-wrapper-3 {
+    @apply p-3 border border-white mt-6 rounded-lg cursor-pointer;
+}
+/* \End of Image Upload */
+
+/* Switch */
+.khb_switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+.khb_switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.khb_switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #888;
+    -webkit-transition: all 0.4s ease-in;
+    transition: all 0.4s ease-in;
+}
+.khb_switch .slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 5px;
+    bottom: 4px;
+    background-color: #fff;
+    -webkit-transition: all 0.2s ease-in;
+    transition: all 0.2s ease-in;
+    box-shadow: 0px 0px 6px #00000029;
+    /* background-image: url(../public/images/close.png); */
+    /* background-repeat: no-repeat; */
+    /* background-position: center; */
+}
+/* Switch Rounded sliders */
+.khb_switch .slider.round {
+    border-radius: 34px;
+}
+.khb_switch .slider.round:before {
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: #16a34a;
+}
+input:focus + .slider {
+    box-shadow: 0 0 1px #16a34a;
+}
+input:checked + .slider:before {
+    -webkit-transform: translateX(28px);
+    -ms-transform: translateX(28px);
+    transform: translateX(28px);
+    /* background-image: url(../public/images/tick.png);
+    background-repeat: no-repeat;
+    background-position: center; */
+}
+/* \ End of Switch */
+
+.khb_DND-items {
+    @apply space-y-2;
+}
+.khb_DND-item-text {
+    @apply text-base font-medium leading-6 text-black truncate;
+}
+.khb_DND-item {
+    @apply p-3 overflow-hidden bg-white border rounded-md cursor-pointer border-slate-500 hover:shadow hover:border-blue-400 transition-colors duration-200 ease-in-out;
+}

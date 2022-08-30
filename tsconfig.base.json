@@ -16,8 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@knovator/pagecreator-admin": ["libs/admin/src/index.ts"],
-      "@knovator/pagecreator-node": ["libs/node/src/index.ts"],
-      "@pagecreator/api-interfaces": ["libs/api-interfaces/src/index.ts"]
+      "@knovator/pagecreator-node": ["libs/node/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,8 +1,8 @@
 import joi from 'joi';
-import { IPageSchema } from '@pagecreator/api-interfaces';
 import { Page } from '../../models';
 import { getOne } from '../../services/dbService';
 import { VALIDATION } from '../../constants';
+import { IPageSchema } from '../../types';
 
 const checkUnique = async (value: string): Promise<void> => {
   let result;

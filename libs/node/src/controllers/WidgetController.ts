@@ -9,13 +9,14 @@ import {
 
 import { defaults } from '../utils/defaults';
 import {
+  CollectionItem,
+  IModel,
   IRequest,
   IResponse,
   SelectionTypes,
-  WidgetType,
   TypesType,
-  CollectionItem,
-} from '@pagecreator/api-interfaces';
+  WidgetType,
+} from '../types';
 
 const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Notification');
@@ -131,11 +132,11 @@ export const getCollectionData = catchAsync(
       throw new Error(`No collection is specified with ${collectionName}`);
     }
     // setting up mongoose model
-    let TempModel = models[collectionName];
+    let TempModel = models[collectionName] as unknown as IModel<any>;
     if (!TempModel) {
       const tempSchema = new Schema({}, { strict: false });
       tempSchema.plugin(mongoosePaginate);
-      TempModel = model(collectionName, tempSchema);
+      TempModel = model(collectionName, tempSchema) as unknown as IModel<any>;
     }
     // fetching data
     let query: any = collectionItem.filters || {};

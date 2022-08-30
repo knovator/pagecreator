@@ -11,6 +11,13 @@ import TileItemsAccordian from './TileItemsAccordian';
 import { useWidgetState } from '../../../context/WidgetContext';
 import { useProviderState } from '../../../context/ProviderContext';
 import { capitalizeFirstLetter, changeToCode } from '../../../helper/utils';
+import {
+  CombineObjectType,
+  FormProps,
+  ObjectType,
+  OptionType,
+  SchemaType,
+} from 'libs/admin/src/types';
 
 const WidgetForm = ({ onClose, open, formState }: FormProps) => {
   const { baseUrl } = useProviderState();

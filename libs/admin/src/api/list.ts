@@ -1,3 +1,5 @@
+import { API_INPUT_TYPE } from '../types';
+
 const apiList = {
   LIST: ({ prefix }: API_INPUT_TYPE) => ({
     url: `${prefix}/list`,

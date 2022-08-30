@@ -1,12 +1,28 @@
 import {
+  Document,
   Model,
+  Types,
   FilterQuery,
   QueryOptions,
   HydratedDocument,
-  Document,
-  Mixed,
 } from 'mongoose';
+import { WidgetType, SelectionTypes, TileTypes } from '.';
 
+export type TypesType = { value: string; label: string };
+// export type CollectionItem = {
+//   title: string;
+//   collectionName: string;
+//   filters?: { [key: string]: string };
+//   searchColumns: string[];
+// };
+export interface iConfig {
+  logger: any;
+  catchAsync: (
+    fn: any,
+    modal?: string
+  ) => (req: any, res: any, next: any) => void;
+  collections: CollectionItem[];
+}
 export interface IPageSchema extends Document {
   name: string;
   code: string;
@@ -21,18 +37,18 @@ export interface IWidgetSchema extends Document {
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;
-  widgetType: string;
-  selectionType: string;
+  widgetType: WidgetType;
+  selectionType: SelectionTypes;
   collectionName: string;
   collectionItems: string[];
 }
 export interface ITileSchema extends Document {
-  widgetId: Mixed;
+  widgetId: typeof Types.ObjectId;
   title: string;
   altText: string;
   link: string;
   sequence: number;
-  tileType: string;
+  tileType: TileTypes;
   img: any;
 }
 
@@ -60,4 +76,3 @@ export interface IModel<T> extends Model<T> {
     options?: QueryOptions
   ) => Promise<HydratedDocument<ReturnDocument>[]>;
 }
-export type TypesType = { value: string; label: string };

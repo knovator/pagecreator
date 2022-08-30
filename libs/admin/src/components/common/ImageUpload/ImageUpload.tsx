@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import SmallCancel from '../../../icons/close';
+import { ImageUploadProps } from 'libs/admin/src/types';
 import { build_path, isEmpty, isString } from '../../../helper/utils';
 
 const ImageUpload = ({

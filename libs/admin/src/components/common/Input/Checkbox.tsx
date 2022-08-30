@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { CheckboxProps } from 'libs/admin/src/types';
 
 const Checkbox = ({
   rest,

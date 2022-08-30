@@ -1,4 +1,4 @@
-import React from 'react';
+import { ToggleProps } from 'libs/admin/src/types';
 
 const Toggle = ({ isChecked, disabled, onChange }: ToggleProps) => {
   return (

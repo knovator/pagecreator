@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import Accordian from '../../common/Accordian';
 import Button from '../../common/Button';
 import Form from '../../common/Form';
+import {
+  CombineObjectType,
+  FormActionTypes,
+  TileItemsAccordianProps,
+} from 'libs/admin/src/types';
 
 const TileItemsAccordian = ({
   schema,

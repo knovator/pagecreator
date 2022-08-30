@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PaginationProps } from 'libs/admin/src/types';
 import { TRANSLATION_PAIRS_COMMON } from '../../../constants/common';
 import ChevronLeft from '../../../icons/chevronLeft';
 import ChevronRight from '../../../icons/chevronRight';

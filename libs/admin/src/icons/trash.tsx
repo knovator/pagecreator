@@ -1,3 +1,5 @@
+import { IconProps } from '../types';
+
 const Trash = ({ srText, className }: IconProps) => {
   return (
     <>

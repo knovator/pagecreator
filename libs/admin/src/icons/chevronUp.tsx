@@ -1,3 +1,5 @@
+import { IconProps } from '../types';
+
 const ChevronUp = ({ srText, className }: IconProps) => {
   return (
     <>

@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { SelectProps } from 'libs/admin/src/types';
 
 const Select = ({
   onChange,

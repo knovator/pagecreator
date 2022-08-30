@@ -4,10 +4,11 @@ import { defaults } from '../defaults';
 import { VALIDATION } from '../../constants';
 import { getOne } from '../../services/dbService';
 import {
-  IWidgetSchema,
   WidgetType,
   SelectionTypes,
-} from '@pagecreator/api-interfaces';
+  IWidgetSchema,
+  CollectionItem,
+} from '../../types';
 
 const checkUnique = async (value: string) => {
   let result;
@@ -46,7 +47,7 @@ export const create = joi.object<IWidgetSchema>({
         return value;
       }
       const collectionIndex = defaults.collections.findIndex(
-        (collection) => collection.collectionName === value
+        (collection: CollectionItem) => collection.collectionName === value
       );
       if (collectionIndex > -1) {
         return value;

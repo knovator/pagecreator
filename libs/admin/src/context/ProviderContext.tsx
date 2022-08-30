@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { createContext, useContext } from 'react';
+import { ProviderContextProviderProps, ProviderContextType } from '../types';
 
 const ProviderContext = createContext<ProviderContextType | null>(null);
 

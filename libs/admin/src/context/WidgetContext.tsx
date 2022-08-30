@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { createContext, useContext } from 'react';
 import { PAGE_LIMITS } from '../constants/common';
+import { WidgetContextType } from '../types';
 
 interface WidgetContextProviderProps
   extends React.PropsWithChildren,

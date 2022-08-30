@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Button from '../Button';
 import Input from '../Input';
 import Modal from '../Modal';
+import { DeleteModalProps } from 'libs/admin/src/types';
 import { TRANSLATION_PAIRS_COMMON } from '../../../constants/common';
 
 const DeleteModal = ({
@@ -19,9 +20,9 @@ const DeleteModal = ({
   useEffect(() => {
     setUserInput('');
   }, [formState]);
-  return (
+  return itemData ? (
     <Modal
-      open={formState === 'DELETE'}
+      open={formState === 'DELETE' && itemData ? true : false}
       onClose={onClose}
       title="Confirmation Required"
     >
@@ -55,7 +56,7 @@ const DeleteModal = ({
         </div>
       </div>
     </Modal>
-  );
+  ) : null;
 };
 
 export default DeleteModal;

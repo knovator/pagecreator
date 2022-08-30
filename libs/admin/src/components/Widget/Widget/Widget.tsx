@@ -15,6 +15,7 @@ import AddButton from '../AddButton';
 import Pagination from '../Pagination';
 import WidgetSearch from '../Search';
 import DeleteModal from '../../common/DeleteModal';
+import { WidgetProps } from 'libs/admin/src/types';
 
 const Widget = ({
   t,

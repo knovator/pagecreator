@@ -1,7 +1,7 @@
 import express from 'express';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('express-list-endpoints-descriptor')(express);
-import { IRouter } from '@pagecreator/api-interfaces';
+import { IRouter } from '../types';
 
 import validate from '../utils/validate';
 import * as tileValidation from '../utils/validations/tile';

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { createContext, useContext } from 'react';
 import { PAGE_LIMITS, TRANSLATION_PAIRS_COMMON } from '../constants/common';
+import { ObjectType, PageContextType } from '../types';
 
 interface PageContextProviderProps
   extends React.PropsWithChildren,

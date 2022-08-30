@@ -1,5 +1,6 @@
 import fetchUrl, { setAPIConfig } from '@knovator/api';
 import apiList from './list';
+import { ACTION_TYPES, API_TYPE, BaseAPIProps, Routes_Input } from '../types';
 
 const handleError = (error: Error) => {
   console.log(error);

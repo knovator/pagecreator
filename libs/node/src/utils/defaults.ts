@@ -1,10 +1,5 @@
 import { NextFunction } from 'express';
-import {
-  IRequest,
-  IResponse,
-  IConfig,
-  CollectionItem,
-} from '@pagecreator/api-interfaces';
+import { CollectionItem, IConfig, IRequest, IResponse } from '../types';
 import { RESPONSE_CODES, internalServerError, REGEXS } from '../constants';
 
 export const defaults: IConfig = {

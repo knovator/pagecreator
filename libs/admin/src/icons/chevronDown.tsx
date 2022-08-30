@@ -1,3 +1,5 @@
+import { IconProps } from '../types';
+
 const ChevronDown = ({ srText, className }: IconProps) => {
   return (
     <>

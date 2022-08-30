@@ -1,7 +1,7 @@
 import { Schema, Types, model } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
-import { ITileSchema, TileTypes, IModel } from '@pagecreator/api-interfaces';
 import { softDeletePlugin } from '../plugins/softDelete';
+import { IModel, ITileSchema, TileTypes } from '../types';
 
 const TileSchema = new Schema<ITileSchema>({
   widgetId: {
@@ -24,6 +24,6 @@ const TileSchema = new Schema<ITileSchema>({
 TileSchema.plugin(softDeletePlugin);
 TileSchema.plugin(mongoosePaginate);
 
-const Tile = model('Tile', TileSchema) as IModel<ITileSchema>;
+const Tile = model('Tile', TileSchema) as unknown as IModel<ITileSchema>;
 
 export default Tile;

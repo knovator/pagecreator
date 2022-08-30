@@ -2,6 +2,11 @@ import React, { useCallback } from 'react';
 import Table from '../../common/Table';
 import ToggleWidget from '../../common/Toggle';
 import { useWidgetState } from '../../../context/WidgetContext';
+import {
+  CombineObjectType,
+  ObjectType,
+  ValuesType,
+} from 'libs/admin/src/types';
 
 const WidgetTable = () => {
   const {

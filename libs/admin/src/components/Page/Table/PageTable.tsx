@@ -1,6 +1,7 @@
 import React from 'react';
 import Table from '../../common/Table';
 import { usePageState } from '../../../context/PageContext';
+import { CombineObjectType } from 'libs/admin/src/types';
 
 const PageTable = () => {
   const {

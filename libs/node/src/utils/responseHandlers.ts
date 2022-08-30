@@ -1,5 +1,5 @@
 import { RESPONSE_CODES, validationError, success, create } from '../constants';
-import { IResponse } from './../../types/IResponse';
+import { IResponse } from '../types';
 
 export const failureResponse = (data: any, res: IResponse) => {
 	let i = 0;

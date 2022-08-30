@@ -7,6 +7,7 @@ import {
   TRANSLATION_PAIRS_COMMON,
   TRANSLATION_PAIRS_PAGE,
 } from '../../../constants/common';
+import { PageProps } from 'libs/admin/src/types';
 
 import Table from '../Table';
 import Search from '../Search';

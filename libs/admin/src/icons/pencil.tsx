@@ -1,3 +1,5 @@
+import { IconProps } from '../types';
+
 const Pencil = ({ srText, className }: IconProps) => {
   return (
     <>

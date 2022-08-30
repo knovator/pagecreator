@@ -1,3 +1,5 @@
+import { TFunc } from '../types';
+
 /* eslint-disable no-useless-escape */
 export const paginationDataGatter = (data: any) => {
   return data.data.docs;

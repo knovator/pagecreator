@@ -1,7 +1,7 @@
 import { Schema, model, Types } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { softDeletePlugin } from '../plugins/softDelete';
-import { IModel, IPageSchema } from '@pagecreator/api-interfaces';
+import { IModel, IPageSchema } from '../types';
 
 const PageSchema = new Schema<IPageSchema>({
   name: String,
@@ -12,6 +12,6 @@ const PageSchema = new Schema<IPageSchema>({
 PageSchema.plugin(softDeletePlugin);
 PageSchema.plugin(mongoosePaginate);
 
-const Page = model('Page', PageSchema) as IModel<IPageSchema>;
+const Page = model('Page', PageSchema) as unknown as IModel<IPageSchema>;
 
 export default Page;

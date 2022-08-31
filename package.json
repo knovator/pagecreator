@@ -12,7 +12,8 @@
     "build:admin": "nx run admin:build",
     "lint:node": "nx run node:lint",
     "build:node": "nx run node:build",
-    "dev": "nx run-many --target=serve --projects=api,pagecreator"
+    "dev": "nx run-many --target=serve --projects=api,pagecreator,front",
+    "start:user": "nx run user:serve"
   },
   "private": true,
   "dependencies": {
@@ -27,6 +28,7 @@
     "joi": "^17.6.0",
     "mongoose": "^6.5.3",
     "mongoose-paginate-v2": "^1.7.0",
+    "next": "12.2.3",
     "react": "18.2.0",
     "react-beautiful-dnd": "^13.1.0",
     "react-dom": "18.2.0",
@@ -44,6 +46,7 @@
     "@nrwl/express": "14.5.10",
     "@nrwl/jest": "14.5.10",
     "@nrwl/linter": "14.5.10",
+    "@nrwl/next": "^14.5.10",
     "@nrwl/node": "14.5.10",
     "@nrwl/react": "14.5.10",
     "@nrwl/web": "14.5.10",
@@ -62,6 +65,7 @@
     "babel-jest": "27.5.1",
     "cypress": "^10.2.0",
     "eslint": "~8.15.0",
+    "eslint-config-next": "12.2.3",
     "eslint-config-prettier": "8.1.0",
     "eslint-plugin-cypress": "^2.10.3",
     "eslint-plugin-import": "2.26.0",

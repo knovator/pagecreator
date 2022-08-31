@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@knovator/pagecreator": ["libs/user/src/index.ts"],
       "@knovator/pagecreator-admin": ["libs/admin/src/index.ts"],
       "@knovator/pagecreator-node": ["libs/node/src/index.ts"]
     }

@@ -4,8 +4,11 @@
   "projects": {
     "admin": "libs/admin",
     "api": "apps/api",
+    "front": "apps/front",
+    "front-e2e": "apps/front-e2e",
     "node": "libs/node",
     "pagecreator": "apps/pagecreator",
-    "pagecreator-e2e": "apps/pagecreator-e2e"
+    "pagecreator-e2e": "apps/pagecreator-e2e",
+    "user": "libs/user"
   }
 }

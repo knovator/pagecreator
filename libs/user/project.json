@@ -4,6 +4,19 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "css": {
+      "executor": "nx:run-commands",
+      "options": {
+        "assets": [
+          { "glob": "libs/user/assets/style.css", "input": ".", "output": "." }
+        ],
+        "commands": [
+          "npx tailwindcss -i src/lib/styles/index.css -o assets/style.css"
+        ],
+        "cwd": "libs/user",
+        "parallel": true
+      }
+    },
     "build": {
       "executor": "@nrwl/web:rollup",
       "outputs": ["{options.outputPath}"],
@@ -20,7 +33,8 @@
             "glob": "libs/user/README.md",
             "input": ".",
             "output": "."
-          }
+          },
+          { "glob": "libs/user/assets/style.css", "input": ".", "output": "." }
         ]
       }
     },

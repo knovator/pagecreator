@@ -25,7 +25,7 @@ export const update = joi.object<ITileSchema>({
   tileType: joi
     .string()
     .valid(...Object.values(TileTypes))
-    .required(),
+    .optional(),
 });
 
 export const list = joi.object({

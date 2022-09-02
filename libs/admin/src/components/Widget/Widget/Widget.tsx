@@ -110,12 +110,14 @@ const Widget = ({
         onClose={onCloseForm}
         formState={formState}
       />
-      <DeleteModal
-        formState={formState}
-        itemData={itemData}
-        onClose={onCloseForm}
-        onConfirmDelete={onCofirmDeleteWidget}
-      />
+      {itemData && (
+        <DeleteModal
+          formState={formState}
+          itemData={itemData}
+          onClose={onCloseForm}
+          onConfirmDelete={onCofirmDeleteWidget}
+        />
+      )}
     </WidgetContextProvider>
   );
 };

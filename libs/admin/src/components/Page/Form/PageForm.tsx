@@ -112,7 +112,7 @@ const PageForm = ({ onClose, open, formState }: FormProps) => {
           isUpdating={formState === 'UPDATE'}
           updates={{
             widgets: selectedWidgets.map(
-              (widget: { value: any }) => widget.value
+              (widget: { value: string }) => widget.value
             ),
           }}
         />

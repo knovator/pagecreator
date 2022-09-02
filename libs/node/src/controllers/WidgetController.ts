@@ -45,7 +45,7 @@ export const deleteWidget = catchAsync(
   async (req: IRequest, res: IResponse) => {
     const _id = new Types.ObjectId(req.params['id']);
     const deletedNotification = await remove(Widget, { _id });
-    res.message = req?.i18n?.t('widget.update');
+    res.message = req?.i18n?.t('widget.delete');
     return successResponse(deletedNotification, res);
   }
 );
@@ -55,12 +55,17 @@ export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
   const { page, limit } = req.body.options;
   const all =
     (typeof req.body.all !== 'undefined' && req.body.all === true) || false;
+  const isActive =
+    typeof req.body.isActive !== 'undefined'
+      ? req.body.isActive || false
+      : null;
   const customOptions = {
     pagination: !all,
     ...(page && limit ? { page, limit } : {}),
   };
   const query = {
     isDeleted: false,
+    isActive: { $in: isActive === null ? [true, false] : [isActive] },
     $or: [
       {
         name: {

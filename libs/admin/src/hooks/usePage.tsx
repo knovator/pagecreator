@@ -60,6 +60,7 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
         onError: handleError(CALLBACK_CODES.GET_ALL),
         data: {
           all: true,
+          isActive: true,
         },
       });
       if (response?.code === 'SUCCESS') {

@@ -1,4 +1,5 @@
 import './db/db';
+import './models/notification';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -9,6 +10,7 @@ import {
   TileRoutes,
   PageRoutes,
   WidgetRoutes,
+  UserRoutes,
 } from '@knovator/pagecreator-node';
 
 const app = express();
@@ -35,6 +37,7 @@ app.use('/widgets', WidgetRoutes);
 app.use('/tiles', TileRoutes);
 app.use('/media', FileUploadRoute);
 app.use('/pages', PageRoutes);
+app.use('/users', UserRoutes);
 app.use(express.static(path.join(__dirname, './public')));
 
 const port = process.env.port || 3333;

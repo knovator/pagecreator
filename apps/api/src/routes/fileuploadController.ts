@@ -2,8 +2,16 @@ import { File } from '../models/file';
 import { promisify } from 'util';
 import { existsSync, unlinkSync } from 'fs';
 import imageSize from 'image-size';
+import path from 'path';
 
 const sizeOf = promisify(imageSize);
+
+const getPath = (folder: string, fileName: string, uri?: string) => {
+  if (uri) {
+    return path.join(__dirname, './public/uploads', uri);
+  }
+  return path.join(__dirname, `./public/uploads/${folder}/${fileName}`);
+};
 
 const fileData = async (file, folder) => {
   if (
@@ -14,7 +22,7 @@ const fileData = async (file, folder) => {
     throw new Error('Only images files are allowed.');
   }
   const fileName = file.name;
-  const pathToStore = `./public/uploads/${folder}/${fileName}`;
+  const pathToStore = getPath(folder, fileName);
   await file.mv(pathToStore);
   const fileObj = {
     name: file.name,
@@ -38,7 +46,7 @@ export const removeFile = async (req, res) => {
   const findFile = await File.findById(id);
   const result = await File.deleteOne({ _id: id });
   if (result.deletedCount) {
-    const path = `./public/uploads${findFile.uri}`;
+    const path = getPath('', '', findFile.uri);
     if (existsSync(path)) {
       unlinkSync(path);
     }

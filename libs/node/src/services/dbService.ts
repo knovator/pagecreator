@@ -4,6 +4,7 @@ import {
   QueryOptions,
   ProjectionType,
   HydratedDocument,
+  QueryWithHelpers,
 } from 'mongoose';
 import { EntityType, IModel, ReturnDocument } from '../types';
 
@@ -34,12 +35,13 @@ export async function remove<T extends EntityType>(
   return await modalInstance.remove();
 }
 // get-all
-export async function getAll<T extends EntityType>(
+export function getAll<T extends EntityType>(
   Modal: Model<T>,
   query: FilterQuery<EntityType> = {},
   options?: QueryOptions<EntityType>,
   projection?: ProjectionType<EntityType>
-): Promise<ReturnDocument[]> {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+): QueryWithHelpers<Array<T>, T, {}, T> {
   return Modal.find(query, projection, options);
 }
 // list
@@ -58,10 +60,15 @@ export async function list<T extends EntityType>(
 // get-one
 export async function getOne<T extends EntityType>(
   Modal: Model<T>,
-  query: FilterQuery<EntityType>
+  query: FilterQuery<EntityType>,
+  projection?: ProjectionType<EntityType>
 ): Promise<HydratedDocument<T>> {
-  const modalInstance: HydratedDocument<T> | null = await Modal.findOne(query);
-  if (!modalInstance) throw new Error(`Record not found in ${Modal.name}`);
+  const modalInstance: HydratedDocument<T> | null = await Modal.findOne(
+    query,
+    projection
+  );
+  if (!modalInstance)
+    throw new Error(`Record not found ${Modal.name ? `in ${Modal.name}` : ''}`);
 
   return modalInstance;
 }

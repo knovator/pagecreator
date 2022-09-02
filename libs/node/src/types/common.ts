@@ -76,3 +76,17 @@ export interface IModel<T> extends Model<T> {
     options?: QueryOptions
   ) => Promise<HydratedDocument<ReturnDocument>[]>;
 }
+
+export type ObjectType = {
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | null
+    | undefined
+    | string[]
+    | number[]
+    | ObjectType
+    | ObjectType[]
+    | any;
+};

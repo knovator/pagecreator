@@ -7,7 +7,7 @@ import {
 } from './../utils/responseHandlers';
 
 import { defaults } from '../utils/defaults';
-import { IRequest, IResponse, TileTypes } from '../types';
+import { IRequest, IResponse } from '../types';
 
 const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Notification');

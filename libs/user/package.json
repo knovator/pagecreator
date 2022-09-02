@@ -1,4 +1,26 @@
 {
   "name": "@knovator/pagecreator",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:knovator/pagecreator.git"
+  },
+  "keywords": [
+    "pagecreator",
+    "pagebuilder",
+    "knovator",
+    "chavda-bhavik"
+  ],
+  "author": "knovator (https://knovator.com/)",
+  "dependencies": {
+    "react-slick": "^0.29.0"
+  },
+  "files": [
+    "lib",
+    "package.json",
+    "README.md",
+    "style.css",
+    "index.d.ts",
+    "index.js"
+  ]
 }

@@ -28,5 +28,10 @@
   "peerDependencies": {
     "mongoose": "^6.5.3",
     "express": "^4.18.1"
-  }
+  },
+  "files": [
+    "src",
+    "package.json",
+    "README.md"
+  ]
 }

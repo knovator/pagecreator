@@ -17,7 +17,7 @@ import {
   ObjectType,
   OptionType,
   SchemaType,
-} from 'libs/admin/src/types';
+} from '../../../types';
 
 const WidgetForm = ({ onClose, open, formState }: FormProps) => {
   const { baseUrl } = useProviderState();

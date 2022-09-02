@@ -1,4 +1,4 @@
-import { DNDItemsListProps } from 'libs/admin/src/types';
+import { DNDItemsListProps } from '../../../types';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const DNDItemsList = ({

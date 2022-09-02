@@ -6,7 +6,7 @@ import {
   CombineObjectType,
   FormActionTypes,
   TileItemsAccordianProps,
-} from 'libs/admin/src/types';
+} from '../../../types';
 
 const TileItemsAccordian = ({
   schema,
@@ -47,7 +47,11 @@ const TileItemsAccordian = ({
   const onTileFormSubmit = (index: number, formData: CombineObjectType) => {
     const state: FormActionTypes =
       index === editingItemIndex && data[index] ? 'UPDATE' : 'ADD';
-    const finalData = { ...formData, widgetId, tileType, sequence: index };
+    const finalData: any = { ...formData, widgetId, tileType, sequence: index };
+    if (finalData['img'] && finalData['img']['_id']) {
+      const id = finalData['img']['_id'];
+      finalData['img'] = id;
+    }
     onDataSubmit(
       state,
       finalData,

@@ -5,7 +5,7 @@ import {
   ObjectType,
   OptionType,
   SchemaType,
-} from 'libs/admin/src/types';
+} from '../../../types';
 
 import Input from '../Input';
 import { isEmpty } from '../../../helper/utils';

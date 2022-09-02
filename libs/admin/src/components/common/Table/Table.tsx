@@ -1,11 +1,7 @@
 import Button from '../Button';
 import Pencil from '../../../icons/pencil';
 import Trash from '../../../icons/trash';
-import {
-  ObjectType,
-  TableDataItemFormat,
-  TableProps,
-} from 'libs/admin/src/types';
+import { ObjectType, TableDataItemFormat, TableProps } from '../../../types';
 
 const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
   const cellItemRenderer = (

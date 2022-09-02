@@ -23,5 +23,13 @@
     "knovator",
     "chavda-bhavik"
   ],
-  "author": "knovator (https://knovator.com/)"
+  "author": "knovator (https://knovator.com/)",
+  "files": [
+    "lib",
+    "package.json",
+    "README.md",
+    "style.css",
+    "index.d.ts",
+    "index.js"
+  ]
 }

@@ -20,4 +20,12 @@ routes
   )
   .descriptor('user.getWidgetData');
 
+routes
+  .post(
+    '/page-data',
+    validate(userValidation.getPageData),
+    userController.getPageData
+  )
+  .descriptor('user.getPageData');
+
 export default routes;

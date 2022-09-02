@@ -67,7 +67,8 @@ export async function getOne<T extends EntityType>(
     query,
     projection
   );
-  if (!modalInstance) throw new Error(`Record not found in ${Modal.name}`);
+  if (!modalInstance)
+    throw new Error(`Record not found ${Modal.name ? `in ${Modal.name}` : ''}`);
 
   return modalInstance;
 }

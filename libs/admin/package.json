@@ -1,4 +1,27 @@
 {
   "name": "@knovator/pagecreator-admin",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "classnames": "^2.3.1",
+    "react-beautiful-dnd": "^13.1.0",
+    "react-transition-group": "^4.4.5",
+    "react-hook-form": "^7.34.2",
+    "react-dropzone": "^14.2.2",
+    "react-select": "^5.4.0"
+  },
+  "peerDependencies": {
+    "@knovator/api": "^0.0.10",
+    "react": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:knovator/pagecreator.git"
+  },
+  "keywords": [
+    "pagecreator",
+    "pagebuilder",
+    "knovator",
+    "chavda-bhavik"
+  ],
+  "author": "knovator (https://knovator.com/)"
 }

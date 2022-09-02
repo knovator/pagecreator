@@ -4,18 +4,18 @@ import { useProviderState } from '../context/ProviderContext';
 import { paginationDataGatter } from '../helper/utils';
 import usePagination from './usePagination';
 import request, { getApiType } from '../api';
-import { FormActionTypes, Routes_Input } from '../types';
+import { FormActionTypes, ObjectType, Routes_Input } from '../types';
 
 interface UsePageProps {
   defaultLimit: number;
   routes?: Routes_Input;
-  preConfirmDelete?: (data: { row: any }) => Promise<boolean>;
+  preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
 }
 
 const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
-  const [list, setList] = useState<any[]>([]);
+  const [list, setList] = useState<ObjectType[]>([]);
   const [loading, setLoading] = useState(false);
-  const [widgets, setWidgets] = useState<any[]>([]);
+  const [widgets, setWidgets] = useState<ObjectType[]>([]);
   const [selectedWidgets, setSelectedWidgets] = useState<
     { label: string; value: string }[]
   >([]);
@@ -37,13 +37,16 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
   const { setPageSize, pageSize, currentPage, setCurrentPage, filter } =
     usePagination({ defaultLimit });
 
-  const handleError = (code: CALLBACK_CODES) => (error: any) => {
-    const { data = {} } = error?.response || {};
-    if (data?.code === 'UNAUTHENTICATED') {
-      onLogout();
-    }
-    onError(code, 'error', data?.message);
-  };
+  const handleError = useCallback(
+    (code: CALLBACK_CODES) => (error: any) => {
+      const { data = {} } = error?.response || {};
+      if (data?.code === 'UNAUTHENTICATED') {
+        onLogout();
+      }
+      onError(code, 'error', data?.message);
+    },
+    [onError, onLogout]
+  );
   const getWidgets = useCallback(async () => {
     try {
       setWidgetsLoading(true);
@@ -60,14 +63,15 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
         onError: handleError(CALLBACK_CODES.GET_ALL),
         data: {
           all: true,
+          isActive: true,
         },
       });
       if (response?.code === 'SUCCESS') {
         let widgetsData = paginationDataGatter(response);
-        widgetsData = widgetsData.map((item: any) => {
+        widgetsData = widgetsData.map((item: ObjectType) => {
           return {
-            label: item.name,
-            value: item._id,
+            label: item['name'],
+            value: item['_id'],
           };
         });
         return setWidgets(widgetsData);
@@ -76,7 +80,7 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
     } catch (error) {
       setWidgetsLoading(false);
     }
-  }, [baseUrl, routes, token]);
+  }, [baseUrl, handleError, routes, token, widgetRoutesPrefix]);
   const getPages = useCallback(
     async (search?: string) => {
       try {
@@ -112,9 +116,18 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
         setLoading(false);
       }
     },
-    [baseUrl, currentPage, filter.limit, filter.offset, routes, token]
+    [
+      baseUrl,
+      currentPage,
+      filter.limit,
+      filter.offset,
+      handleError,
+      pageRoutesPrefix,
+      routes,
+      token,
+    ]
   );
-  const onPageFormSubmit = async (data: any) => {
+  const onPageFormSubmit = async (data: ObjectType) => {
     setLoading(true);
     const code =
       formState === 'ADD' ? CALLBACK_CODES.CREATE : CALLBACK_CODES.UPDATE;
@@ -204,7 +217,7 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
     if (state === 'UPDATE' && data?.widgets) {
       setSelectedWidgets(
         data.widgets.map((widgetId: string) =>
-          widgets.find((widget) => widget.value === widgetId)
+          widgets.find((widget) => widget['value'] === widgetId)
         )
       );
       // setSelectedWidgets(widgets.filter((widget) => data.widgets.includes(widget.value)));

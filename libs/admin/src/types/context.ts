@@ -87,7 +87,7 @@ export interface WidgetContextType {
   canDelete?: boolean;
   onPartialUpdateWidget: (data: any, id: string) => Promise<void>;
   // Tile
-  tilesList: { [key: string]: any };
+  tilesList: any[];
   tilesLoading: boolean;
   onTileFormSubmit: (state: FormActionTypes, data: any) => void;
 }

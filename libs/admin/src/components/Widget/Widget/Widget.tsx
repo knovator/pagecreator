@@ -15,7 +15,7 @@ import AddButton from '../AddButton';
 import Pagination from '../Pagination';
 import WidgetSearch from '../Search';
 import DeleteModal from '../../common/DeleteModal';
-import { WidgetProps } from 'libs/admin/src/types';
+import { WidgetProps } from '../../../types';
 
 const Widget = ({
   t,
@@ -110,12 +110,14 @@ const Widget = ({
         onClose={onCloseForm}
         formState={formState}
       />
-      <DeleteModal
-        formState={formState}
-        itemData={itemData}
-        onClose={onCloseForm}
-        onConfirmDelete={onCofirmDeleteWidget}
-      />
+      {itemData && (
+        <DeleteModal
+          formState={formState}
+          itemData={itemData}
+          onClose={onCloseForm}
+          onConfirmDelete={onCofirmDeleteWidget}
+        />
+      )}
     </WidgetContextProvider>
   );
 };

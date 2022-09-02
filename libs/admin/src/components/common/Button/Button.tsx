@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { ButtonProps } from 'libs/admin/src/types';
+import { ButtonProps } from '../../../types';
 
 const Button = ({
   type = 'primary',

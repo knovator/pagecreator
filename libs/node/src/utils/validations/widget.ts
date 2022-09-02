@@ -89,6 +89,7 @@ export const list = joi.object({
       limit: joi.number().optional(),
     })
     .default({}),
+  isActive: joi.boolean().optional(),
   all: joi.boolean().default(false),
 });
 

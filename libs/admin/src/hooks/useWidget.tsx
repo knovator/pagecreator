@@ -5,12 +5,12 @@ import { paginationDataGatter, dataGatter, build_path } from '../helper/utils';
 import usePagination from './usePagination';
 import request, { getApiType } from '../api';
 import { Routes_Input, SelectionType, WidgetType } from '../types';
-import { FormActionTypes } from '../types/common';
+import { FormActionTypes, ObjectType } from '../types/common';
 
 interface UseWidgetProps {
   defaultLimit: number;
   routes?: Routes_Input;
-  preConfirmDelete?: (data: { row: any }) => Promise<boolean>;
+  preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
 }
 
 const useWidget = ({
@@ -18,13 +18,13 @@ const useWidget = ({
   routes,
   preConfirmDelete,
 }: UseWidgetProps) => {
-  const [list, setList] = useState<any[]>([]);
-  const [tilesList, setTilesList] = useState({ web: [], mobile: [] });
+  const [list, setList] = useState<ObjectType[]>([]);
+  const [tilesList, setTilesList] = useState<ObjectType[]>([]);
   const [tilesLoading, setTilesLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [itemData, setItemData] = useState<any | null>(null);
+  const [itemData, setItemData] = useState<ObjectType | null>(null);
   const [formState, setFormState] = useState<FormActionTypes>();
   const [widgetTypes, setWidgetTypes] = useState<WidgetType[]>([]);
   const [selectionTypes, setSelectionTypes] = useState<SelectionType[]>([]);
@@ -44,13 +44,16 @@ const useWidget = ({
   const { setPageSize, pageSize, currentPage, setCurrentPage, filter } =
     usePagination({ defaultLimit });
 
-  const handleError = (code: CALLBACK_CODES) => (error: any) => {
-    const { data = {} } = error?.response || {};
-    if (data?.code === 'UNAUTHENTICATED') {
-      onLogout();
-    }
-    onError(code, 'error', data?.message);
-  };
+  const handleError = useCallback(
+    (code: CALLBACK_CODES) => (error: any) => {
+      const { data = {} } = error?.response || {};
+      if (data?.code === 'UNAUTHENTICATED') {
+        onLogout();
+      }
+      onError(code, 'error', data?.message);
+    },
+    [onError, onLogout]
+  );
   // List operations
   const getWidgets = useCallback(
     async (search?: string) => {
@@ -87,7 +90,16 @@ const useWidget = ({
         setLoading(false);
       }
     },
-    [baseUrl, currentPage, filter.limit, filter.offset, routes, token]
+    [
+      baseUrl,
+      currentPage,
+      filter.limit,
+      filter.offset,
+      handleError,
+      routes,
+      token,
+      widgetRoutesPrefix,
+    ]
   );
   const getTiles = useCallback(
     async (id: string) => {
@@ -115,7 +127,7 @@ const useWidget = ({
         setTilesLoading(false);
       }
     },
-    [baseUrl, routes, token]
+    [baseUrl, handleError, routes, tilesRoutesPrefix, token]
   );
   const onDeleteTile = async (id: string) => {
     try {
@@ -136,7 +148,7 @@ const useWidget = ({
       if (response?.code === 'SUCCESS') {
         setTilesLoading(false);
         onSuccess(CALLBACK_CODES.DELETE, response?.code, response?.message);
-        getTiles(itemData?._id);
+        if (itemData) getTiles(itemData['_id']);
         return;
       }
       setTilesLoading(false);
@@ -153,7 +165,7 @@ const useWidget = ({
   const onCofirmDeleteWidget = async () => {
     try {
       let proceed = true;
-      if (typeof preConfirmDelete === 'function') {
+      if (typeof preConfirmDelete === 'function' && itemData) {
         try {
           proceed = await preConfirmDelete({ row: itemData });
         } catch (error) {
@@ -167,7 +179,7 @@ const useWidget = ({
           routes,
           action: 'DELETE',
           prefix: widgetRoutesPrefix,
-          id: itemData?._id,
+          id: itemData?.['_id'],
         });
         const response = await request({
           baseUrl,
@@ -197,7 +209,7 @@ const useWidget = ({
       onCloseForm();
     }
   };
-  const onPartialUpdateWidget = async (data: any, id: string) => {
+  const onPartialUpdateWidget = async (data: ObjectType, id: string) => {
     try {
       const api = getApiType({
         routes,
@@ -215,7 +227,7 @@ const useWidget = ({
       });
       if (response?.code === 'SUCCESS') {
         setList((oldListData) =>
-          oldListData.map((item) => (item._id === id ? response.data : item))
+          oldListData.map((item) => (item['_id'] === id ? response.data : item))
         );
       } else {
         onError(
@@ -300,7 +312,7 @@ const useWidget = ({
     setCollectionDataLoading(false);
   };
   // Form operations
-  const onWidgetFormSubmit = async (data: any) => {
+  const onWidgetFormSubmit = async (data: ObjectType) => {
     setLoading(true);
     const code =
       formState === 'ADD' ? CALLBACK_CODES.CREATE : CALLBACK_CODES.UPDATE;
@@ -308,7 +320,7 @@ const useWidget = ({
       routes,
       action: formState === 'ADD' ? 'CREATE' : 'UPDATE',
       prefix: widgetRoutesPrefix,
-      id: itemData?._id,
+      id: itemData?.['_id'],
     });
     const response = await request({
       baseUrl,
@@ -329,7 +341,7 @@ const useWidget = ({
     setFormState(undefined);
     setItemData(null);
   };
-  const onChangeFormState = (state: FormActionTypes, data?: any) => {
+  const onChangeFormState = (state: FormActionTypes, data?: ObjectType) => {
     setItemData(data || null);
     setFormState(state);
     // fetch WidgetTypes & SelectionTypes if needed
@@ -339,17 +351,17 @@ const useWidget = ({
     }
     // get Tile data if widget is updating
     if (state === 'UPDATE' && data) {
-      if (data.widgetType !== 'Image' && data.collectionName)
-        getCollectionData(data.collectionName);
-      else getTiles(data._id);
+      if (data['widgetType'] !== 'Image' && data['collectionName'])
+        getCollectionData(data['collectionName']);
+      else getTiles(data['_id']);
     } else if (state === 'ADD') {
       // reset Tile data if widget is adding
-      setTilesList({ web: [], mobile: [] });
+      setTilesList([]);
     }
   };
   const onTileFormSubmit = async (
     state: FormActionTypes,
-    data: any,
+    data: ObjectType,
     updateId?: string
   ) => {
     setTilesLoading(true);
@@ -373,7 +385,7 @@ const useWidget = ({
       if (response?.code === 'SUCCESS') {
         setTilesLoading(false);
         onSuccess(code, response?.code, response?.message);
-        getTiles(itemData._id);
+        if (itemData) getTiles(itemData['_id']);
       } else {
         setTilesLoading(false);
         onError(code, response?.code, response?.message);

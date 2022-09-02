@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Button from '../Button';
 import Input from '../Input';
 import Modal from '../Modal';
-import { DeleteModalProps } from 'libs/admin/src/types';
+import { DeleteModalProps } from '../../../types';
 import { TRANSLATION_PAIRS_COMMON } from '../../../constants/common';
 
 const DeleteModal = ({

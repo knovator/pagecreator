@@ -1,4 +1,4 @@
-import { ToggleProps } from 'libs/admin/src/types';
+import { ToggleProps } from '../../../types';
 
 const Toggle = ({ isChecked, disabled, onChange }: ToggleProps) => {
   return (

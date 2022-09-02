@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import ReactSelect from 'react-select';
-import { ReactSelectProps } from 'libs/admin/src/types';
+import { ReactSelectProps } from '../../../types';
 
 const CustomReactSelect = ({
   onChange,

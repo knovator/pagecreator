@@ -49,7 +49,7 @@ const WidgetContextProvider = ({
   loader = <span />,
   onPartialUpdateWidget = () => Promise.resolve(),
   // Tile
-  tilesList = { web: [], mobile: [] },
+  tilesList = [],
   tilesLoading = false,
   onTileFormSubmit = () => {},
   // other

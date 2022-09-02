@@ -17,7 +17,7 @@ import {
   ObjectType,
   OptionType,
   SchemaType,
-} from 'libs/admin/src/types';
+} from '../../../types';
 
 const WidgetForm = ({ onClose, open, formState }: FormProps) => {
   const { baseUrl } = useProviderState();
@@ -43,8 +43,7 @@ const WidgetForm = ({ onClose, open, formState }: FormProps) => {
   const callerRef = useRef<NodeJS.Timeout | null>(null);
   const widgetFormRef = useRef<HTMLFormElement | null>(null);
 
-  const [webShow, setWebShow] = useState(false);
-  const [mobileShow, setMobileShow] = useState(false);
+  const [tilesVisible, setTilesVisible] = useState(false);
   const [tilesEnabled, setTilesEnabled] = useState(true);
   const [showAutoPlay, setShowAutoPlay] = useState(false);
   const [selectedCollectionItems, setSelectedCollectionItems] = useState<
@@ -385,35 +384,15 @@ const WidgetForm = ({ onClose, open, formState }: FormProps) => {
           <>
             {/* Web Items */}
             <TileItemsAccordian
-              collapseId="webItems"
-              title={t('widget.webItems')}
-              id="web"
+              collapseId="imageItems"
+              title={t('widget.imageItems')}
+              id="items"
               schema={tileFormSchema}
-              show={webShow}
-              tilesData={tilesList['web']}
-              toggleShow={setWebShow}
+              show={tilesVisible}
+              tilesData={tilesList}
+              toggleShow={setTilesVisible}
               onDataSubmit={onTileFormSubmit}
               tileType="Web"
-              widgetId={data?._id}
-              onDelete={onDeleteTile}
-              addText={t('addButtonText')}
-              cancelText={t('cancelButtonText')}
-              saveText={t('saveButtonText')}
-              editText={t('editButtonText')}
-              deleteText={t('deleteButtonText')}
-            />
-
-            {/* Mobile Items */}
-            <TileItemsAccordian
-              collapseId="mobileItems"
-              title={t('widget.mobileItems')}
-              id="mobile"
-              schema={tileFormSchema}
-              show={mobileShow}
-              tilesData={tilesList['mobile']}
-              toggleShow={setMobileShow}
-              onDataSubmit={onTileFormSubmit}
-              tileType="Mobile"
               widgetId={data?._id}
               onDelete={onDeleteTile}
               addText={t('addButtonText')}

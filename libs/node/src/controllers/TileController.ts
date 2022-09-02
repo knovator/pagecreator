@@ -7,7 +7,7 @@ import {
 } from './../utils/responseHandlers';
 
 import { defaults } from '../utils/defaults';
-import { IRequest, IResponse, TileTypes } from '../types';
+import { IRequest, IResponse } from '../types';
 
 const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Notification');
@@ -40,16 +40,7 @@ export const getTiles = catchAsync(async (req: IRequest, res: IResponse) => {
   const options = {
     populate: ['img'],
   };
-  const webTiles = await getAll(
-    Tile,
-    { widgetId, tileType: TileTypes.Web },
-    options
-  );
-  const mobileTiles = await getAll(Tile, {
-    widgetId,
-    tileType: TileTypes.Mobile,
-    options,
-  });
+  const tiles = await getAll(Tile, { widgetId }, options);
   res.message = req?.i18n?.t('tile.getAll');
-  return successResponse({ web: webTiles, mobile: mobileTiles }, res);
+  return successResponse(tiles, res);
 });

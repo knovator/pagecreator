@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { DropResult } from 'react-beautiful-dnd';
-import { FormProps, SchemaType } from 'libs/admin/src/types';
+import { FormProps, SchemaType } from '../../../types';
 
 import Form from '../../common/Form';
 import Drawer from '../../common/Drawer';
@@ -112,7 +112,7 @@ const PageForm = ({ onClose, open, formState }: FormProps) => {
           isUpdating={formState === 'UPDATE'}
           updates={{
             widgets: selectedWidgets.map(
-              (widget: { value: any }) => widget.value
+              (widget: { value: string }) => widget.value
             ),
           }}
         />

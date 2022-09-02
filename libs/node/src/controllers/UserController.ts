@@ -82,8 +82,8 @@ export const getWidgetData = catchAsync(
     ])) as Array<IWidgetSchema>;
 
     if (!newWidgetData.length) throw new Error(`Widget not found`);
-    // await Widget.populate(newWidgetData[0], { path: 'collectionItems' });
-    return successResponse(newWidgetData, res);
+    await Widget.populate(newWidgetData[0], { path: 'collectionItems' });
+    return successResponse(newWidgetData[0], res);
   }
 );
 
@@ -182,5 +182,5 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
     options: { projection: commonExcludedFields },
   });
   res.message = req?.i18n?.t('user.pageData');
-  return successResponse(pageData, res);
+  return successResponse(pageData[0], res);
 });

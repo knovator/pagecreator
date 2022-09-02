@@ -4,6 +4,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import 'libs/user/assets/style.css';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import Link from 'next/link';
 
 function CustomApp({ Component, pageProps }: AppProps) {
   return (
@@ -12,6 +13,14 @@ function CustomApp({ Component, pageProps }: AppProps) {
         <title>Pagecreator</title>
       </Head>
       <main className="app">
+        <ul>
+          <li>
+            <Link href="/widget">See Widget example</Link>
+          </li>
+          <li>
+            <Link href="/page">See Page example</Link>
+          </li>
+        </ul>
         <Component {...pageProps} />
       </main>
     </>

@@ -15,7 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@pagecreator/api-interfaces": ["libs/api-interfaces/src/index.ts"]
+      "@knovator/pagecreator": ["libs/user/src/index.ts"],
+      "@knovator/pagecreator-admin": ["libs/admin/src/index.ts"],
+      "@knovator/pagecreator-node": ["libs/node/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

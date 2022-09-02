@@ -1,0 +1,59 @@
+@import url('slick-carousel/slick/slick.css');
+@import url('slick-carousel/slick/slick-theme.css');
+@tailwind components;
+@tailwind base;
+@tailwind utilities;
+
+.kpc_widget {
+    @apply mt-10 lg:mt-16;
+}
+.kpc_widget-title {
+    @apply mb-2 font-bold text-2xl;
+}
+
+
+.kpc_simple-card {
+    @apply flex flex-col gap-2 p-3 overflow-hidden rounded-lg border border-gray-400;
+}
+.kpc_simple-card-heading {
+    @apply shrink-0;
+}
+.kpc_simple-card-image {
+    @apply aspect-square object-cover rounded-md;
+}
+.kpc_simple-card-body {
+    @apply w-full contents;
+}
+.kpc_simple-card-label {
+    @apply text-xs text-gray-600 truncate;
+}
+.kpc_simple-card-content {
+    @apply items-center justify-between w-full;
+}
+.kpc_simple-card-title {
+    @apply font-semibold text-lg text-center;
+}
+.kpc_simple-card-subtitle {
+    @apply text-xs text-gray-600;
+}
+
+.kpc_banner {
+    @apply border border-gray-500 rounded-md p-1;
+}
+.kpc_banner-image {
+    @apply h-full w-full aspect-square;
+}
+
+.kpc_page {}
+.kpc_page-title {
+    @apply mb-2 font-bold text-2xl;
+}
+.kpc_page-widgets {
+    @apply space-y-2;
+}
+.kpc_item {
+    @apply p-2 border-2 border-gray-500 rounded-md;
+}
+.kpc_item-text {
+    @apply text-center text-base font-medium;
+}

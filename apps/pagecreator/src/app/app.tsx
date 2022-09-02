@@ -1,26 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { Message } from '@pagecreator/api-interfaces';
+import { useState } from 'react';
+import { Widget, Provider, Page } from '@knovator/pagecreator-admin';
 
 export const App = () => {
-  const [m, setMessage] = useState<Message>({ message: '' });
-
-  useEffect(() => {
-    fetch('/api')
-      .then((r) => r.json())
-      .then(setMessage);
-  }, []);
+  const [selectedType, setSelectedType] = useState('widget');
 
   return (
     <>
-      <div style={{ textAlign: 'center' }}>
-        <h1>Welcome to pagecreator!</h1>
-        <img
-          width="450"
-          src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png"
-          alt="Nx - Smart, Fast and Extensible Build System"
-        />
+      <div className="form-group">
+        <label htmlFor="widget">
+          <input
+            type="radio"
+            value="widget"
+            id="widget"
+            checked={selectedType === 'widget'}
+            onChange={(e) => setSelectedType(e.target.value)}
+          />
+          Widget
+        </label>
+        <label htmlFor="page">
+          <input
+            type="radio"
+            value="page"
+            id="page"
+            checked={selectedType === 'page'}
+            onChange={(e) => setSelectedType(e.target.value)}
+          />
+          Page
+        </label>
       </div>
-      <div>{m.message}</div>
+      <Provider baseUrl={process.env['NX_API_URL']} token="ABCD">
+        {selectedType === 'widget' && (
+          <Widget
+            formatOptionLabel={(code: string, label: any) => (
+              <div>
+                {label?.value}-{label?.label}
+              </div>
+            )}
+            formatListItem={(code: string, label: any) => (
+              <div>
+                {label?.value}-{label?.label}
+              </div>
+            )}
+          />
+        )}
+        {selectedType === 'page' && <Page />}
+      </Provider>
     </>
   );
 };

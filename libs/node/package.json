@@ -1,0 +1,32 @@
+{
+  "name": "@knovator/pagecreator-node",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "author": "knovator (https://knovator.com/)",
+  "description": "PageCreator Node.js module",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:knovator/pagecreator.git"
+  },
+  "keywords": [
+    "pagecreator",
+    "nodejs",
+    "mongodb",
+    "knovator"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.js"
+    }
+  },
+  "dependencies": {
+    "mongoose-paginate-v2": "^1.7.0",
+    "express-list-endpoints-descriptor": "^1.0.13",
+    "joi": "^17.6.0"
+  },
+  "peerDependencies": {
+    "mongoose": "^6.5.3",
+    "express": "^4.18.1"
+  }
+}

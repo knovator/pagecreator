@@ -41,3 +41,17 @@
 .kpc_banner-image {
     @apply h-full w-full aspect-square;
 }
+
+.kpc_page {}
+.kpc_page-title {
+    @apply mb-2 font-bold text-2xl;
+}
+.kpc_page-widgets {
+    @apply space-y-2;
+}
+.kpc_item {
+    @apply p-2 border-2 border-gray-500 rounded-md;
+}
+.kpc_item-text {
+    @apply text-center text-base font-medium;
+}

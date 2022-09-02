@@ -23,6 +23,12 @@ export type Routes_Input = {
   [K in ACTION_TYPES]?: (data: API_INPUT_TYPE) => API_TYPE;
 };
 
+export interface PageData {
+  _id: string;
+  name: string;
+  code: string;
+  widgets: WidgetData[];
+}
 export interface WidgetData {
   _id: string;
   name: string;
@@ -35,8 +41,8 @@ export interface WidgetData {
   tabletPerRow: number;
   widgetType: 'Image' | string;
   selectionType: 'FixedCard' | 'Carousel';
-  webTiles: TileData[];
-  mobileTiles: TileData[];
+  tiles: TileData[];
+  collectionItems: CollectionItemType[];
 }
 export interface TileData {
   _id: string;
@@ -49,4 +55,8 @@ export interface TileData {
 export interface ImgData {
   _id: string;
   uri: string;
+}
+export interface CollectionItemType {
+  _id: string;
+  name?: string;
 }

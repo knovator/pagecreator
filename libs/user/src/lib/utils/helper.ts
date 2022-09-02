@@ -1,27 +1,29 @@
-import { WidgetData } from '../types';
+import { WidgetData, PageData } from '../types';
 
-interface GetWidgetDataParams {
+interface GetDataParams {
   url: string;
   code: string;
   token?: string | (() => Promise<string>);
 }
 
-export async function getWidgetData({
+export async function getData({
   url,
   code,
   token,
-}: GetWidgetDataParams): Promise<WidgetData> {
-  let apiToken = token;
-  if (typeof token === 'function') apiToken = await token();
-
+}: GetDataParams): Promise<WidgetData | PageData> {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `jwt ${apiToken}`,
+      Authorization: token ? `Bearer ${token}` : '',
     },
     body: JSON.stringify({ code }),
   });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
   const data = await response.json();
   return data['data'];
 }

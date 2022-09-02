@@ -696,6 +696,37 @@ video {
   width: 100%;
 }
 
+.kpc_page {
+}
+
+.kpc_page-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+}
+
+.kpc_page-widgets > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
+}
+
+.kpc_item {
+  border-radius: 0.375rem;
+  border-width: 2px;
+  --tw-border-opacity: 1;
+  border-color: rgb(107 114 128 / var(--tw-border-opacity));
+  padding: 0.5rem;
+}
+
+.kpc_item-text {
+  text-align: center;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+}
+
 @media (min-width: 640px) {
   .sm\:grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));

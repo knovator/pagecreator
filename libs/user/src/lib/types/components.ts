@@ -1,5 +1,11 @@
 import { Settings } from 'react-slick';
-import { TileData, WidgetData, ObjectType } from './';
+import {
+  TileData,
+  WidgetData,
+  ObjectType,
+  PageData,
+  CollectionItemType,
+} from './';
 
 interface SlideProps {
   onClick?: (data?: ObjectType) => void;
@@ -40,5 +46,18 @@ export interface WidgetProps {
 }
 export interface WidgetTypeProps extends WidgetProps {
   formatTile: (item: TileData) => JSX.Element;
+  formatItem: (item: CollectionItemType) => JSX.Element;
   settings?: Settings;
+}
+
+export interface PageProps {
+  title?: string;
+  apiBaseUrl: string;
+  pageData: PageData;
+  formatItem?: (CODE: string, item: TileData) => JSX.Element;
+  onClick?: (CODE: string, item: TileData) => JSX.Element;
+}
+
+export interface CollectionItemProps {
+  name?: string;
 }

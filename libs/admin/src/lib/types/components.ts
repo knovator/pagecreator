@@ -1,3 +1,4 @@
+import { MutableRefObject } from 'react';
 import { DropResult } from 'react-beautiful-dnd';
 import { RegisterOptions } from 'react-hook-form';
 import {
@@ -124,6 +125,7 @@ export interface FormProps {
   open: boolean;
   onClose: () => void;
   formState: FormActionTypes | undefined;
+  widgetFormRef: MutableRefObject<HTMLFormElement | null>;
 }
 export interface InputRendererProps {
   field: import('react-hook-form').ControllerRenderProps;
@@ -134,10 +136,24 @@ export interface InputRendererProps {
 export interface WidgetProps {
   t?: any;
   loader?: any;
+  explicitForm?: boolean;
   permissions?: PermissionsObj;
   formatListItem?: (code: string, data: any) => JSX.Element;
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
+  children?: JSX.Element;
 }
+
+export interface FormWrapperProps {
+  children: (data: {
+    formState: FormActionTypes | undefined;
+    onClose: () => void;
+    open: boolean;
+  }) => JSX.Element | null;
+}
+export interface FormActionWrapperProps {
+  formRef: MutableRefObject<HTMLFormElement | null>;
+}
+
 export interface SchemaType extends ReactSelectProps {
   label?: string;
   accessor: string;

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useRef } from 'react';
 import useWidget from '../../../hooks/useWidget';
 import WidgetContextProvider from '../../../context/WidgetContext';
 import { createTranslation } from '../../../helper/utils';
@@ -8,22 +8,28 @@ import {
   TRANSLATION_PAIRS_TILES,
   DEFAULT_PERMISSIONS,
 } from '../../../constants/common';
+import { WidgetProps } from '../../../types';
 
 import Table from '../Table';
 import WidgetForm from '../Form';
 import AddButton from '../AddButton';
 import Pagination from '../Pagination';
 import WidgetSearch from '../Search';
+import Drawer from '../../common/Drawer';
 import DeleteModal from '../../common/DeleteModal';
-import { WidgetProps } from '../../../types';
+import WidgetFormActions from '../WidgetFormActions';
+import WiddgetFormWrapper from '../WidgetFormWrapper';
 
 const Widget = ({
   t,
   loader,
+  explicitForm = false,
   permissions = DEFAULT_PERMISSIONS,
   formatListItem,
   formatOptionLabel,
+  children,
 }: WidgetProps) => {
+  const widgetFormRef = useRef<HTMLFormElement | null>(null);
   const derivedT = createTranslation(t, {
     ...TRANSLATION_PAIRS_COMMON,
     ...TRANSLATION_PAIRS_WIDGET,
@@ -99,17 +105,38 @@ const Widget = ({
       canUpdate={permissions.update}
       canPartialUpdate={permissions.partialUpdate}
     >
-      <AddButton />
-      <WidgetSearch />
-      <div className="khb_table-wrapper">
-        <Table />
-        <Pagination />
-      </div>
-      <WidgetForm
-        open={formState === 'ADD' || formState === 'UPDATE'}
-        onClose={onCloseForm}
-        formState={formState}
-      />
+      {children ? (
+        children
+      ) : (
+        <>
+          <AddButton />
+          <WidgetSearch />
+          <Table />
+          <Pagination />
+        </>
+      )}
+
+      {!explicitForm && (
+        <Drawer
+          open={formState === 'ADD' || formState === 'UPDATE'}
+          onClose={onCloseForm}
+          title={
+            formState === 'ADD'
+              ? t('widget.addWidgetTitle')
+              : formState === 'UPDATE'
+              ? t('widget.updateWidgetTitle')
+              : ''
+          }
+          footerContent={<WidgetFormActions formRef={widgetFormRef} />}
+        >
+          <WidgetForm
+            open={formState === 'ADD' || formState === 'UPDATE'}
+            onClose={onCloseForm}
+            formState={formState}
+            widgetFormRef={widgetFormRef}
+          />
+        </Drawer>
+      )}
       {itemData && (
         <DeleteModal
           formState={formState}
@@ -123,5 +150,12 @@ const Widget = ({
 };
 
 Widget.Table = Table;
+Widget.AddButton = AddButton;
+Widget.Search = WidgetSearch;
+Widget.Table = Table;
+Widget.Pagination = Pagination;
+Widget.FormWrapper = WiddgetFormWrapper;
+Widget.Form = WidgetForm;
+Widget.FormActions = WidgetFormActions;
 
 export default Widget;

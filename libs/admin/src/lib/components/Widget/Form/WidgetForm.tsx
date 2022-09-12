@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { DropResult } from 'react-beautiful-dnd';
 
 import Form from '../../common/Form';
-import Drawer from '../../common/Drawer';
-import Button from '../../common/Button';
 import ImageUpload from '../../common/ImageUpload';
 import DNDItemsList from '../../common/DNDItemsList';
 import TileItemsAccordian from './TileItemsAccordian';
@@ -19,7 +17,7 @@ import {
   SchemaType,
 } from '../../../types';
 
-const WidgetForm = ({ onClose, open, formState }: FormProps) => {
+const WidgetForm = ({ formState, widgetFormRef }: FormProps) => {
   const { baseUrl } = useProviderState();
   const {
     t,
@@ -41,7 +39,6 @@ const WidgetForm = ({ onClose, open, formState }: FormProps) => {
     formatOptionLabel,
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
-  const widgetFormRef = useRef<HTMLFormElement | null>(null);
 
   const [tilesVisible, setTilesVisible] = useState(false);
   const [tilesEnabled, setTilesEnabled] = useState(true);
@@ -124,11 +121,6 @@ const WidgetForm = ({ onClose, open, formState }: FormProps) => {
   }
 
   // Widget Form Functions
-  const onWidgetFormSubmitClick = () => {
-    widgetFormRef.current?.dispatchEvent(
-      new Event('submit', { cancelable: true, bubbles: true })
-    );
-  };
   const onWidgetFormInputChange = useCallback(
     (value: ObjectType, name: string | undefined) => {
       if (name === 'selectionType') {
@@ -342,70 +334,48 @@ const WidgetForm = ({ onClose, open, formState }: FormProps) => {
 
   if (!canAdd || !canUpdate) return null;
   return (
-    <Drawer
-      open={open}
-      onClose={onClose}
-      title={
-        formState === 'ADD'
-          ? t('widget.addWidgetTitle')
-          : formState === 'UPDATE'
-          ? t('widget.updateWidgetTitle')
-          : ''
-      }
-      footerContent={
-        <>
-          <Button type="secondary" onClick={onClose}>
-            {t('cancelButtonText')}
-          </Button>
-          <Button onClick={onWidgetFormSubmitClick}>
-            {t('saveButtonText')}
-          </Button>
-        </>
-      }
-    >
-      <div className="khb_form">
-        <Form
-          schema={widgetFormSchema}
-          onSubmit={onFormSubmit}
-          ref={widgetFormRef}
-          data={data}
-          isUpdating={formState === 'UPDATE'}
-          watcher={onWidgetFormInputChange}
+    <div className="khb_form">
+      <Form
+        schema={widgetFormSchema}
+        onSubmit={onFormSubmit}
+        ref={widgetFormRef}
+        data={data}
+        isUpdating={formState === 'UPDATE'}
+        watcher={onWidgetFormInputChange}
+      />
+      {!tilesEnabled && (
+        <DNDItemsList
+          items={selectedCollectionItems}
+          onDragEnd={onCollectionIndexChange}
+          formatItem={formatListItem}
         />
-        {!tilesEnabled && (
-          <DNDItemsList
-            items={selectedCollectionItems}
-            onDragEnd={onCollectionIndexChange}
-            formatItem={formatListItem}
-          />
-        )}
+      )}
 
-        {tilesEnabled && (
-          <>
-            {/* Web Items */}
-            <TileItemsAccordian
-              collapseId="imageItems"
-              title={t('widget.imageItems')}
-              id="items"
-              schema={tileFormSchema}
-              show={tilesVisible}
-              tilesData={tilesList}
-              toggleShow={setTilesVisible}
-              onDataSubmit={onTileFormSubmit}
-              tileType="Web"
-              widgetId={data?._id}
-              onDelete={onDeleteTile}
-              addText={t('addButtonText')}
-              cancelText={t('cancelButtonText')}
-              saveText={t('saveButtonText')}
-              editText={t('editButtonText')}
-              deleteText={t('deleteButtonText')}
-            />
-          </>
-        )}
-      </div>
-    </Drawer>
+      {tilesEnabled && (
+        <>
+          {/* Web Items */}
+          <TileItemsAccordian
+            collapseId="imageItems"
+            title={t('widget.imageItems')}
+            id="items"
+            schema={tileFormSchema}
+            show={tilesVisible}
+            tilesData={tilesList}
+            toggleShow={setTilesVisible}
+            onDataSubmit={onTileFormSubmit}
+            tileType="Web"
+            widgetId={data?._id}
+            onDelete={onDeleteTile}
+            addText={t('addButtonText')}
+            cancelText={t('cancelButtonText')}
+            saveText={t('saveButtonText')}
+            editText={t('editButtonText')}
+            deleteText={t('deleteButtonText')}
+          />
+        </>
+      )}
+    </div>
   );
-};
+};;
 
 export default WidgetForm;

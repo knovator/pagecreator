@@ -8,7 +8,7 @@
     "react-hook-form": "^7.34.2",
     "react-dropzone": "^14.2.2",
     "react-select": "^5.4.0",
-    "@knovator/api": "^1.0.1"
+    "@knovator/api": "^1.0.2"
   },
   "peerDependencies": {
     "react": "^18"

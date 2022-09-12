@@ -97,9 +97,9 @@ const Page = ({
           onClose={onCloseForm}
           title={
             formState === 'ADD'
-              ? t('page.addPageTitle')
+              ? derivedT('page.addPageTitle')
               : formState === 'UPDATE'
-              ? t('page.updatePageTitle')
+              ? derivedT('page.updatePageTitle')
               : ''
           }
           footerContent={<PageFormActions formRef={formRef} />}

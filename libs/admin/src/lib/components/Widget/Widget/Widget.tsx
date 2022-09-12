@@ -111,8 +111,10 @@ const Widget = ({
         <>
           <AddButton />
           <WidgetSearch />
-          <Table />
-          <Pagination />
+          <div className="khb_table-wrapper">
+            <Table />
+            <Pagination />
+          </div>
         </>
       )}
 
@@ -122,9 +124,9 @@ const Widget = ({
           onClose={onCloseForm}
           title={
             formState === 'ADD'
-              ? t('widget.addWidgetTitle')
+              ? derivedT('widget.addWidgetTitle')
               : formState === 'UPDATE'
-              ? t('widget.updateWidgetTitle')
+              ? derivedT('widget.updateWidgetTitle')
               : ''
           }
           footerContent={<WidgetFormActions formRef={widgetFormRef} />}

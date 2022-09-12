@@ -14,6 +14,7 @@ export interface ProviderContextType {
     code: string,
     message: string
   ) => void;
+  switchClass: string;
   onLogout: () => void;
   widgetRoutesPrefix: string;
   tilesRoutesPrefix: string;
@@ -29,6 +30,7 @@ export interface ProviderContextProviderProps
       | 'widgetRoutesPrefix'
       | 'tilesRoutesPrefix'
       | 'pageRoutesPrefix'
+      | 'switchClass'
     > {
   onError?: (
     callback_code: import('../constants/common').CALLBACK_CODES,
@@ -41,6 +43,7 @@ export interface ProviderContextProviderProps
     message: string
   ) => void;
   onLogout?: () => void;
+  switchClass?: string;
   widgetRoutesPrefix?: string;
   tilesRoutesPrefix?: string;
   pageRoutesPrefix?: string;

@@ -1,8 +1,13 @@
 import { ToggleProps } from '../../../types';
 
-const Toggle = ({ isChecked, disabled, onChange }: ToggleProps) => {
+const Toggle = ({
+  isChecked,
+  disabled,
+  onChange,
+  switchClass,
+}: ToggleProps) => {
   return (
-    <label className="khb_switch" data-testid="khb_switch">
+    <label className={switchClass || 'khb_switch'} data-testid="khb_switch">
       <input
         type="checkbox"
         onChange={() => onChange && onChange(!isChecked)}

@@ -17,7 +17,7 @@ import {
   SchemaType,
 } from '../../../types';
 
-const WidgetForm = ({ formState, widgetFormRef }: FormProps) => {
+const WidgetForm = ({ formState, formRef }: FormProps) => {
   const { baseUrl } = useProviderState();
   const {
     t,
@@ -338,7 +338,7 @@ const WidgetForm = ({ formState, widgetFormRef }: FormProps) => {
       <Form
         schema={widgetFormSchema}
         onSubmit={onFormSubmit}
-        ref={widgetFormRef}
+        ref={formRef}
         data={data}
         isUpdating={formState === 'UPDATE'}
         watcher={onWidgetFormInputChange}

@@ -133,7 +133,7 @@ const Widget = ({
             open={formState === 'ADD' || formState === 'UPDATE'}
             onClose={onCloseForm}
             formState={formState}
-            widgetFormRef={widgetFormRef}
+            formRef={widgetFormRef}
           />
         </Drawer>
       )}
@@ -150,12 +150,11 @@ const Widget = ({
 };
 
 Widget.Table = Table;
+Widget.Form = WidgetForm;
 Widget.AddButton = AddButton;
 Widget.Search = WidgetSearch;
-Widget.Table = Table;
 Widget.Pagination = Pagination;
 Widget.FormWrapper = WiddgetFormWrapper;
-Widget.Form = WidgetForm;
 Widget.FormActions = WidgetFormActions;
 
 export default Widget;

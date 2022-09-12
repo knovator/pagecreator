@@ -1,4 +1,4 @@
-import { MutableRefObject } from 'react';
+import React, { MutableRefObject } from 'react';
 import { DropResult } from 'react-beautiful-dnd';
 import { RegisterOptions } from 'react-hook-form';
 import {
@@ -125,7 +125,7 @@ export interface FormProps {
   open: boolean;
   onClose: () => void;
   formState: FormActionTypes | undefined;
-  widgetFormRef: MutableRefObject<HTMLFormElement | null>;
+  formRef: MutableRefObject<HTMLFormElement | null>;
 }
 export interface InputRendererProps {
   field: import('react-hook-form').ControllerRenderProps;
@@ -183,7 +183,9 @@ export interface SchemaType extends ReactSelectProps {
 export interface PageProps {
   t?: any;
   loader?: any;
+  explicitForm?: boolean;
   permissions?: PermissionsObj;
+  children?: JSX.Element;
 }
 export interface PaginationProps {
   totalPages: number;

@@ -1,6 +1,12 @@
 import fetchUrl, { setAPIConfig } from '@knovator/api';
 import apiList from './list';
-import { ACTION_TYPES, API_TYPE, BaseAPIProps, Routes_Input } from '../types';
+import {
+  ACTION_TYPES,
+  API_TYPE,
+  BaseAPIProps,
+  Routes_Input,
+  ResponseType,
+} from '../types';
 
 const handleError = (error: Error) => {
   console.log(error);
@@ -17,7 +23,7 @@ const commonApi = async ({
   method,
 
   onError = handleError,
-}: BaseAPIProps) => {
+}: BaseAPIProps): Promise<ResponseType> => {
   let apiToken = token;
   if (typeof token === 'function') {
     apiToken = await token();
@@ -28,12 +34,15 @@ const commonApi = async ({
     getToken: apiToken,
     onError,
   });
-  return fetchUrl({
+  const response: ResponseType = (await fetchUrl({
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     type: method,
     url,
     data,
     config,
-  });
+  })) as ResponseType;
+  return response;
 };
 
 const getApiType = ({

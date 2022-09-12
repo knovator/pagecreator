@@ -34,3 +34,9 @@ export interface BaseAPIProps {
   method: string;
   onError?: (error: Error) => void;
 }
+
+export interface ResponseType {
+  message: string;
+  code: 'SUCCESS' | 'FAILED';
+  data: any;
+}

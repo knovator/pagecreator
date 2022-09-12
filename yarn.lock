@@ -1461,14 +1461,13 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@knovator/api@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@knovator/api/-/api-0.0.10.tgz#a0d02e5f1f2f6533202a9042dbe60c0193b71509"
-  integrity sha512-Y74JXlLmwrLEf505FUJSZSk8zyGr8BdXDNMllj41NJQy1EchmdUf6nJstcMuB++WQlrkgz8vctvIrwBnbU1F4g==
+"@knovator/api@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@knovator/api/-/api-1.0.2.tgz#c48c2ddbb42d082167744005a65628f33887128c"
+  integrity sha512-CSkImJyojxVkIdJFaUxQkLkW9f1HcQgVuNtV7kTbw3sG+IJ7TPHp+coBZ2yvhz1ORd/pwjDzt+Utcun3UcKUEg==
   dependencies:
-    axios "^0.21.1"
-    preact "^10.5.14"
-    qs "^6.10.1"
+    axios "^0.27"
+    tslib "^2.3.0"
 
 "@leichtgewicht/ip-codec@^2.0.1":
   version "2.0.4"
@@ -3192,12 +3191,13 @@ axe-core@^4.4.3:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.4.3.tgz#11c74d23d5013c0fa5d183796729bc3482bd2f6f"
   integrity sha512-32+ub6kkdhhWick/UjvEwRchgoetXqTK14INLqbGm5U2TzBkBNF3nQtLYm8ovxSkQWArjEQvftCKryjZaATu3w==
 
-axios@^0.21.1:
-  version "0.21.4"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
-  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
+axios@^0.27:
+  version "0.27.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.27.2.tgz#207658cc8621606e586c85db4b41a750e756d972"
+  integrity sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==
   dependencies:
-    follow-redirects "^1.14.0"
+    follow-redirects "^1.14.9"
+    form-data "^4.0.0"
 
 axobject-query@^2.2.0:
   version "2.2.0"
@@ -5242,7 +5242,7 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.7.tgz#609f39207cb614b89d0765b477cb2d437fbf9787"
   integrity sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==
 
-follow-redirects@^1.0.0, follow-redirects@^1.14.0:
+follow-redirects@^1.0.0, follow-redirects@^1.14.9:
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.1.tgz#0ca6a452306c9b276e4d3127483e29575e207ad5"
   integrity sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==
@@ -5274,6 +5274,15 @@ form-data@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-3.0.1.tgz#ebd53791b78356a99af9a300d4282c4d5eb9755f"
   integrity sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==
+  dependencies:
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
+    mime-types "^2.1.12"
+
+form-data@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.0.tgz#93919daeaf361ee529584b9b31664dc12c9fa452"
+  integrity sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
@@ -8045,11 +8054,6 @@ postcss@8.4.16, postcss@^8.3.5, postcss@^8.4.14, postcss@^8.4.7:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-preact@^10.5.14:
-  version "10.10.6"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.10.6.tgz#1fe62aecf93974b64e6a42e09ba1f00f93207d14"
-  integrity sha512-w0mCL5vICUAZrh1DuHEdOWBjxdO62lvcO++jbzr8UhhYcTbFkpegLH9XX+7MadjTl/y0feoqwQ/zAnzkc/EGog==
-
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -8149,7 +8153,7 @@ qs@6.10.3:
   dependencies:
     side-channel "^1.0.4"
 
-qs@^6.10.1, qs@^6.4.0:
+qs@^6.4.0:
   version "6.11.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.11.0.tgz#fd0d963446f7a65e1367e01abd85429453f0c37a"
   integrity sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==

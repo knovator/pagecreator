@@ -134,6 +134,7 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
             input = (
               <Input.Checkbox
                 error={errors[schema.accessor]?.message?.toString()}
+                switchClass={schema.switchClass}
                 label={schema.label}
                 rest={register(schema.accessor, schema.validations || {})}
                 className="block"

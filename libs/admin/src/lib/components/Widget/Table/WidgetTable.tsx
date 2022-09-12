@@ -3,8 +3,10 @@ import Table from '../../common/Table';
 import ToggleWidget from '../../common/Toggle';
 import { useWidgetState } from '../../../context/WidgetContext';
 import { CombineObjectType, ObjectType, ValuesType } from '../../../types';
+import { useProviderState } from '../../../context/ProviderContext';
 
 const WidgetTable = () => {
+  const { switchClass } = useProviderState();
   const {
     list,
     canList,
@@ -39,6 +41,7 @@ const WidgetTable = () => {
           dataKey: 'isActive',
           Cell: ({ row }) => (
             <ToggleWidget
+              switchClass={switchClass}
               isChecked={row?.isActive}
               onChange={(status) => updateClosure(row, 'isActive', status)}
             />

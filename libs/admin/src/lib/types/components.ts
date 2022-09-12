@@ -1,3 +1,4 @@
+import React, { MutableRefObject } from 'react';
 import { DropResult } from 'react-beautiful-dnd';
 import { RegisterOptions } from 'react-hook-form';
 import {
@@ -60,6 +61,7 @@ export interface CheckboxProps {
   className?: string;
   disabled?: boolean;
   wrapperClassName?: string;
+  switchClass?: string;
 }
 export interface SelectProps {
   value?: string | number;
@@ -124,6 +126,7 @@ export interface FormProps {
   open: boolean;
   onClose: () => void;
   formState: FormActionTypes | undefined;
+  formRef: MutableRefObject<HTMLFormElement | null>;
 }
 export interface InputRendererProps {
   field: import('react-hook-form').ControllerRenderProps;
@@ -134,10 +137,24 @@ export interface InputRendererProps {
 export interface WidgetProps {
   t?: any;
   loader?: any;
+  explicitForm?: boolean;
   permissions?: PermissionsObj;
   formatListItem?: (code: string, data: any) => JSX.Element;
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
+  children?: JSX.Element;
 }
+
+export interface FormWrapperProps {
+  children: (data: {
+    formState: FormActionTypes | undefined;
+    onClose: () => void;
+    open: boolean;
+  }) => JSX.Element | null;
+}
+export interface FormActionWrapperProps {
+  formRef: MutableRefObject<HTMLFormElement | null>;
+}
+
 export interface SchemaType extends ReactSelectProps {
   label?: string;
   accessor: string;
@@ -163,11 +180,14 @@ export interface SchemaType extends ReactSelectProps {
   onChange?: (e: any) => void;
   show?: boolean;
   wrapperClassName?: string;
+  switchClass?: string;
 }
 export interface PageProps {
   t?: any;
   loader?: any;
+  explicitForm?: boolean;
   permissions?: PermissionsObj;
+  children?: JSX.Element;
 }
 export interface PaginationProps {
   totalPages: number;
@@ -217,6 +237,7 @@ export interface ToggleProps {
   isChecked?: boolean;
   disabled?: boolean;
   onChange?: (status: boolean) => void;
+  switchClass?: string;
 }
 export interface DeleteModalProps {
   formState: FormActionTypes | undefined;

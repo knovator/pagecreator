@@ -1,16 +1,16 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { DropResult } from 'react-beautiful-dnd';
 import { FormProps, SchemaType } from '../../../types';
 
 import Form from '../../common/Form';
 import Drawer from '../../common/Drawer';
-import Button from '../../common/Button';
 import DNDItemsList from '../../common/DNDItemsList';
 
 import { usePageState } from '../../../context/PageContext';
 import { capitalizeFirstLetter, changeToCode } from '../../../helper/utils';
+import PageFormActions from '../PageFormActions';
 
-const PageForm = ({ onClose, open, formState }: FormProps) => {
+const PageForm = ({ onClose, open, formState, formRef }: FormProps) => {
   const {
     t,
     data,
@@ -22,7 +22,6 @@ const PageForm = ({ onClose, open, formState }: FormProps) => {
     canAdd,
     canUpdate,
   } = usePageState();
-  const pageFormRef = useRef<HTMLFormElement | null>(null);
 
   // Form Utility Functions
   function handleCapitalize(event: React.ChangeEvent<HTMLInputElement>) {
@@ -35,12 +34,6 @@ const PageForm = ({ onClose, open, formState }: FormProps) => {
   }
 
   // Widget Form Functions
-  const onPageFormSubmitClick = () => {
-    pageFormRef.current?.dispatchEvent(
-      new Event('submit', { cancelable: true, bubbles: true })
-    );
-  };
-
   const onDragEnd = (result: DropResult) => {
     const { destination, source } = result;
     if (destination) onChangeWidgetSequence(source.index, destination.index);
@@ -94,20 +87,13 @@ const PageForm = ({ onClose, open, formState }: FormProps) => {
           ? t('page.updatePageTitle')
           : ''
       }
-      footerContent={
-        <>
-          <Button type="secondary" onClick={onClose}>
-            {t('cancelButtonText')}
-          </Button>
-          <Button onClick={onPageFormSubmitClick}>{t('saveButtonText')}</Button>
-        </>
-      }
+      footerContent={<PageFormActions formRef={formRef} />}
     >
       <div className="khb_form">
         <Form
           schema={pageFormSchema}
           onSubmit={onPageFormSubmit}
-          ref={pageFormRef}
+          ref={formRef}
           data={data}
           isUpdating={formState === 'UPDATE'}
           updates={{

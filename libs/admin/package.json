@@ -1,17 +1,17 @@
 {
   "name": "@knovator/pagecreator-admin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "dependencies": {
     "classnames": "^2.3.1",
     "react-beautiful-dnd": "^13.1.0",
     "react-transition-group": "^4.4.5",
     "react-hook-form": "^7.34.2",
     "react-dropzone": "^14.2.2",
-    "react-select": "^5.4.0"
+    "react-select": "^5.4.0",
+    "@knovator/api": "^1.0.1"
   },
   "peerDependencies": {
-    "@knovator/api": "^0.0.10",
-    "react": "*"
+    "react": "^18"
   },
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     "lib",
     "package.json",
     "README.md",
-    "style.css",
+    "index.css",
     "index.d.ts",
     "index.js"
   ]

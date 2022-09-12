@@ -18,7 +18,7 @@ import {
 } from '../../../types';
 
 const WidgetForm = ({ formState, formRef }: FormProps) => {
-  const { baseUrl } = useProviderState();
+  const { baseUrl, switchClass } = useProviderState();
   const {
     t,
     data,
@@ -234,6 +234,7 @@ const WidgetForm = ({ formState, formRef }: FormProps) => {
       accessor: 'autoPlay',
       type: 'checkbox',
       show: showAutoPlay,
+      switchClass: switchClass,
     },
     {
       label: t('widget.webPerRow'),

@@ -61,6 +61,7 @@ export interface CheckboxProps {
   className?: string;
   disabled?: boolean;
   wrapperClassName?: string;
+  switchClass?: string;
 }
 export interface SelectProps {
   value?: string | number;
@@ -179,6 +180,7 @@ export interface SchemaType extends ReactSelectProps {
   onChange?: (e: any) => void;
   show?: boolean;
   wrapperClassName?: string;
+  switchClass?: string;
 }
 export interface PageProps {
   t?: any;
@@ -235,6 +237,7 @@ export interface ToggleProps {
   isChecked?: boolean;
   disabled?: boolean;
   onChange?: (status: boolean) => void;
+  switchClass?: string;
 }
 export interface DeleteModalProps {
   formState: FormActionTypes | undefined;

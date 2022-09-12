@@ -7,11 +7,12 @@ const Checkbox = ({
   error,
   wrapperClassName,
   disabled,
+  switchClass,
 }: CheckboxProps) => {
   return (
     <div className={classNames('khb_input-wrapper', wrapperClassName)}>
       {label && <label className="khb_input-label">{label}</label>}
-      <label className="khb_switch" data-testid="khb_switch">
+      <label className={switchClass || 'khb_switch'} data-testid="khb_switch">
         <input type="checkbox" disabled={disabled} {...rest} />
         <span className="slider round" />
       </label>

@@ -105,6 +105,7 @@ const Widget = ({
       canUpdate={permissions.update}
       canPartialUpdate={permissions.partialUpdate}
       formState={formState}
+      closeForm={onCloseForm}
     >
       {children ? (
         children

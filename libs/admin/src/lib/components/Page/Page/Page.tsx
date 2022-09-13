@@ -74,6 +74,7 @@ const Page = ({
       onChangeWidgetSequence={onChangeWidgetSequence}
       getPages={getPages}
       formState={formState}
+      closeForm={onCloseForm}
       // permissions
       canAdd={permissions?.add}
       canDelete={permissions?.delete}

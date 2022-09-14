@@ -1,6 +1,7 @@
 import React, { MutableRefObject } from 'react';
 import { DropResult } from 'react-beautiful-dnd';
 import { RegisterOptions } from 'react-hook-form';
+import { Routes_Input } from './api';
 import {
   OptionType,
   FormActionTypes,
@@ -137,10 +138,12 @@ export interface InputRendererProps {
 export interface WidgetProps {
   t?: any;
   loader?: any;
+  routes?: Routes_Input;
   explicitForm?: boolean;
   permissions?: PermissionsObj;
   formatListItem?: (code: string, data: any) => JSX.Element;
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
+  preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
   children?: JSX.Element;
 }
 

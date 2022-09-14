@@ -90,3 +90,10 @@ export type ObjectType = {
     | ObjectType[]
     | any;
 };
+
+export interface IDefaultValidations {
+  createdBy: string;
+  updatedBy: string;
+  deletedBy: string;
+  deletedAt: string;
+}

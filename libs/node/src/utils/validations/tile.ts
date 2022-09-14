@@ -1,7 +1,9 @@
 import joi from 'joi';
-import { ITileSchema, TileTypes } from '../../types';
+import { ITileSchema, IDefaultValidations, TileTypes } from '../../types';
 
-export const create = joi.object<ITileSchema>({
+type TileValidation = ITileSchema & IDefaultValidations;
+
+export const create = joi.object<TileValidation>({
   widgetId: joi.string().required(),
   title: joi.string().required(),
   altText: joi.string().optional(),
@@ -13,9 +15,13 @@ export const create = joi.object<ITileSchema>({
     .valid(...Object.values(TileTypes))
     .optional()
     .default(TileTypes.Web),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
-export const update = joi.object<ITileSchema>({
+export const update = joi.object<TileValidation>({
   widgetId: joi.string().required(),
   title: joi.string().required(),
   altText: joi.string().optional(),
@@ -26,6 +32,10 @@ export const update = joi.object<ITileSchema>({
     .string()
     .valid(...Object.values(TileTypes))
     .optional(),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
 export const list = joi.object({

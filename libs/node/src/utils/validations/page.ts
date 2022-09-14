@@ -2,7 +2,9 @@ import joi from 'joi';
 import { Page } from '../../models';
 import { getOne } from '../../services/dbService';
 import { VALIDATION } from '../../constants';
-import { IPageSchema } from '../../types';
+import { IPageSchema, IDefaultValidations } from '../../types';
+
+type PageValidation = IPageSchema & IDefaultValidations;
 
 const checkUnique = async (value: string): Promise<void> => {
   let result;
@@ -18,7 +20,7 @@ const checkUnique = async (value: string): Promise<void> => {
   }
 };
 
-export const create = joi.object<IPageSchema>({
+export const create = joi.object<PageValidation>({
   name: joi.string().required(),
   code: joi
     .string()
@@ -27,11 +29,19 @@ export const create = joi.object<IPageSchema>({
     .external(checkUnique)
     .required(),
   widgets: joi.array().items(joi.string()).optional(),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
-export const update = joi.object<IPageSchema>({
+export const update = joi.object<PageValidation>({
   name: joi.string().optional(),
   widgets: joi.array().items(joi.string()).optional(),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
 export const list = joi.object({

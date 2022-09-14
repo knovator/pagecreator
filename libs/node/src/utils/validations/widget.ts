@@ -8,7 +8,10 @@ import {
   SelectionTypes,
   IWidgetSchema,
   CollectionItem,
+  IDefaultValidations,
 } from '../../types';
+
+type TileValidation = IWidgetSchema & IDefaultValidations;
 
 const checkUnique = async (value: string) => {
   let result;
@@ -24,7 +27,7 @@ const checkUnique = async (value: string) => {
   }
 };
 
-export const create = joi.object<IWidgetSchema>({
+export const create = joi.object<TileValidation>({
   name: joi.string().required(),
   selectionTitle: joi.string().required(),
   code: joi
@@ -61,9 +64,13 @@ export const create = joi.object<IWidgetSchema>({
     .valid(...Object.values(SelectionTypes))
     .optional()
     .default(SelectionTypes.FixedCard),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
-export const update = joi.object<IWidgetSchema>({
+export const update = joi.object<TileValidation>({
   name: joi.string().required(),
   selectionTitle: joi.string().required(),
   isActive: joi.boolean().optional(),
@@ -76,6 +83,10 @@ export const update = joi.object<IWidgetSchema>({
     .string()
     .valid(...Object.values(SelectionTypes))
     .optional(),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
 export const list = joi.object({

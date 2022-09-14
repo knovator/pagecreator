@@ -22,9 +22,11 @@ import WiddgetFormWrapper from '../WidgetFormWrapper';
 
 const Widget = ({
   t,
+  routes,
   loader,
   explicitForm = false,
   permissions = DEFAULT_PERMISSIONS,
+  preConfirmDelete,
   formatListItem,
   formatOptionLabel,
   children,
@@ -65,7 +67,9 @@ const Widget = ({
     tilesLoading,
     onTileFormSubmit,
   } = useWidget({
+    routes,
     defaultLimit: 10,
+    preConfirmDelete,
   });
   return (
     <WidgetContextProvider

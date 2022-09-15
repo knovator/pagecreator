@@ -26,8 +26,8 @@
     "joi": "^17.6.0"
   },
   "peerDependencies": {
-    "mongoose": "^6.5.3",
-    "express": "^4.18.1"
+    "mongoose": "*",
+    "express": "*"
   },
   "files": [
     "src",

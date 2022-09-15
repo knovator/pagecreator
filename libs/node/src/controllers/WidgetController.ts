@@ -1,7 +1,7 @@
 import { Types, model, Schema, models } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { Widget } from './../models';
-import { create, remove, update, list } from '../services/dbService';
+import { create, remove, update, list, getAll } from '../services/dbService';
 import {
   successResponse,
   createdDocumentResponse,
@@ -128,6 +128,7 @@ export const getSelectionTypes = catchAsync(
 
 export const getCollectionData = catchAsync(
   async (req: IRequest, res: IResponse) => {
+    const limit = 10;
     const { search, collectionName } = req.body;
     const collectionItem: CollectionItem | undefined =
       defaults.collections.find(
@@ -140,7 +141,6 @@ export const getCollectionData = catchAsync(
     let TempModel = models[collectionName] as unknown as IModel<any>;
     if (!TempModel) {
       const tempSchema = new Schema({}, { strict: false });
-      tempSchema.plugin(mongoosePaginate);
       TempModel = model(collectionName, tempSchema) as unknown as IModel<any>;
     }
     // fetching data
@@ -156,8 +156,8 @@ export const getCollectionData = catchAsync(
         })),
       };
     }
-    const collectionData = await list(TempModel, query, {});
+    const collectionData = await getAll(TempModel, query, { limit });
     res.message = req?.i18n?.t('widget.getCollectionData');
-    return successResponse(collectionData, res);
+    return successResponse({ docs: collectionData }, res);
   }
 );

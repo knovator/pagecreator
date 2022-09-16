@@ -106,7 +106,7 @@ const Page = ({
           }
           footerContent={<PageFormActions formRef={formRef} />}
         >
-          <PageForm formState={formState} formRef={formRef} />
+          <PageForm formRef={formRef} />
         </Drawer>
       )}
       {itemData && (

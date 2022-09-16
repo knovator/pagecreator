@@ -124,7 +124,6 @@ export interface SchemaType extends ReactSelectProps {
   wrapperClassName?: string;
 }
 export interface FormProps {
-  formState: FormActionTypes | undefined;
   formRef: MutableRefObject<HTMLFormElement | null>;
 }
 export interface InputRendererProps {

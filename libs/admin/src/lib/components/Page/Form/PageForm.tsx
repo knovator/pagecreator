@@ -8,10 +8,11 @@ import DNDItemsList from '../../common/DNDItemsList';
 import { usePageState } from '../../../context/PageContext';
 import { capitalizeFirstLetter, changeToCode } from '../../../helper/utils';
 
-const PageForm = ({ formState, formRef }: FormProps) => {
+const PageForm = ({ formRef }: FormProps) => {
   const {
     t,
     data,
+    formState,
     onPageFormSubmit,
     selectedWidgets,
     setSelectedWidgets,

@@ -3,14 +3,12 @@ import { DropResult } from 'react-beautiful-dnd';
 import { FormProps, SchemaType } from '../../../types';
 
 import Form from '../../common/Form';
-import Drawer from '../../common/Drawer';
 import DNDItemsList from '../../common/DNDItemsList';
 
 import { usePageState } from '../../../context/PageContext';
 import { capitalizeFirstLetter, changeToCode } from '../../../helper/utils';
-import PageFormActions from '../PageFormActions';
 
-const PageForm = ({ onClose, open, formState, formRef }: FormProps) => {
+const PageForm = ({ formState, formRef }: FormProps) => {
   const {
     t,
     data,
@@ -77,35 +75,22 @@ const PageForm = ({ onClose, open, formState, formRef }: FormProps) => {
 
   if (!canAdd && !canUpdate) return null;
   return (
-    <Drawer
-      open={open}
-      onClose={onClose}
-      title={
-        formState === 'ADD'
-          ? t('page.addPageTitle')
-          : formState === 'UPDATE'
-          ? t('page.updatePageTitle')
-          : ''
-      }
-      footerContent={<PageFormActions formRef={formRef} />}
-    >
-      <div className="khb_form">
-        <Form
-          schema={pageFormSchema}
-          onSubmit={onPageFormSubmit}
-          ref={formRef}
-          data={data}
-          isUpdating={formState === 'UPDATE'}
-          updates={{
-            widgets: selectedWidgets.map(
-              (widget: { value: string }) => widget.value
-            ),
-          }}
-        />
+    <div className="khb_form">
+      <Form
+        schema={pageFormSchema}
+        onSubmit={onPageFormSubmit}
+        ref={formRef}
+        data={data}
+        isUpdating={formState === 'UPDATE'}
+        updates={{
+          widgets: selectedWidgets.map(
+            (widget: { value: string }) => widget.value
+          ),
+        }}
+      />
 
-        <DNDItemsList onDragEnd={onDragEnd} items={selectedWidgets} />
-      </div>
-    </Drawer>
+      <DNDItemsList onDragEnd={onDragEnd} items={selectedWidgets} />
+    </div>
   );
 };
 

@@ -137,12 +137,7 @@ const Widget = ({
           }
           footerContent={<WidgetFormActions formRef={widgetFormRef} />}
         >
-          <WidgetForm
-            open={formState === 'ADD' || formState === 'UPDATE'}
-            onClose={onCloseForm}
-            formState={formState}
-            formRef={widgetFormRef}
-          />
+          <WidgetForm formState={formState} formRef={widgetFormRef} />
         </Drawer>
       )}
       {itemData && (

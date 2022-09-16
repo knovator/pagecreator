@@ -106,12 +106,7 @@ const Page = ({
           }
           footerContent={<PageFormActions formRef={formRef} />}
         >
-          <PageForm
-            open={formState === 'ADD' || formState === 'UPDATE'}
-            onClose={onCloseForm}
-            formState={formState}
-            formRef={formRef}
-          />
+          <PageForm formState={formState} formRef={formRef} />
         </Drawer>
       )}
       {itemData && (

@@ -124,8 +124,6 @@ export interface SchemaType extends ReactSelectProps {
   wrapperClassName?: string;
 }
 export interface FormProps {
-  open: boolean;
-  onClose: () => void;
   formState: FormActionTypes | undefined;
   formRef: MutableRefObject<HTMLFormElement | null>;
 }

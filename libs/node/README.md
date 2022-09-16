@@ -64,7 +64,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-`@knovator/pagecreator-node` is built with intent to build pages that are depend on backend data, or someway admin can change how page will look like.
+`@knovator/pagecreator-node` is built with intent to build pages that are depend on backend data, and admin can change how page will look like.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

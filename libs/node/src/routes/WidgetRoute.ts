@@ -38,7 +38,7 @@ routes
     validate(widgetValidation.partialUpdate),
     widgetController.partialUpdateWidget
   )
-  .descriptor('widget.update');
+  .descriptor('widget.partialUpdate');
 // Delete a widget
 routes
   .delete(`/:id`, widgetController.deleteWidget)

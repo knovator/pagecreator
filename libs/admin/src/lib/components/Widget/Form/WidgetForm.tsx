@@ -349,6 +349,7 @@ const WidgetForm = ({ formState, formRef }: FormProps) => {
           items={selectedCollectionItems}
           onDragEnd={onCollectionIndexChange}
           formatItem={formatListItem}
+          listCode={selectedWidgetType?.value}
         />
       )}
 

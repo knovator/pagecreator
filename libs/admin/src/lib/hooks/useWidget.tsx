@@ -313,28 +313,37 @@ const useWidget = ({
   };
   // Form operations
   const onWidgetFormSubmit = async (data: ObjectType) => {
-    setLoading(true);
-    const code =
-      formState === 'ADD' ? CALLBACK_CODES.CREATE : CALLBACK_CODES.UPDATE;
-    const api = getApiType({
-      routes,
-      action: formState === 'ADD' ? 'CREATE' : 'UPDATE',
-      prefix: widgetRoutesPrefix,
-      id: itemData?.['_id'],
-    });
-    const response = await request({
-      baseUrl,
-      token,
-      data,
-      url: api.url,
-      method: api.method,
-      onError: handleError(code),
-    });
-    if (response?.code === 'SUCCESS') {
+    try {
+      setLoading(true);
+      const code =
+        formState === 'ADD' ? CALLBACK_CODES.CREATE : CALLBACK_CODES.UPDATE;
+      const api = getApiType({
+        routes,
+        action: formState === 'ADD' ? 'CREATE' : 'UPDATE',
+        prefix: widgetRoutesPrefix,
+        id: itemData?.['_id'],
+      });
+      const response = await request({
+        baseUrl,
+        token,
+        data,
+        url: api.url,
+        method: api.method,
+        onError: handleError(code),
+      });
+      if (response?.code === 'SUCCESS') {
+        setLoading(false);
+        onSuccess(code, response?.code, response?.message);
+        getWidgets();
+        onCloseForm();
+      }
+    } catch (error) {
       setLoading(false);
-      onSuccess(code, response?.code, response?.message);
-      getWidgets();
-      onCloseForm();
+      onError(
+        CALLBACK_CODES.UPDATE,
+        INTERNAL_ERROR_CODE,
+        (error as Error).message
+      );
     }
   };
   const onCloseForm = () => {

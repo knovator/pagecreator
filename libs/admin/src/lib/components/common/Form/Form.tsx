@@ -48,6 +48,7 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
       control,
       setError,
       watch,
+      getValues,
     } = useForm();
 
     // setting update data in form
@@ -149,21 +150,28 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
             break;
           case 'select':
             input = (
-              <Input.Select
-                options={schema.options}
-                label={schema.label}
-                error={errors[schema.accessor]?.message?.toString()}
-                rest={register(schema.accessor, schema.validations || {})}
-                className="w-full"
-                disabled={
-                  (isUpdating &&
-                    typeof schema.editable !== 'undefined' &&
-                    !schema.editable) ||
-                  !enable
-                }
-                required={schema.required}
-                wrapperClassName={schema.wrapperClassName}
-              />
+              <Controller
+                control={control}
+                name={schema.accessor}
+                render={({ field }) => (
+                  <Input.Select
+                    options={schema.options}
+                    label={schema.label}
+                    error={errors[schema.accessor]?.message?.toString()}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    value={field.value}
+                    className="w-full"
+                    disabled={
+                      (isUpdating &&
+                        typeof schema.editable !== 'undefined' &&
+                        !schema.editable) ||
+                      !enable
+                    }
+                    required={schema.required}
+                    wrapperClassName={schema.wrapperClassName}
+                  />
+                )}
+              ></Controller>
             );
             break;
           case 'text':

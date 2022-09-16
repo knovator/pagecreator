@@ -17,7 +17,7 @@ import {
   SchemaType,
 } from '../../../types';
 
-const WidgetForm = ({ formState, formRef }: FormProps) => {
+const WidgetForm = ({ formRef }: FormProps) => {
   const { baseUrl, switchClass } = useProviderState();
   const {
     t,
@@ -25,6 +25,7 @@ const WidgetForm = ({ formState, formRef }: FormProps) => {
     canAdd,
     canUpdate,
     tilesList,
+    formState,
     widgetTypes,
     selectionTypes,
     onTileFormSubmit,
@@ -349,6 +350,7 @@ const WidgetForm = ({ formState, formRef }: FormProps) => {
           items={selectedCollectionItems}
           onDragEnd={onCollectionIndexChange}
           formatItem={formatListItem}
+          listCode={selectedWidgetType?.value}
         />
       )}
 

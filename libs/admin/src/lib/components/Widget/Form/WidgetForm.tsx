@@ -1,14 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { DropResult } from 'react-beautiful-dnd';
 
-import Form from '../../common/Form';
+import { SimpleForm } from '../../common/Form';
 import ImageUpload from '../../common/ImageUpload';
 import DNDItemsList from '../../common/DNDItemsList';
 import TileItemsAccordian from './TileItemsAccordian';
 
 import { useWidgetState } from '../../../context/WidgetContext';
 import { useProviderState } from '../../../context/ProviderContext';
-import { capitalizeFirstLetter, changeToCode } from '../../../helper/utils';
+import { capitalizeFirstLetter, changeToCode, isEmpty } from '../../../helper/utils';
 import {
   CombineObjectType,
   FormProps,
@@ -18,6 +19,16 @@ import {
 } from '../../../types';
 
 const WidgetForm = ({ formRef }: FormProps) => {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset,
+    setValue,
+    control,
+    watch,
+    setError,
+  } = useForm();
   const { baseUrl, switchClass } = useProviderState();
   const {
     t,
@@ -103,6 +114,12 @@ const WidgetForm = ({ formRef }: FormProps) => {
     }
   }, [formState]);
 
+  useEffect(() => {
+    if (!isEmpty(data)) {
+      reset(data);
+    }
+  }, [data, reset]);
+
   const onChangeSearch = (str: string) => {
     if (callerRef.current) clearTimeout(callerRef.current);
 
@@ -169,6 +186,13 @@ const WidgetForm = ({ formRef }: FormProps) => {
       });
     }
   };
+
+  useEffect(() => {
+    const subscription = watch((value, { name }) =>
+      onWidgetFormInputChange(value, name)
+    );
+    return () => subscription.unsubscribe();
+  }, [watch, onWidgetFormInputChange]);
 
   // Schemas
   const widgetFormSchema: SchemaType[] = [
@@ -337,13 +361,17 @@ const WidgetForm = ({ formRef }: FormProps) => {
   if (!canAdd || !canUpdate) return null;
   return (
     <div className="khb_form">
-      <Form
+      <SimpleForm
         schema={widgetFormSchema}
         onSubmit={onFormSubmit}
         ref={formRef}
-        data={data}
         isUpdating={formState === 'UPDATE'}
-        watcher={onWidgetFormInputChange}
+        register={register}
+        errors={errors}
+        handleSubmit={handleSubmit}
+        setValue={setValue}
+        control={control}
+        setError={setError}
       />
       {!tilesEnabled && (
         <DNDItemsList
@@ -357,24 +385,24 @@ const WidgetForm = ({ formRef }: FormProps) => {
       {tilesEnabled && (
         <>
           {/* Web Items */}
-          <TileItemsAccordian
-            collapseId="imageItems"
-            title={t('widget.imageItems')}
-            id="items"
-            schema={tileFormSchema}
-            show={tilesVisible}
-            tilesData={tilesList}
-            toggleShow={setTilesVisible}
-            onDataSubmit={onTileFormSubmit}
-            tileType="Web"
-            widgetId={data?._id}
-            onDelete={onDeleteTile}
-            addText={t('addButtonText')}
-            cancelText={t('cancelButtonText')}
-            saveText={t('saveButtonText')}
-            editText={t('editButtonText')}
-            deleteText={t('deleteButtonText')}
-          />
+        <TileItemsAccordian
+          collapseId="imageItems"
+          title={t('widget.imageItems')}
+          id="items"
+          schema={tileFormSchema}
+          show={tilesVisible}
+          tilesData={tilesList}
+          toggleShow={setTilesVisible}
+          onDataSubmit={onTileFormSubmit}
+          tileType="Web"
+          widgetId={data?._id}
+          onDelete={onDeleteTile}
+          addText={t('addButtonText')}
+          cancelText={t('cancelButtonText')}
+          saveText={t('saveButtonText')}
+          editText={t('editButtonText')}
+          deleteText={t('deleteButtonText')}
+        />
         </>
       )}
     </div>

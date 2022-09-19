@@ -1,82 +1,44 @@
-import React, { forwardRef, MutableRefObject, useEffect } from 'react';
-import { useForm, Controller, EventType } from 'react-hook-form';
+import React, { forwardRef, MutableRefObject } from 'react';
+import { Controller } from 'react-hook-form';
 import {
   CombineObjectType,
-  ObjectType,
   OptionType,
   SchemaType,
 } from '../../../types';
 
 import Input from '../Input';
-import { isEmpty } from '../../../helper/utils';
 import CustomReactSelect from '../Input/ReactSelect';
 
-interface FormProps {
+interface SimpleFormProps {
   schema: SchemaType[];
-  data?: CombineObjectType;
   isUpdating?: boolean;
   onSubmit: (data: CombineObjectType) => void;
   enable?: boolean;
-  updates?: CombineObjectType;
   ref: MutableRefObject<HTMLFormElement | null>;
-  watcher?: (
-    value: ObjectType,
-    name: string | undefined,
-    type: EventType | undefined
-  ) => void;
+  register: any;
+  errors: any;
+  handleSubmit: any;
+  setValue: any;
+  control: any;
+  setError: any;
 }
 
-const Form = forwardRef<HTMLFormElement | null, FormProps>(
+const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
   (
     {
       schema,
       onSubmit,
-      data,
       isUpdating = false,
       enable = true,
-      updates,
-      watcher,
-    },
-    ref
-  ) => {
-    const {
       register,
-      formState: { errors },
+      errors,
       handleSubmit,
-      reset,
       setValue,
       control,
       setError,
-      watch,
-    } = useForm();
-
-    // setting update data in form
-    useEffect(() => {
-      if (!isEmpty(data)) {
-        reset(data);
-      }
-    }, [data, reset]);
-
-    // setting subscriber if watcher is provided
-    useEffect(() => {
-      if (watcher) {
-        const subscription = watch((value, { name, type }) =>
-          watcher(value, name, type)
-        );
-        return () => subscription.unsubscribe();
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-      } else return () => {};
-    }, [watch, watcher]);
-
-    // setting values if updates are provided
-    useEffect(() => {
-      if (updates) {
-        Object.keys(updates).forEach((key) => {
-          setValue(key, updates[key]);
-        });
-      }
-    }, [setValue, updates]);
-
+    },
+    ref
+  ) => {
     const inputRenderer = (schema: SchemaType) => {
       let input;
       if (typeof schema.show !== 'undefined' && !schema.show) return null;
@@ -139,8 +101,9 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
                     options={schema.options}
                     label={schema.label}
                     error={errors[schema.accessor]?.message?.toString()}
-                    onChange={(e) => field.onChange(e.target.value)}
-                    value={field.value}
+                    // onChange={(e) => field.onChange(e.target.value)}
+                    rest={field}
+                    // value={field.value}
                     className="w-full"
                     disabled={
                       (isUpdating &&
@@ -218,7 +181,7 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
 
     const onFormSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      handleSubmit((data) => {
+      handleSubmit((data: any) => {
         const formattedData: CombineObjectType = schema.reduce(
           (values: CombineObjectType, schemaItem: SchemaType) => {
             // Do not add field if editing is disabled for it
@@ -253,4 +216,4 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
   }
 );
 
-export default Form;
+export default SimpleForm;

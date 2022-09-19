@@ -174,7 +174,6 @@ export interface SchemaType extends ReactSelectProps {
   options?: { value: string; label: string }[];
   selectedOptions?: { value: string; label: string }[];
   isMulti?: boolean;
-  defaultValue?: string | number | boolean;
   placeholder?: string;
   required?: boolean;
   onChange?: (e: any) => void;

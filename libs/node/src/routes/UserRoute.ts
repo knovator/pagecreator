@@ -7,6 +7,7 @@ import validate from '../utils/validate';
 import * as userValidation from '../utils/validations/user';
 import * as userController from '../controllers/UserController';
 
+const descriptorPrefix = process.env['PAGECREATOR_DESCRIPTOR_PREFIX'] || '';
 const routes = express.Router() as IRouter;
 routes.use(express.json());
 
@@ -18,7 +19,7 @@ routes
     validate(userValidation.getWidgetData),
     userController.getWidgetData
   )
-  .descriptor('user.getWidgetData');
+  .descriptor(`${descriptorPrefix}user.getWidgetData`);
 
 routes
   .post(
@@ -26,6 +27,6 @@ routes
     validate(userValidation.getPageData),
     userController.getPageData
   )
-  .descriptor('user.getPageData');
+  .descriptor(`${descriptorPrefix}user.getPageData`);
 
 export default routes;

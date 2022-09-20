@@ -7,6 +7,7 @@ import validate from '../utils/validate';
 import * as tileValidation from '../utils/validations/tile';
 import * as tileController from '../controllers/TileController';
 
+const descriptorPrefix = process.env['PAGECREATOR_DESCRIPTOR_PREFIX'] || '';
 const routes = express.Router() as IRouter;
 routes.use(express.json());
 
@@ -14,16 +15,18 @@ routes.use(express.json());
 // Get all tiles
 routes
   .get(`/:widgetId`, validate(tileValidation.list), tileController.getTiles)
-  .descriptor('tile.getAll');
+  .descriptor(`${descriptorPrefix}tile.getAll`);
 // Create a tile
 routes
   .post(`/`, validate(tileValidation.create), tileController.createTile)
-  .descriptor('tile.create');
+  .descriptor(`${descriptorPrefix}tile.create`);
 // Update a tile
 routes
   .put(`/:id`, validate(tileValidation.update), tileController.updateTile)
-  .descriptor('tile.update');
+  .descriptor(`${descriptorPrefix}tile.update`);
 // Delete a tile
-routes.delete(`/:id`, tileController.deleteTile).descriptor('tile.delete');
+routes
+  .delete(`/:id`, tileController.deleteTile)
+  .descriptor(`${descriptorPrefix}tile.delete`);
 
 export default routes;

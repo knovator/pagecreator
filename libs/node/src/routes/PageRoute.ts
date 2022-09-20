@@ -7,22 +7,25 @@ import validate from '../utils/validate';
 import * as pageValidation from '../utils/validations/page';
 import * as pageController from '../controllers/PageController';
 
+const descriptorPrefix = process.env['PAGECREATOR_DESCRIPTOR_PREFIX'] || '';
 const routes = express.Router() as IRouter;
 routes.use(express.json());
 
 // Get all pages
 routes
   .post(`/list`, validate(pageValidation.list), pageController.getPages)
-  .descriptor('page.getAll');
+  .descriptor(`${descriptorPrefix}page.getAll`);
 // Create a page
 routes
   .post(`/`, validate(pageValidation.create), pageController.createPage)
-  .descriptor('page.create');
+  .descriptor(`${descriptorPrefix}page.create`);
 // Update a page
 routes
   .put(`/:id`, validate(pageValidation.update), pageController.updatePage)
-  .descriptor('page.update');
+  .descriptor(`${descriptorPrefix}page.update`);
 // Delete a page
-routes.delete(`/:id`, pageController.deletePage).descriptor('page.delete');
+routes
+  .delete(`/:id`, pageController.deletePage)
+  .descriptor(`${descriptorPrefix}page.delete`);
 
 export default routes;

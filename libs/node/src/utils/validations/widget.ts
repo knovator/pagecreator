@@ -106,6 +106,10 @@ export const list = joi.object({
 
 export const partialUpdate = joi.object({
   isActive: joi.boolean().optional(),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
 export const getCollectionData = joi.object({

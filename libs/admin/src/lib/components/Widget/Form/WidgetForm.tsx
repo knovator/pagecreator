@@ -88,6 +88,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
               ? {
                   label: item.name,
                   value: item._id,
+                  ...item,
                 }
               : {};
           }) || []

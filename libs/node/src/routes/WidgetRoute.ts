@@ -7,6 +7,7 @@ import validate from '../utils/validate';
 import * as widgetValidation from '../utils/validations/widget';
 import * as widgetController from '../controllers/WidgetController';
 
+const descriptorPrefix = process.env['PAGECREATOR_DESCRIPTOR_PREFIX'] || '';
 const routes = express.Router() as IRouter;
 routes.use(express.json());
 
@@ -14,23 +15,23 @@ routes.use(express.json());
 // Get widget types
 routes
   .get('/widget-types', widgetController.getWidgetTypes)
-  .descriptor('widget.getWidgetTypes');
+  .descriptor(`${descriptorPrefix}widget.getWidgetTypes`);
 // Get widget selection types
 routes
   .get('/selection-types', widgetController.getSelectionTypes)
-  .descriptor('widget.getSelectionTypes');
+  .descriptor(`${descriptorPrefix}widget.getSelectionTypes`);
 // Get all widgets
 routes
   .post(`/list`, validate(widgetValidation.list), widgetController.getWidgets)
-  .descriptor('widget.getAll');
+  .descriptor(`${descriptorPrefix}widget.getAll`);
 // Create a widget
 routes
   .post(`/`, validate(widgetValidation.create), widgetController.createWidget)
-  .descriptor('widget.create');
+  .descriptor(`${descriptorPrefix}widget.create`);
 // Update a widget
 routes
   .put(`/:id`, validate(widgetValidation.update), widgetController.updateWidget)
-  .descriptor('widget.update');
+  .descriptor(`${descriptorPrefix}widget.update`);
 // Partial Update a widget
 routes
   .patch(
@@ -38,11 +39,11 @@ routes
     validate(widgetValidation.partialUpdate),
     widgetController.partialUpdateWidget
   )
-  .descriptor('widget.partialUpdate');
+  .descriptor(`${descriptorPrefix}widget.partialUpdate`);
 // Delete a widget
 routes
   .delete(`/:id`, widgetController.deleteWidget)
-  .descriptor('widget.delete');
+  .descriptor(`${descriptorPrefix}widget.delete`);
 // Get dynamic collection data
 routes
   .post(
@@ -50,6 +51,6 @@ routes
     validate(widgetValidation.getCollectionData),
     widgetController.getCollectionData
   )
-  .descriptor('widget.getCollectionData');
+  .descriptor(`${descriptorPrefix}widget.getCollectionData`);
 
 export default routes;

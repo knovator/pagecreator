@@ -39,7 +39,11 @@ const SlickArrowRight = ({
   </button>
 );
 
-export function CarouselWidget({ widgetData, formatTile, settings }: WidgetTypeProps) {
+export function CarouselWidget({
+  widgetData,
+  formatItem,
+  settings,
+}: WidgetTypeProps) {
   const defaultSettings: Settings = {
     dots: false,
     infinite: true,
@@ -69,7 +73,9 @@ export function CarouselWidget({ widgetData, formatTile, settings }: WidgetTypeP
   if (!widgetData) return null;
   return (
     <Slider {...(settings ? settings : defaultSettings)}>
-      {widgetData.tiles.map((tile) => formatTile(tile))}
+      {widgetData.widgetType === 'Image'
+        ? widgetData.tiles.map((tile) => formatItem(tile))
+        : widgetData.collectionItems.map((item) => formatItem(item))}
     </Slider>
   );
 }

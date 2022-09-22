@@ -41,23 +41,26 @@ export interface ReviewCardProps extends UserCardProps {
 export interface WidgetProps {
   widgetData: WidgetData;
   apiBaseUrl: string;
-  formatItem?: (item: TileData) => JSX.Element;
-  onClick?: (item: TileData) => void;
+  formatItem?: (item: TileData | CollectionItemType) => JSX.Element;
+  onClick?: (item: TileData | CollectionItemType) => void;
+  settings?: Settings;
 }
 export interface WidgetTypeProps extends WidgetProps {
-  formatTile: (item: TileData) => JSX.Element;
-  formatItem: (item: CollectionItemType) => JSX.Element;
-  settings?: Settings;
+  formatItem: (item: CollectionItemType | TileData) => JSX.Element;
 }
 
 export interface PageProps {
   title?: string;
   apiBaseUrl: string;
   pageData: PageData;
-  formatItem?: (CODE: string, item: TileData) => JSX.Element;
-  onClick?: (CODE: string, item: TileData) => JSX.Element;
+  formatItem?: (
+    CODE: string,
+    item: TileData | CollectionItemType
+  ) => JSX.Element;
+  onClick?: (CODE: string, item: TileData | CollectionItemType) => JSX.Element;
 }
 
 export interface CollectionItemProps {
   name?: string;
+  onClick?: () => void;
 }

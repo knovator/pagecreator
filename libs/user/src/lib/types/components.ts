@@ -53,8 +53,11 @@ export interface PageProps {
   title?: string;
   apiBaseUrl: string;
   pageData: PageData;
-  formatItem?: (CODE: string, item: TileData) => JSX.Element;
-  onClick?: (CODE: string, item: TileData) => JSX.Element;
+  formatItem?: (
+    CODE: string,
+    item: TileData | CollectionItemType
+  ) => JSX.Element;
+  onClick?: (CODE: string, item: TileData | CollectionItemType) => JSX.Element;
 }
 
 export interface CollectionItemProps {

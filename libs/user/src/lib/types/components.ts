@@ -41,13 +41,12 @@ export interface ReviewCardProps extends UserCardProps {
 export interface WidgetProps {
   widgetData: WidgetData;
   apiBaseUrl: string;
-  formatItem?: (item: TileData) => JSX.Element;
-  onClick?: (item: TileData) => void;
+  formatItem?: (item: TileData | CollectionItemType) => JSX.Element;
+  onClick?: (item: TileData | CollectionItemType) => void;
+  settings?: Settings;
 }
 export interface WidgetTypeProps extends WidgetProps {
-  formatTile: (item: TileData) => JSX.Element;
-  formatItem: (item: CollectionItemType) => JSX.Element;
-  settings?: Settings;
+  formatItem: (item: CollectionItemType | TileData) => JSX.Element;
 }
 
 export interface PageProps {
@@ -60,4 +59,5 @@ export interface PageProps {
 
 export interface CollectionItemProps {
   name?: string;
+  onClick?: () => void;
 }

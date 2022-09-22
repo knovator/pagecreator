@@ -1,7 +1,6 @@
 import { CollectionItemType, TileData, WidgetProps } from '../../types';
 import FixedWidget from './fixed-widget/fixed-widget';
 import CarouselWidget from './carousel-widget/carousel-widget';
-import SimpleCard from '../common/Card/simple-card/simple-card';
 import Banner from '../common/Card/banner/banner';
 import CollectionItem from '../common/collection-item/collection-item';
 
@@ -11,29 +10,27 @@ export function Widget({
   formatItem,
   onClick,
 }: WidgetProps) {
-  const formatTile = (tile: TileData): JSX.Element => {
+  const formatTile = (tile: TileData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(tile);
     else if (widgetData.widgetType === 'Image')
       return (
         <Banner
           key={tile._id}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           imageUrl={`${apiBaseUrl}${tile.img?.uri}`}
-          imageAltText={tile.altText}
+          imageAltText={tile._id}
+          onClick={() => onClick && onClick(tile)}
         />
       );
     else
       return (
-        <SimpleCard
-          onClick={() => onClick && onClick(tile)}
-          title={tile.title}
-          imageUrl={`${apiBaseUrl}${tile.img?.uri}`}
-          imageAltText={tile.altText}
+        <CollectionItem
           key={tile._id}
+          onClick={() => onClick && onClick(tile)}
+          {...tile}
         />
       );
-  };
-  const formatCollectionItem = (item: CollectionItemType): JSX.Element => {
-    return <CollectionItem key={item._id} {...item} />;
   };
   if (!widgetData) return null;
   return (
@@ -44,15 +41,13 @@ export function Widget({
           <CarouselWidget
             apiBaseUrl={apiBaseUrl}
             widgetData={widgetData}
-            formatItem={formatCollectionItem}
-            formatTile={formatTile}
+            formatItem={formatTile}
           />
         ) : (
           <FixedWidget
             apiBaseUrl={apiBaseUrl}
             widgetData={widgetData}
-            formatItem={formatCollectionItem}
-            formatTile={formatTile}
+            formatItem={formatTile}
           />
         )}
       </div>

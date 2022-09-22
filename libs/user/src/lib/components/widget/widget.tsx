@@ -9,6 +9,7 @@ export function Widget({
   apiBaseUrl,
   formatItem,
   onClick,
+  settings,
 }: WidgetProps) {
   const formatTile = (tile: TileData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(tile);
@@ -39,6 +40,7 @@ export function Widget({
       <div className="kpc_widget-body">
         {widgetData.selectionType === 'Carousel' ? (
           <CarouselWidget
+            settings={settings}
             apiBaseUrl={apiBaseUrl}
             widgetData={widgetData}
             formatItem={formatTile}

@@ -4,7 +4,9 @@ import Widget from './widget';
 
 describe('Widget', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<Widget widgetData={{}} apiBaseUrl={''} />);
+    const { baseElement } = render(
+      <Widget widgetData={{}} imageBaseUrl={''} />
+    );
     expect(baseElement).toBeTruthy();
   });
 });

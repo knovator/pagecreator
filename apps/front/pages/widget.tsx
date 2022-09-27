@@ -4,7 +4,7 @@ export function WidgetPage({ widgetData }) {
   return (
     <Widget
       widgetData={widgetData}
-      apiBaseUrl={process.env.NEXT_PUBLIC_API_BASE_URL}
+      imageBaseUrl={process.env.NEXT_PUBLIC_API_BASE_URL}
     />
   );
 }

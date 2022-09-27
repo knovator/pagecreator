@@ -5,7 +5,7 @@ export function PagePage({ pageData }) {
   return (
     <Page
       pageData={pageData}
-      apiBaseUrl={process.env.NEXT_PUBLIC_API_BASE_URL}
+      imageBaseUrl={process.env.NEXT_PUBLIC_API_BASE_URL}
       // title={`Page Name is ${pageData.name}`}
     />
   );

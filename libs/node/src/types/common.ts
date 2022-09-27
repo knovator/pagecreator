@@ -57,6 +57,9 @@ export type CollectionItem = {
   collectionName: string;
   filters?: { [key: string]: string | number | boolean };
   searchColumns: string[];
+  match?: ObjectType;
+  project?: ObjectType;
+  lookup?: ObjectType;
 };
 
 export interface IConfig {

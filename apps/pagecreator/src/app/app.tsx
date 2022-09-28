@@ -1,6 +1,27 @@
 import { useState } from 'react';
 import { Widget, Provider, Page } from '@knovator/pagecreator-admin';
 
+const formatOptionLabel = (code: string, data: any) => {
+  if (code === 'category' || code === 'product') {
+    return <div>{data.name}</div>;
+  }
+  return (
+    <div>
+      {data?.value}-{data?.label}
+    </div>
+  );
+};
+const formatListItems = (code: string, data: any) => {
+  if (code === 'category' || code === 'product') {
+    return <div>{data.name}</div>;
+  }
+  return (
+    <div>
+      {data?.value}-{data?.label}
+    </div>
+  );
+};
+
 export const App = () => {
   const [selectedType, setSelectedType] = useState('widget');
 
@@ -31,16 +52,8 @@ export const App = () => {
       <Provider baseUrl={process.env['NX_API_URL']} token="ABCD">
         {selectedType === 'widget' && (
           <Widget
-            formatOptionLabel={(code: string, label: any) => (
-              <div>
-                {label?.value}-{label?.label}
-              </div>
-            )}
-            formatListItem={(code: string, label: any) => (
-              <div>
-                {label?.value}-{label?.label}
-              </div>
-            )}
+            formatOptionLabel={formatOptionLabel}
+            formatListItem={formatListItems}
           />
         )}
         {selectedType === 'page' && <Page />}

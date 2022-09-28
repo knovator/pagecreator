@@ -29,6 +29,62 @@ setConfig({
       filters: { isDeleted: false, isActive: true },
       searchColumns: ['name', 'code'],
     },
+    {
+      title: 'Category',
+      collectionName: 'category',
+      lookup: {
+        from: 'file',
+        let: {
+          id: '$fileId',
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ['$_id', '$$id'],
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              nm: 1,
+              uri: 1,
+              mimeType: 1,
+            },
+          },
+        ],
+        as: 'fileId',
+      },
+    },
+    {
+      title: 'Product',
+      collectionName: 'product',
+      lookup: {
+        from: 'file',
+        let: {
+          id: '$fileId',
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ['$_id', '$$id'],
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              nm: 1,
+              uri: 1,
+              mimeType: 1,
+            },
+          },
+        ],
+        as: 'fileId',
+      },
+    },
   ],
 });
 app.get('/status', (_req, res) => {

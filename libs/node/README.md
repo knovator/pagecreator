@@ -229,6 +229,9 @@ Through `setConfig` function e can set `logger`, `collections` and `catchAsync` 
 | collectionName | Collection name specified in database |
 | filters | Filter object to apply while getting data, like `{ isDeleted: false, isActive: true }` |
 | searchColumns | Array of fields to to perform search |
+| lookup | `$lookup` object to apply while getting data through aggregation |
+| project | `$project` object to apply while getting data through aggregation |
+| match | `$match` object to apply while getting data through aggregation |
 
 ## Routes Infomration
 

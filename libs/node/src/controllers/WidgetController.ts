@@ -148,12 +148,14 @@ export const getCollectionData = catchAsync(
     if (search) {
       query = {
         ...query,
-        $or: collectionItem.searchColumns.map((column) => ({
-          [column]: {
-            $regex: search,
-            $options: 'i',
-          },
-        })),
+        $or: collectionItem.searchColumns
+          ? collectionItem.searchColumns.map((column) => ({
+              [column]: {
+                $regex: search,
+                $options: 'i',
+              },
+            }))
+          : [],
       };
     }
     const collectionData = await getAll(TempModel, query, { limit });

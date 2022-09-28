@@ -1,4 +1,5 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+
 <a name="readme-top"></a>
 
 [![Contributors][contributors-shield]][contributors-url]
@@ -6,8 +7,6 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-
-
 
 <!-- PROJECT LOGO -->
 <br />
@@ -31,8 +30,6 @@
     <a href="https://github.com/knovator/pagecreator/issues">Request Feature</a>
   </p>
 </div>
-
-
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -59,34 +56,35 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
 `@knovator/pagecreator-node` is built with intent to build pages that are depend on backend data, and admin can change how page will look like.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
 ### Built With
 
-* [Typescript](https://www.typescriptlang.org/)
-* [mongoose](https://mongoosejs.com/)
-* [express](https://expressjs.com/)
-* [mongoose-paginate-v2](https://www.npmjs.com/package/mongoose-paginate-v2)
-* [joi](https://www.npmjs.com/package/joi)
+- [Typescript](https://www.typescriptlang.org/)
+- [mongoose](https://mongoosejs.com/)
+- [express](https://expressjs.com/)
+- [mongoose-paginate-v2](https://www.npmjs.com/package/mongoose-paginate-v2)
+- [joi](https://www.npmjs.com/package/joi)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 To integrate `@knovator/pagecreator-node`, you should be having basic nodejs application up and running with express (optionally using mongoose for mongodb database). `@knovator/pagecreator-node` provides routes for `widget`, `page`, `tile` and `user` to use in application.
 
 ### Prerequisites
+
 - It's good start to have `nodejs` application up and running with `express`. Good to have used [i18next](https://www.npmjs.com/package/i18next) to add message in response codes.
 - `routes` uses `mongoose` connection established by application, so it's required to connect to database before using package. Example,
+
   ```js
   // db.js
   const mongoose = require('mongoose');
@@ -100,57 +98,58 @@ To integrate `@knovator/pagecreator-node`, you should be having basic nodejs app
 
   module.exports = mongoose;
   ```
+
 - Image upload route for `upload` & `remove` is needed to declare externally. Example,
+
   ```js
   // fileRoute.js
   const express = require('express');
   const router = express.Router();
 
   router.post(`/files/upload`, (req, res) => {
-      // TO DO: some file storage operation
-      let uri = "/image.jpg";
-      let id = "62c54b15524b6b59d2313c02";
-      res.json({
-        code: 'SUCCESS',
-        data: { id, uri },
-        message: 'File uploaded successfully'
-      });
+    // TO DO: some file storage operation
+    let uri = '/image.jpg';
+    let id = '62c54b15524b6b59d2313c02';
+    res.json({
+      code: 'SUCCESS',
+      data: { id, uri },
+      message: 'File uploaded successfully',
+    });
   });
 
   router.delete(`/files/remove/:id`, (req, res) => {
-      // TO DO: some file remove operation
-      res.json({
-          code: 'SUCCESS',
-          data: {},
-          message: 'File removed successfully'
-      })
-  })
+    // TO DO: some file remove operation
+    res.json({
+      code: 'SUCCESS',
+      data: {},
+      message: 'File removed successfully',
+    });
+  });
 
   module.exports = router;
   ```
 
-
-
 **Sample App file**
-  ```js
-    require('./src/db');
-    require('./src/models/file');
 
-    const cors = require('cors');
-    const express = require("express");
-    const fileRoutes = require('./fileRoute.js');
-    const PORT = 8080;
+```js
+require('./src/db');
+require('./src/models/file');
 
-    const app = express();
-    app.use(cors());
-    app.use(express.static("public"));
-    app.use(fileRoutes);
+const cors = require('cors');
+const express = require('express');
+const fileRoutes = require('./fileRoute.js');
+const PORT = 8080;
 
-    // ...
-    app.listen(PORT, () => {
-        console.log(`App started on ${PORT}`);
-    });
-  ```
+const app = express();
+app.use(cors());
+app.use(express.static('public'));
+app.use(fileRoutes);
+
+// ...
+app.listen(PORT, () => {
+  console.log(`App started on ${PORT}`);
+});
+```
 
 ### Installation
 
@@ -163,76 +162,137 @@ To integrate `@knovator/pagecreator-node`, you should be having basic nodejs app
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- USAGE EXAMPLES -->
+
 ## Usage
 
 App/Main file is a good place to use `@knovator/pagecreator-node`
+
 ```js
-    const { setConfig, WidgetRoutes, TileRoutes, FileUploadRoute, PageRoutes, UserRoutes } = require('@knovator/pagecreator-node');
+const {
+  setConfig,
+  WidgetRoutes,
+  TileRoutes,
+  FileUploadRoute,
+  PageRoutes,
+  UserRoutes,
+} = require('@knovator/pagecreator-node');
 
-    setConfig({
-        collections: [
-            {
-                title: 'Notifications',
-                collectionName: 'notifications',
-                filters: { isDeleted: false, isActive: true },
-                searchColumns: ['name', 'code'],
-            },
-        ],
-    });
+setConfig({
+  collections: [
+    {
+      title: 'Notifications',
+      collectionName: 'notifications',
+      filters: { isDeleted: false, isActive: true },
+      searchColumns: ['name', 'code'],
+    },
+  ],
+});
 
-    app.use('/widgets', WidgetRoutes);
-    app.use('/tiles', TileRoutes);
-    app.use('/media', FileUploadRoute);
-    app.use('/pages', PageRoutes);
-    app.use('/users', UserRoutes);
+app.use('/widgets', WidgetRoutes);
+app.use('/tiles', TileRoutes);
+app.use('/media', FileUploadRoute);
+app.use('/pages', PageRoutes);
+app.use('/users', UserRoutes);
 
-    app.listen(PORT, () => {
-        console.log(`App started on ${PORT}`);
-    });
+app.listen(PORT, () => {
+  console.log(`App started on ${PORT}`);
+});
 ```
 
 Through `setConfig` function e can set `logger`, `collections` and `catchAsync` functions as parameters. By `collections`, we can add reference of application collections.
+
 ### parameter explanations
+
 - `logger`
   - Provides ability to add logging for Database and Validation
     ```js
     // default
-    console
+    console;
     ```
 - `catchAsync`
   - Wraps functions to handle async errors
-      ```js
-      // default
-      function catchAsync(fn) {
-        return function (req, res, next) {
-          Promise.resolve(fn(req, res, next)).catch((err) => {
-            // this.logger.error(err.message);
-            res.status(internalServerError).json({
-              code: RESPONSE_CODE.ERROR,
-              message: err.message,
-              data: {},
-            });
+    ```js
+    // default
+    function catchAsync(fn) {
+      return function (req, res, next) {
+        Promise.resolve(fn(req, res, next)).catch((err) => {
+          // this.logger.error(err.message);
+          res.status(internalServerError).json({
+            code: RESPONSE_CODE.ERROR,
+            message: err.message,
+            data: {},
           });
-        };
-      }
-      ```
+        });
+      };
+    }
+    ```
 - `collections`
-    - Array of collection items to add reference of collections in package.
+  - Array of collection items to add reference of collections in package.
 
 #### Collection Item Format
-| Code | Description |
-| --- | ----------- |
-| title | Title of collection name to show in UI |
-| collectionName | Collection name specified in database |
-| filters | Filter object to apply while getting data, like `{ isDeleted: false, isActive: true }` |
-| searchColumns | Array of fields to to perform search |
+
+| Code           | Description                                                                            |
+| -------------- | -------------------------------------------------------------------------------------- |
+| title          | Title of collection name to show in UI                                                 |
+| collectionName | Collection name specified in database                                                  |
+| filters        | Filter object to apply while getting data, like `{ isDeleted: false, isActive: true }` |
+| searchColumns  | Array of fields to to perform search                                                   |
+| lookup         | `$lookup` object to apply while getting data through aggregation                       |
+| project        | `$project` object to apply while getting data through aggregation                      |
+| match          | `$match` object to apply while getting data through aggregation                        |
+
+**Example**,
+
+```js
+setConfig({
+  collections: [
+    {
+      title: 'Notifications',
+      collectionName: 'notifications',
+      filters: { isDeleted: false, isActive: true },
+      searchColumns: ['name', 'code'],
+      lookup: {
+        from: 'file',
+        let: {
+          id: '$fileId',
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ['$_id', '$$id'],
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              nm: 1,
+              uri: 1,
+              mimeType: 1,
+            },
+          },
+        ],
+        as: 'fileId',
+      },
+      project: {
+        _id: 1,
+        nm: 1,
+        fileId: 1,
+      },
+      match: {
+        deletedAt: { $exists: false },
+      },
+    },
+  ],
+});
+```
 
 ## Routes Infomration
 
 Response follows following structure
+
 ```js
 {
   code: RESPONSE_CODES,
@@ -242,93 +302,102 @@ Response follows following structure
 ```
 
 ### Response Codes
-| Code | Description |
-| --- | ----------- |
+
+| Code    | Description                          |
+| ------- | ------------------------------------ |
 | SUCCESS | When request fullfiled without error |
-| ERROR | When request fullfiled with error |
+| ERROR   | When request fullfiled with error    |
 
 ### Custom Validation messages
-| Message | Description |
-| --- | ----------- |
+
+| Message                            | Description                                     |
+| ---------------------------------- | ----------------------------------------------- |
 | Widget with same code is available | When widget with same code is exist in database |
 
 ### HTTP Status Codes
-| HTTP | Description |
-| --- | ----------- |
-| 200 | When request fullfiled without error |
-| 201 | When document is created |
-| 500 | When internal server occurred |
-| 422 | When Validation error occurred |
+
+| HTTP | Description                          |
+| ---- | ------------------------------------ |
+| 200  | When request fullfiled without error |
+| 201  | When document is created             |
+| 500  | When internal server occurred        |
+| 422  | When Validation error occurred       |
 
 ### Routes
+
 This are the routes that gets integrated by `@knovator/pagecreator-node`,
+
 #### Widget
-| Route | Method | Description |
-| --- | ----- | ----------- |
-| `/widget-types` | **GET** | Get widget-types like `Image` and provided `collections` |
-| `/selection-types` | **GET** | Get Selection types like `Fixed Card` and `Carousel` |
-| `/list` | **POST** | List widget data in pagination |
-| `/` | **POST** | Create `widget` |
-| `/:id` | **PUT** | Update `widget` |
-| `/:id` | **PATCH** | Partial Update `widget` |
-| `/:id` | **DELETE** | Delete widget whose `id` send in body |
-| `/collection-data` | **POST** | Get collection data |
+
+| Route              | Method     | Description                                              |
+| ------------------ | ---------- | -------------------------------------------------------- |
+| `/widget-types`    | **GET**    | Get widget-types like `Image` and provided `collections` |
+| `/selection-types` | **GET**    | Get Selection types like `Fixed Card` and `Carousel`     |
+| `/list`            | **POST**   | List widget data in pagination                           |
+| `/`                | **POST**   | Create `widget`                                          |
+| `/:id`             | **PUT**    | Update `widget`                                          |
+| `/:id`             | **PATCH**  | Partial Update `widget`                                  |
+| `/:id`             | **DELETE** | Delete widget whose `id` send in body                    |
+| `/collection-data` | **POST**   | Get collection data                                      |
 
 #### Page
-| Route | Method | Description |
-| --- | ----- | ----------- |
-| `/list` | **POST** | List page data in pagination |
-| `/` | **POST** | Create `page` |
-| `/:id` | **PUT** | Update `page` |
-| `/:id` | **DELETE** | Delete page whose `id` send in body |
+
+| Route   | Method     | Description                         |
+| ------- | ---------- | ----------------------------------- |
+| `/list` | **POST**   | List page data in pagination        |
+| `/`     | **POST**   | Create `page`                       |
+| `/:id`  | **PUT**    | Update `page`                       |
+| `/:id`  | **DELETE** | Delete page whose `id` send in body |
 
 #### Tile
-| Route | Method | Description |
-| --- | ----- | ----------- |
-| `/:widgetId` | **GET** | Get Tiles data for `widgetId` |
-| `/` | **POST** | Create `tile` |
-| `/:id` | **PUT** | Update `tile` |
-| `/:id` | **DELETE** | Delete tile whose `id` send in body |
+
+| Route        | Method     | Description                         |
+| ------------ | ---------- | ----------------------------------- |
+| `/:widgetId` | **GET**    | Get Tiles data for `widgetId`       |
+| `/`          | **POST**   | Create `tile`                       |
+| `/:id`       | **PUT**    | Update `tile`                       |
+| `/:id`       | **DELETE** | Delete tile whose `id` send in body |
 
 #### User
-| Route | Method | Description |
-| --- | ----- | ----------- |
+
+| Route          | Method   | Description                                              |
+| -------------- | -------- | -------------------------------------------------------- |
 | `/widget-data` | **POST** | Get widget-data data for specified widget `code` in body |
-| `/page-data` | **POST** | Get page-data data for specified page `code` in body |
+| `/page-data`   | **POST** | Get page-data data for specified page `code` in body     |
 
 ### `descriptor` codes & `i18n` code for messages
 
 Nextjs [i18n](https://www.npmjs.com/package/i18next) package adds facility for internationalization in nodejs application, and it's used in following manner
+
 ```js
 // usage
-req?.i18n?.(CODE)
+req?.i18n?.(CODE);
 ```
-| CODE | Description |
-| --- | ----------- |
-| `widget.getWidgetTypes` | While fetching widget types |
-| `widget.getSelectionTypes` | While fetching selection types |
-| `widget.getAll` | While fetching widgets |
-| `widget.create` | While creating widget |
-| `widget.update` | While updating widget |
-| `widget.partialUpdate` | While doing partialUpdate for widget, like toggle `IsActive` |
-| `widget.delete` | While deleting widget |
-| `widget.getCollectionData` | While getting widget `collection-data` |
-| `page.getAll` | While getting pages in pagination |
-| `page.create` | While creating page |
-| `page.update` | While updating page |
-| `page.delete` | While deleting page |
-| `tile.getAll` | While getting tiles for widget |
-| `tile.create` | While creating tile |
-| `tile.update` | While updating tile |
-| `user.getWidgetData` | While getting widget data |
-| `user.getPageData` | While getting page data |
+
+| CODE                       | Description                                                  |
+| -------------------------- | ------------------------------------------------------------ |
+| `widget.getWidgetTypes`    | While fetching widget types                                  |
+| `widget.getSelectionTypes` | While fetching selection types                               |
+| `widget.getAll`            | While fetching widgets                                       |
+| `widget.create`            | While creating widget                                        |
+| `widget.update`            | While updating widget                                        |
+| `widget.partialUpdate`     | While doing partialUpdate for widget, like toggle `IsActive` |
+| `widget.delete`            | While deleting widget                                        |
+| `widget.getCollectionData` | While getting widget `collection-data`                       |
+| `page.getAll`              | While getting pages in pagination                            |
+| `page.create`              | While creating page                                          |
+| `page.update`              | While updating page                                          |
+| `page.delete`              | While deleting page                                          |
+| `tile.getAll`              | While getting tiles for widget                               |
+| `tile.create`              | While creating tile                                          |
+| `tile.update`              | While updating tile                                          |
+| `user.getWidgetData`       | While getting widget data                                    |
+| `user.getPageData`         | While getting page data                                      |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
-
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -344,20 +413,20 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
 <!-- LICENSE -->
+
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
 <!-- CONTACT -->
+
 ## Contact
 
 Knovator Technologies
+
 - Twitter [@knovator](https://twitter.com/knovator)
 - Web [https://knovator.com/](https://knovator.com/)
 
@@ -365,9 +434,9 @@ Project Link: [https://github.com/knovator/pagecreator](https://github.com/knova
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/knovator/pagecreator.svg?style=for-the-badge
 [contributors-url]: https://github.com/knovator/pagecreator/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/knovator/pagecreator.svg?style=for-the-badge

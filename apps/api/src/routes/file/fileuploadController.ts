@@ -1,4 +1,4 @@
-import { File } from '../models/file';
+import { File } from '../../models/file';
 import { promisify } from 'util';
 import { existsSync, unlinkSync } from 'fs';
 import imageSize from 'image-size';
@@ -14,11 +14,7 @@ const getPath = (folder: string, fileName: string, uri?: string) => {
 };
 
 const fileData = async (file, folder) => {
-  if (
-    !file.name.match(
-      /\.(jpg|JPG|jpeg|JPEG|png|PNG|pdf|PDF|docx|DOCX|mp4|MP4|doc|DOC|webm|WEBM|avi|AVI)$/
-    )
-  ) {
+  if (!file.name.match(/\.(jpg|jpeg|png|webp)$/)) {
     throw new Error('Only images files are allowed.');
   }
   const fileName = file.name;
@@ -33,7 +29,7 @@ const fileData = async (file, folder) => {
     height: 0,
     width: 0,
   };
-  if (file.name.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
+  if (file.name.match(/\.(jpg|jpeg|png|webp)$/)) {
     const dimensions = await sizeOf(pathToStore);
     fileObj.height = dimensions.height;
     fileObj.width = dimensions.width;

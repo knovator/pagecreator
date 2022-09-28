@@ -1,10 +1,10 @@
 import './db/db';
-import './models/notification';
+import './models';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fileUpload from 'express-fileupload';
-import FileUploadRoute from './routes/fileuploadRoute';
+import appRoutes from './routes';
 import {
   setConfig,
   TileRoutes,
@@ -20,6 +20,7 @@ app.use(
     createParentPath: true,
   })
 );
+app.use(express.json());
 setConfig({
   collections: [
     {
@@ -35,9 +36,9 @@ app.get('/status', (_req, res) => {
 });
 app.use('/widgets', WidgetRoutes);
 app.use('/tiles', TileRoutes);
-app.use('/media', FileUploadRoute);
 app.use('/pages', PageRoutes);
 app.use('/users', UserRoutes);
+app.use(appRoutes);
 app.use(express.static(path.join(__dirname, './public')));
 
 const port = process.env.port || 3333;

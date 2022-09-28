@@ -100,3 +100,12 @@ export interface IDefaultValidations {
   deletedBy: string;
   deletedAt: string;
 }
+
+// helper.ts
+export interface IWidgetDataSchema {
+  _id: string;
+  code: string;
+  collectionName: string;
+  collectionItems: string[];
+}
+export type IWidgetData = { [key: string]: IWidgetDataSchema };

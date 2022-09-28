@@ -1,20 +1,15 @@
-import { Widget, Page } from './../models';
-import { successResponse } from './../utils/responseHandlers';
-import { IPageSchema, IRequest, IResponse, IWidgetSchema } from '../types';
-
-import { defaults } from '../utils/defaults';
 import { AggregateOptions, models } from 'mongoose';
-
-const commonExcludedFields = {
-  __v: 0,
-  isDeleted: 0,
-  deletedAt: 0,
-};
+import { Widget, Page } from './../models';
+import { appendCollectionData } from '../utils/helper';
+import { successResponse } from './../utils/responseHandlers';
+import { defaults, commonExcludedFields } from '../utils/defaults';
+import { IPageSchema, IRequest, IResponse, IWidgetSchema } from '../types';
 
 const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'User');
 };
 
+// TO Do: Optimize the following
 export const getWidgetData = catchAsync(
   async (req: IRequest, res: IResponse) => {
     const { code } = req.body;
@@ -121,9 +116,10 @@ export const getWidgetData = catchAsync(
   }
 );
 
+// TO Do: Optimize the following
 export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
   const { code } = req.body;
-  const pageData = (await Page.aggregate([
+  const pageData: any = (await Page.aggregate([
     {
       $match: {
         isDeleted: false,
@@ -211,10 +207,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
   ])) as Array<IPageSchema>;
 
   if (!pageData.length) throw new Error('Page not found');
-  await Widget.populate(pageData[0].widgets, {
-    path: 'collectionItems',
-    options: { projection: commonExcludedFields },
-  });
+  pageData[0].widgets = await appendCollectionData(pageData[0].widgets);
   res.message = req?.i18n?.t('user.pageData');
   return successResponse(pageData[0], res);
 });

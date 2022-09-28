@@ -3,7 +3,7 @@ import Widget from '../widget/widget';
 
 export function Page({
   title,
-  apiBaseUrl,
+  imageBaseUrl,
   pageData,
   formatItem,
   onClick,
@@ -17,7 +17,7 @@ export function Page({
           <Widget
             widgetData={widgetData}
             key={index}
-            apiBaseUrl={apiBaseUrl}
+            imageBaseUrl={imageBaseUrl}
             formatItem={
               formatItem &&
               ((tileData) => formatItem(widgetData.code, tileData))

@@ -112,7 +112,7 @@ We can use `@knovator/pagecreator` in React/Next application, we can create one 
 import { Widget } from '@knovator/pagecreator';
 
 <Widget
-    apiBaseUrl=''
+    imageBaseUrl=''
     widgetData={}
     onClick={...}
 >
@@ -120,8 +120,8 @@ import { Widget } from '@knovator/pagecreator';
 **Props**
 - `widgetData`
     - [widgetData](data-formats.md#widgetdata)
-- `apiBaseUrl`
-    - baseUrl to start prefix image urls
+- `imageBaseUrl`
+    - baseUrl to append before image urls
 - `formatItem` (optional): `(item: TileData) => JSX.Element`
     - Customize look of Items
 - `onClick` (optional): `(item: TileData) => void;`
@@ -132,7 +132,7 @@ import { Widget } from '@knovator/pagecreator';
 import { Page } from '@knovator/pagecreator';
 
 <Page
-    apiBaseUrl=''
+    imageBaseUrl=''
     pageData={...}
     onClick={...}
 >
@@ -140,7 +140,7 @@ import { Page } from '@knovator/pagecreator';
 **Props**
 - `title` (optional)
     - Title to show on page
-- `apiBaseUrl`
+- `imageBaseUrl`
     - baseUrl to start prefix image urls
 - `pageData`
     - [PageData](data-formats.md#pagedata)

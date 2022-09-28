@@ -57,6 +57,9 @@ export type CollectionItem = {
   collectionName: string;
   filters?: { [key: string]: string | number | boolean };
   searchColumns: string[];
+  match?: ObjectType;
+  project?: ObjectType;
+  lookup?: ObjectType;
 };
 
 export interface IConfig {
@@ -97,3 +100,12 @@ export interface IDefaultValidations {
   deletedBy: string;
   deletedAt: string;
 }
+
+// helper.ts
+export interface IWidgetDataSchema {
+  _id: string;
+  code: string;
+  collectionName: string;
+  collectionItems: string[];
+}
+export type IWidgetData = { [key: string]: IWidgetDataSchema };

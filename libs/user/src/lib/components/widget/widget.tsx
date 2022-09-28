@@ -6,7 +6,7 @@ import CollectionItem from '../common/collection-item/collection-item';
 
 export function Widget({
   widgetData,
-  apiBaseUrl,
+  imageBaseUrl,
   formatItem,
   onClick,
   settings,
@@ -19,7 +19,7 @@ export function Widget({
           key={tile._id}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          imageUrl={`${apiBaseUrl}${tile.img?.uri}`}
+          imageUrl={`${imageBaseUrl}${tile.img?.uri}`}
           imageAltText={tile._id}
           onClick={() => onClick && onClick(tile)}
         />
@@ -41,13 +41,13 @@ export function Widget({
         {widgetData.selectionType === 'Carousel' ? (
           <CarouselWidget
             settings={settings}
-            apiBaseUrl={apiBaseUrl}
+            imageBaseUrl={imageBaseUrl}
             widgetData={widgetData}
             formatItem={formatTile}
           />
         ) : (
           <FixedWidget
-            apiBaseUrl={apiBaseUrl}
+            imageBaseUrl={imageBaseUrl}
             widgetData={widgetData}
             formatItem={formatTile}
           />

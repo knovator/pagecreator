@@ -22,3 +22,9 @@ export const defaults: IConfig = {
     },
   collections: [] as CollectionItem[],
 };
+
+export const commonExcludedFields = {
+  __v: 0,
+  isDeleted: 0,
+  deletedAt: 0,
+};

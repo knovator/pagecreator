@@ -71,6 +71,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
                 placeholder={schema.placeholder}
                 wrapperClassName={schema.wrapperClassName}
                 formatOptionLabel={schema.formatOptionLabel}
+                listCode={schema.listCode}
               />
             );
             break;

@@ -83,11 +83,13 @@ const WidgetForm = ({ formRef }: FormProps) => {
         let item;
         setSelectedCollectionItems(
           data?.collectionItems?.map((itemId: string) => {
-            item = collectionData.find((item) => item._id === itemId);
+            item = collectionData.find(
+              (item) => item._id === itemId || item.id === itemId
+            );
             return item
               ? {
                   label: item.name,
-                  value: item._id,
+                  value: item._id || item.id,
                   ...item,
                 }
               : {};
@@ -291,7 +293,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       accessor: 'collectionItems',
       type: 'ReactSelect',
       options: collectionData.map((item: ObjectType) => ({
-        value: item['_id'],
+        value: item['_id'] || item['id'],
         label: item['name'],
         ...item,
       })),
@@ -303,6 +305,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       isLoading: collectionDataLoading,
       show: !tilesEnabled,
       formatOptionLabel: formatOptionLabel,
+      listCode: selectedWidgetType?.value,
     },
   ];
   const tileFormSchema: SchemaType[] = [

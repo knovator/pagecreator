@@ -75,6 +75,9 @@ const TRANSLATION_PAIRS_WIDGET = {
   'widget.tableActive': 'Active',
   'widget.addWidgetTitle': 'Add Widget',
   'widget.updateWidgetTitle': 'Update Widget',
+  'widget.webPerRowRequired': 'Web Per Row is required',
+  'widget.tabletPerRowRequired': 'Tablet Per Row is required',
+  'widget.mobilePerRowRequired': 'Mobile Per Row is required',
 };
 const TRANSLATION_PAIRS_TILES = {
   'tile.title': 'Title',

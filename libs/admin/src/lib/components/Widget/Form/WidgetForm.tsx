@@ -268,23 +268,35 @@ const WidgetForm = ({ formRef }: FormProps) => {
       label: t('widget.webPerRow'),
       accessor: 'webPerRow',
       type: 'number',
+      required: true,
       placeholder: t('widget.webPerRowPlaceholder'),
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-right-1',
-    },
-    {
-      label: t('widget.mobilePerRow'),
-      accessor: 'mobilePerRow',
-      type: 'number',
-      placeholder: t('widget.mobilePerRowPlaceholder'),
-      wrapperClassName:
-        'khb_grid-item-1of3 khb_padding-right-1 khb_padding-left-1',
+      validations: {
+        required: t('widget.webPerRowRequired'),
+      },
     },
     {
       label: t('widget.tabletPerRow'),
       accessor: 'tabletPerRow',
       type: 'number',
+      required: true,
       placeholder: t('widget.tabletPerRowPlaceholder'),
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-left-1',
+      validations: {
+        required: t('widget.tabletPerRowRequired'),
+      },
+    },
+    {
+      label: t('widget.mobilePerRow'),
+      accessor: 'mobilePerRow',
+      type: 'number',
+      required: true,
+      placeholder: t('widget.mobilePerRowPlaceholder'),
+      wrapperClassName:
+        'khb_grid-item-1of3 khb_padding-right-1 khb_padding-left-1',
+      validations: {
+        required: t('widget.mobilePerRowRequired'),
+      },
     },
     {
       label: selectedWidgetType?.label,

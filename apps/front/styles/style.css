@@ -1,0 +1,25 @@
+@tailwind components;
+@tailwind base;
+@tailwind utilities;
+
+.kpc_widget {
+    margin-top: 0;
+}
+.kpc_widget-title {
+    @apply hidden;
+}
+.page {
+    @apply bg-slate-200
+}
+.categories {
+    @apply bg-slate-50 mb-5 shadow-md;
+}
+.categories .tiles {
+    @apply container;
+}
+.content {
+    @apply bg-slate-200 space-y-2 container;
+}
+.container {
+    @apply max-w-6xl mx-auto;
+}

@@ -35,7 +35,7 @@ setConfig({
       lookup: {
         from: 'file',
         let: {
-          id: '$fileId',
+          id: '$img',
         },
         pipeline: [
           {
@@ -54,8 +54,12 @@ setConfig({
             },
           },
         ],
-        as: 'fileId',
+        as: 'img',
       },
+      project: {
+        __v: 0,
+      },
+      unwind: { path: '$img', preserveNullAndEmptyArrays: true },
     },
     {
       title: 'Product',
@@ -63,7 +67,7 @@ setConfig({
       lookup: {
         from: 'file',
         let: {
-          id: '$fileId',
+          id: '$img',
         },
         pipeline: [
           {
@@ -82,8 +86,9 @@ setConfig({
             },
           },
         ],
-        as: 'fileId',
+        as: 'img',
       },
+      unwind: { path: '$img', preserveNullAndEmptyArrays: true },
     },
   ],
 });

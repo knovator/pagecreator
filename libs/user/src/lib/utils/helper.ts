@@ -10,20 +10,23 @@ export async function getData({
   url,
   code,
   token,
-}: GetDataParams): Promise<WidgetData | PageData> {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: token ? `Bearer ${token}` : '',
-    },
-    body: JSON.stringify({ code }),
-  });
+}: GetDataParams): Promise<WidgetData | PageData | null> {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : '',
+      },
+      body: JSON.stringify({ code }),
+    });
+    if (!response.ok) {
+      return null;
+    }
 
-  if (!response.ok) {
-    throw new Error(response.statusText);
+    const data = await response.json();
+    return data['data'];
+  } catch (error) {
+    return null;
   }
-
-  const data = await response.json();
-  return data['data'];
 }

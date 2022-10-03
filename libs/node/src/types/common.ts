@@ -60,6 +60,7 @@ export type CollectionItem = {
   match?: ObjectType;
   project?: ObjectType;
   lookup?: ObjectType;
+  unwind?: ObjectType;
 };
 
 export interface IConfig {

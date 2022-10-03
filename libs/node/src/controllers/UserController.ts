@@ -84,7 +84,7 @@ export const getWidgetData = catchAsync(
       const collectionConfig = defaults.collections.find(
         (c) => c.collectionName === widgetData.collectionName
       );
-      const aggregateQuery: AggregateOptions = {
+      const matchQuery: any = {
         $match: {
           _id: {
             $in: widgetData.collectionItems,
@@ -92,19 +92,14 @@ export const getWidgetData = catchAsync(
           ...(collectionConfig?.match || {}),
         },
       };
-      if (collectionConfig?.project)
-        aggregateQuery['$project'] = collectionConfig?.project;
+
+      const aggregateQueryItem: AggregateOptions[] = [matchQuery];
       if (collectionConfig?.lookup)
-        aggregateQuery['$lookup'] = collectionConfig?.lookup;
-
-      const aggregateQueryItem: AggregateOptions[] = [];
-      if (aggregateQuery['$match'])
-        aggregateQueryItem.push({ $match: aggregateQuery['$match'] });
-      if (aggregateQuery['$lookup'])
-        aggregateQueryItem.push({ $lookup: aggregateQuery['$lookup'] });
-      if (aggregateQuery['$project'])
-        aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
-
+        aggregateQueryItem.push({ $lookup: collectionConfig?.lookup });
+      if (collectionConfig?.project)
+        aggregateQueryItem.push({ $project: collectionConfig?.project });
+      if (collectionConfig?.unwind)
+        aggregateQueryItem.push({ $unwind: collectionConfig?.unwind });
       const collectionItems = await models[widgetData.collectionName].aggregate(
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

@@ -56,7 +56,7 @@ export type CollectionItem = {
   title: string;
   collectionName: string;
   filters?: { [key: string]: string | number | boolean };
-  searchColumns: string[];
+  searchColumns?: string[];
   match?: ObjectType;
   project?: ObjectType;
   lookup?: ObjectType;

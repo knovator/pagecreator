@@ -30,7 +30,7 @@ const ImageUpload = ({
       try {
         onError('');
         if (acceptedFiles?.length > 0) {
-          const regex = /\.(png|jpeg|jpg|svg)$/gi;
+          const regex = /\.(png|jpeg|jpg|webp|svg)$/gi;
           const files = acceptedFiles.filter((file) => regex.test(file.name));
           if (files[0]) {
             const response = await onImageUpload(files[0]);
@@ -40,11 +40,11 @@ const ImageUpload = ({
             }
           } else
             throw new Error(
-              'File type must be .png, .jpg, .jpeg, .gif, or .svg'
+              'Only .png, .jpg, .jpeg, .web, or .svg image types are supported.'
             );
         } else if (
           rejectedFiles?.[0]?.errors?.[0]?.message ===
-          'File is larger than 10485760 bytes'
+          'File size must be smaller than 10485760 bytes'
         ) {
           throw new Error('File is larger than 10mb');
         }

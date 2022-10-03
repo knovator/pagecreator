@@ -20,7 +20,7 @@ export function Widget({
           key={tile._id}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          imageUrl={`${imageBaseUrl}${tile.img?.uri}`}
+          imageUrl={`${imageBaseUrl || ''}${tile.img?.uri}`}
           imageAltText={tile._id}
           onClick={() => onClick && onClick(tile)}
         />
@@ -44,16 +44,11 @@ export function Widget({
         {widgetData.selectionType === 'Carousel' ? (
           <CarouselWidget
             settings={settings}
-            imageBaseUrl={imageBaseUrl}
             widgetData={widgetData}
             formatItem={formatTile}
           />
         ) : (
-          <FixedWidget
-            imageBaseUrl={imageBaseUrl}
-            widgetData={widgetData}
-            formatItem={formatTile}
-          />
+          <FixedWidget widgetData={widgetData} formatItem={formatTile} />
         )}
       </div>
     </div>

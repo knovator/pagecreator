@@ -43,6 +43,7 @@ export function CarouselWidget({
   widgetData,
   formatItem,
   settings,
+  className,
 }: WidgetTypeProps) {
   const defaultSettings: Settings = {
     dots: false,
@@ -72,7 +73,7 @@ export function CarouselWidget({
   };
   if (!widgetData) return null;
   return (
-    <Slider {...(settings ? settings : defaultSettings)}>
+    <Slider {...(settings ? settings : defaultSettings)} className={className}>
       {widgetData.widgetType === 'Image'
         ? widgetData.tiles.map((tile) => <div>{formatItem(tile)}</div>)
         : widgetData.collectionItems.map((item) => (

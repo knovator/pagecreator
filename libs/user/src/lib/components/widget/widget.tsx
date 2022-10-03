@@ -10,6 +10,7 @@ export function Widget({
   formatItem,
   onClick,
   settings,
+  showTitle,
 }: WidgetProps) {
   const formatTile = (tile: TileData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(tile);
@@ -36,7 +37,9 @@ export function Widget({
   if (!widgetData) return null;
   return (
     <div className="kpc_widget">
-      <h2 className="kpc_widget-title">{widgetData.selectionTitle}</h2>
+      {typeof showTitle === 'boolean' && !showTitle ? (
+        <h2 className="kpc_widget-title">{widgetData.selectionTitle}</h2>
+      ) : null}
       <div className="kpc_widget-body">
         {widgetData.selectionType === 'Carousel' ? (
           <CarouselWidget

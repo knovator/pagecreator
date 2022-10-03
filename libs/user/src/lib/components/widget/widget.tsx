@@ -11,6 +11,7 @@ export function Widget({
   onClick,
   settings,
   showTitle,
+  className,
 }: WidgetProps) {
   const formatTile = (tile: TileData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(tile);
@@ -46,9 +47,14 @@ export function Widget({
             settings={settings}
             widgetData={widgetData}
             formatItem={formatTile}
+            className={className}
           />
         ) : (
-          <FixedWidget widgetData={widgetData} formatItem={formatTile} />
+          <FixedWidget
+            widgetData={widgetData}
+            formatItem={formatTile}
+            className={className}
+          />
         )}
       </div>
     </div>

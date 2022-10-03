@@ -45,6 +45,7 @@ export interface WidgetProps {
   formatItem?: (item: TileData | CollectionItemType) => JSX.Element;
   onClick?: (item: TileData | CollectionItemType) => void;
   settings?: Settings;
+  className?: string;
 }
 export interface WidgetTypeProps extends WidgetProps {
   formatItem: (item: CollectionItemType | TileData) => JSX.Element;

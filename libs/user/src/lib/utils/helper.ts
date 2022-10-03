@@ -1,4 +1,4 @@
-import { WidgetData, PageData } from '../types';
+import { WidgetData, PageData, TileData } from '../types';
 
 interface GetDataParams {
   url: string;
@@ -27,3 +27,9 @@ export async function getData({
   const data = await response.json();
   return data['data'];
 }
+
+export const isMobileDevice =
+  typeof window !== 'undefined' && /Mobi/i.test(window?.navigator?.userAgent);
+
+export const filterTileData = (data: TileData): boolean =>
+  isMobileDevice ? data.tileType === 'Mobile' : data.tileType === 'Web';

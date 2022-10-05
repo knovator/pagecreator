@@ -18,6 +18,7 @@ export interface CardProps {
   imageUrl: string;
   imageAltText: string;
   onClick?: (data?: ObjectType) => void;
+  srcSets?: string;
 }
 export interface ProductCardProps extends CardProps {
   title: string;

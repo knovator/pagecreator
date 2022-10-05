@@ -77,13 +77,11 @@ const ImageUpload = ({
     return (
       <div className="khb_img-wrapper">
         <img src={`${fileUrl}`} alt="" className="khb_img-wrapper-img" />
-        <button
-          disabled={disabled}
-          onClick={onRemoveFile}
-          className="khb_img-wrapper-del"
-        >
-          <SmallCancel />
-        </button>
+        {!disabled && (
+          <button onClick={onRemoveFile} className="khb_img-wrapper-del">
+            <SmallCancel />
+          </button>
+        )}
       </div>
     );
   };

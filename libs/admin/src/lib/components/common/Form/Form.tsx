@@ -155,6 +155,17 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
               ></Controller>
             );
             break;
+          case 'srcset':
+            input = (
+              <Input.SrcSet
+                control={control}
+                register={register}
+                label={schema.label}
+                required={schema.required}
+                errors={errors[schema.accessor]}
+              />
+            );
+            break;
           case 'text':
           case 'number':
           case 'url':

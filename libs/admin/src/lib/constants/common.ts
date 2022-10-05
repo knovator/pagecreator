@@ -91,6 +91,7 @@ const TRANSLATION_PAIRS_TILES = {
   'tile.uploadFile': 'Upload File',
   'tile.dragDrop': 'or drag and drop',
   'tile.allowedFormat': 'PNG, JPG, SVG up to 2 MB',
+  'tile.srcset': 'Srcset',
 };
 const TRANSLATION_PAIRS_PAGE = {
   'page.name': 'Name',

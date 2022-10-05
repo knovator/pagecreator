@@ -344,6 +344,11 @@ const WidgetForm = ({ formRef }: FormProps) => {
       placeholder: t('tile.linkPlaceholder'),
     },
     {
+      label: `${t('tile.srcset')}`,
+      accessor: 'srcset',
+      type: 'srcset',
+    },
+    {
       label: t('tile.image'),
       accessor: 'img',
       Input: ({ field, error, setError, disabled }) => (

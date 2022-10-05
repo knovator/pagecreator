@@ -125,6 +125,12 @@
 .khb_input-label-required {
     @apply text-red-600;
 }
+.khb_input-srcset {
+    @apply flex flex-row items-center;
+}
+.khb_input-srcset-items {
+    @apply space-y-1;
+}
 /* \ End of Input */
 
 /* Drawer */

@@ -46,6 +46,7 @@ export interface InputProps {
   size?: InputSizes;
   className?: string;
   error?: string;
+  errors?: any;
   required?: boolean;
   disabled?: boolean;
   rest?: any;
@@ -54,6 +55,8 @@ export interface InputProps {
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  control?: any;
+  register?: any;
 }
 export interface CheckboxProps {
   rest?: any;
@@ -95,32 +98,6 @@ export interface ReactSelectProps {
   placeholder?: string;
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
   listCode?: string;
-  wrapperClassName?: string;
-}
-export interface SchemaType extends ReactSelectProps {
-  label?: string;
-  accessor: string;
-  Input?: (props: InputRendererProps) => JSX.Element;
-  validations?: import('react-hook-form').RegisterOptions;
-  editable?: boolean;
-  onInput?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?:
-    | 'text'
-    | 'number'
-    | 'select'
-    | 'checkbox'
-    | 'textarea'
-    | 'file'
-    | 'url'
-    | 'ReactSelect';
-  options?: { value: string; label: string }[];
-  selectedOptions?: { value: string; label: string }[];
-  isMulti?: boolean;
-  defaultValue?: string | number | boolean;
-  placeholder?: string;
-  required?: boolean;
-  onChange?: (e: any) => void;
-  show?: boolean;
   wrapperClassName?: string;
 }
 export interface FormProps {
@@ -170,7 +147,8 @@ export interface SchemaType extends ReactSelectProps {
     | 'textarea'
     | 'file'
     | 'url'
-    | 'ReactSelect';
+    | 'ReactSelect'
+    | 'srcset';
   options?: { value: string; label: string }[];
   selectedOptions?: { value: string; label: string }[];
   isMulti?: boolean;

@@ -23,10 +23,17 @@ export interface iConfig {
   ) => (req: any, res: any, next: any) => void;
   collections: CollectionItem[];
 }
+// Collection
 export interface IPageSchema extends Document {
   name: string;
   code: string;
   widgets: string[];
+}
+export interface ISrcSetSchema extends Document {
+  width: number;
+  height: number;
+  screenSize: number;
+  tileId: typeof Types.ObjectId;
 }
 export interface IWidgetSchema extends Document {
   name: string;
@@ -50,7 +57,14 @@ export interface ITileSchema extends Document {
   sequence: number;
   tileType: TileTypes;
   img: any;
+  srcset?: SrcSetItem[];
 }
+export interface SrcSetItem {
+  screenSize: number;
+  width: number;
+  height: number;
+}
+// \ End of Collection
 
 export type CollectionItem = {
   title: string;
@@ -71,7 +85,11 @@ export interface IConfig {
   collections: CollectionItem[];
 }
 
-export type EntityType = IWidgetSchema | ITileSchema | IPageSchema;
+export type EntityType =
+  | IWidgetSchema
+  | ITileSchema
+  | IPageSchema
+  | ISrcSetSchema;
 export type ReturnDocument = EntityType;
 export interface IModel<T> extends Model<T> {
   paginate: (

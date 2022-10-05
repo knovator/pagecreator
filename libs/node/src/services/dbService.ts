@@ -34,6 +34,10 @@ export async function remove<T extends EntityType>(
   const modalInstance = await getOne(Modal, query);
   return await modalInstance.remove();
 }
+// delete-all
+export async function deleteAll<T extends EntityType>(Modal: Model<T>, query: FilterQuery<T>) {
+  return Modal.deleteMany(query);
+}
 // get-all
 export function getAll<T extends EntityType>(
   Modal: Model<T>,
@@ -71,4 +75,8 @@ export async function getOne<T extends EntityType>(
     throw new Error(`Record not found ${Modal.name ? `in ${Modal.name}` : ''}`);
 
   return modalInstance;
+}
+// bulk-insert
+export async function bulkInsert<T extends EntityType>(Modal: Model<T>, docs: T[]): Promise<ReturnDocument[]> {
+  return await Modal.insertMany(docs);
 }

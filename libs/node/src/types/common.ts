@@ -36,6 +36,7 @@ export interface ISrcSetSchema extends Document {
   tileId: typeof Types.ObjectId;
 }
 export interface IWidgetSchema extends Document {
+  tiles: any;
   name: string;
   code: string;
   autoPlay: boolean;

@@ -3,6 +3,7 @@ import FixedWidget from './fixed-widget/fixed-widget';
 import CarouselWidget from './carousel-widget/carousel-widget';
 import Banner from '../common/Card/banner/banner';
 import CollectionItem from '../common/collection-item/collection-item';
+import { buildSrcSets } from '../../utils/helper';
 
 export function Widget({
   widgetData,
@@ -26,7 +27,7 @@ export function Widget({
           onClick={() => onClick && onClick(tile)}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          srcSets={tile.srcSets}
+          srcSets={buildSrcSets(imageBaseUrl, tile.srcSets)}
         />
       );
     else

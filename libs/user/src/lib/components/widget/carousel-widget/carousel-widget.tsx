@@ -78,9 +78,9 @@ export function CarouselWidget({
       {widgetData.widgetType === 'Image'
         ? widgetData.tiles
             .filter(filterTileData)
-            .map((tile) => <div>{formatItem(tile)}</div>)
-        : widgetData.collectionItems.map((item) => (
-            <div>{formatItem(item)}</div>
+            .map((tile, index) => <div key={index}>{formatItem(tile)}</div>)
+        : widgetData.collectionItems.map((item, index) => (
+            <div key={index}>{formatItem(item)}</div>
           ))}
     </Slider>
   );

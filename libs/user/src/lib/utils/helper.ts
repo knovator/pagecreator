@@ -28,6 +28,15 @@ export async function getData({
   return data['data'];
 }
 
+export function buildSrcSets(imageBaseUrl?: string, srcSets?: string) {
+  if (!srcSets) return '';
+  if (!imageBaseUrl) return srcSets;
+  return srcSets
+    .split(', ')
+    .map((srcSetItem) => `${imageBaseUrl}${srcSetItem}`)
+    .join(', ');
+}
+
 export const isMobileDevice =
   typeof window !== 'undefined' && /Mobi/i.test(window?.navigator?.userAgent);
 

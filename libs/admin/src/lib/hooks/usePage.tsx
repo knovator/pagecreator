@@ -71,7 +71,7 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
         widgetsData = widgetsData.map((item: ObjectType) => {
           return {
             label: item['name'],
-            value: item['_id'],
+            value: item['_id'] || item['id'],
           };
         });
         return setWidgets(widgetsData);

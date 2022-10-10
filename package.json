@@ -20,6 +20,7 @@
   "private": true,
   "dependencies": {
     "@knovator/api": "^1.0.2",
+    "@knovator/image-resizer": "^0.1.0",
     "classnames": "^2.3.1",
     "core-js": "^3.6.5",
     "cors": "^2.8.5",

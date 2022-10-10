@@ -35,7 +35,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
     data,
     canAdd,
     canUpdate,
-    tilesList,
+    webTiles,
+    mobileTiles,
     formState,
     widgetTypes,
     selectionTypes,
@@ -52,7 +53,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [tilesVisible, setTilesVisible] = useState(false);
+  const [webTilesVisible, setWebTilesVisible] = useState(false);
+  const [mobileTilesVisible, setMobileTilesVisible] = useState(false);
   const [tilesEnabled, setTilesEnabled] = useState(true);
   const [showAutoPlay, setShowAutoPlay] = useState(false);
   const [selectedCollectionItems, setSelectedCollectionItems] = useState<
@@ -83,11 +85,13 @@ const WidgetForm = ({ formRef }: FormProps) => {
         let item;
         setSelectedCollectionItems(
           data?.collectionItems?.map((itemId: string) => {
-            item = collectionData.find((item) => item._id === itemId);
+            item = collectionData.find(
+              (item) => item._id === itemId || item.id === itemId
+            );
             return item
               ? {
                   label: item.name,
-                  value: item._id,
+                  value: item._id || item.id,
                   ...item,
                 }
               : {};
@@ -266,23 +270,35 @@ const WidgetForm = ({ formRef }: FormProps) => {
       label: t('widget.webPerRow'),
       accessor: 'webPerRow',
       type: 'number',
+      required: true,
       placeholder: t('widget.webPerRowPlaceholder'),
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-right-1',
-    },
-    {
-      label: t('widget.mobilePerRow'),
-      accessor: 'mobilePerRow',
-      type: 'number',
-      placeholder: t('widget.mobilePerRowPlaceholder'),
-      wrapperClassName:
-        'khb_grid-item-1of3 khb_padding-right-1 khb_padding-left-1',
+      validations: {
+        required: t('widget.webPerRowRequired'),
+      },
     },
     {
       label: t('widget.tabletPerRow'),
       accessor: 'tabletPerRow',
       type: 'number',
+      required: true,
       placeholder: t('widget.tabletPerRowPlaceholder'),
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-left-1',
+      validations: {
+        required: t('widget.tabletPerRowRequired'),
+      },
+    },
+    {
+      label: t('widget.mobilePerRow'),
+      accessor: 'mobilePerRow',
+      type: 'number',
+      required: true,
+      placeholder: t('widget.mobilePerRowPlaceholder'),
+      wrapperClassName:
+        'khb_grid-item-1of3 khb_padding-right-1 khb_padding-left-1',
+      validations: {
+        required: t('widget.mobilePerRowRequired'),
+      },
     },
     {
       label: selectedWidgetType?.label,
@@ -291,7 +307,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       accessor: 'collectionItems',
       type: 'ReactSelect',
       options: collectionData.map((item: ObjectType) => ({
-        value: item['_id'],
+        value: item['_id'] || item['id'],
         label: item['name'],
         ...item,
       })),
@@ -303,6 +319,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       isLoading: collectionDataLoading,
       show: !tilesEnabled,
       formatOptionLabel: formatOptionLabel,
+      listCode: selectedWidgetType?.value,
     },
   ];
   const tileFormSchema: SchemaType[] = [
@@ -325,6 +342,11 @@ const WidgetForm = ({ formRef }: FormProps) => {
       accessor: 'link',
       type: 'url',
       placeholder: t('tile.linkPlaceholder'),
+    },
+    {
+      label: `${t('tile.srcset')}`,
+      accessor: 'srcset',
+      type: 'srcset',
     },
     {
       label: t('tile.image'),
@@ -386,24 +408,44 @@ const WidgetForm = ({ formRef }: FormProps) => {
       {tilesEnabled && (
         <>
           {/* Web Items */}
-        <TileItemsAccordian
-          collapseId="imageItems"
-          title={t('widget.imageItems')}
-          id="items"
-          schema={tileFormSchema}
-          show={tilesVisible}
-          tilesData={tilesList}
-          toggleShow={setTilesVisible}
-          onDataSubmit={onTileFormSubmit}
-          tileType="Web"
-          widgetId={data?._id}
-          onDelete={onDeleteTile}
-          addText={t('addButtonText')}
-          cancelText={t('cancelButtonText')}
-          saveText={t('saveButtonText')}
-          editText={t('editButtonText')}
-          deleteText={t('deleteButtonText')}
-        />
+          <TileItemsAccordian
+            collapseId="webItems"
+            title={t('widget.webTiles')}
+            id="webTiles"
+            schema={tileFormSchema}
+            show={webTilesVisible}
+            tilesData={webTiles}
+            toggleShow={setWebTilesVisible}
+            onDataSubmit={onTileFormSubmit}
+            tileType="Web"
+            widgetId={data?._id}
+            onDelete={onDeleteTile}
+            addText={t('addButtonText')}
+            cancelText={t('cancelButtonText')}
+            saveText={t('saveButtonText')}
+            editText={t('editButtonText')}
+            deleteText={t('deleteButtonText')}
+          />
+
+          {/* Mobile Items */}
+          <TileItemsAccordian
+            collapseId="mobileItems"
+            title={t('widget.mobileTiles')}
+            id="mobileTiles"
+            schema={tileFormSchema}
+            show={mobileTilesVisible}
+            tilesData={mobileTiles}
+            toggleShow={setMobileTilesVisible}
+            onDataSubmit={onTileFormSubmit}
+            tileType="Mobile"
+            widgetId={data?._id}
+            onDelete={onDeleteTile}
+            addText={t('addButtonText')}
+            cancelText={t('cancelButtonText')}
+            saveText={t('saveButtonText')}
+            editText={t('editButtonText')}
+            deleteText={t('deleteButtonText')}
+          />
         </>
       )}
     </div>

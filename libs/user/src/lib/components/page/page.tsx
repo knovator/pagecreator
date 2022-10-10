@@ -7,17 +7,21 @@ export function Page({
   pageData,
   formatItem,
   onClick,
+  showWidgetTitles,
 }: PageProps) {
   if (!pageData) return null;
   return (
     <div className="kpc_page">
-      <h1 className="kpc_page-title">{title}</h1>
+      {title && <h1 className="kpc_page-title">{title}</h1>}
       <div className="kpc_page-widgets">
         {pageData.widgets.map((widgetData, index) => (
           <Widget
             widgetData={widgetData}
             key={index}
             imageBaseUrl={imageBaseUrl}
+            showTitle={
+              typeof showWidgetTitles === 'boolean' ? showWidgetTitles : true
+            }
             formatItem={
               formatItem &&
               ((tileData) => formatItem(widgetData.code, tileData))

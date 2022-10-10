@@ -12,6 +12,17 @@ export type ObjectType = {
   [key: string]: string;
 };
 export type CombineObjectType = {
-  [key: string]: string | boolean | number | string[] | null | ObjectType;
+  [key: string]:
+    | string
+    | boolean
+    | number
+    | string[]
+    | null
+    | CombineObjectType;
 };
 export type ValuesType = string | boolean | number | string[];
+export interface SrcSetItem {
+  screenSize: number | string;
+  width: number | string;
+  height: number | string;
+}

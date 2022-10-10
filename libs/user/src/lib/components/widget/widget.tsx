@@ -3,6 +3,7 @@ import FixedWidget from './fixed-widget/fixed-widget';
 import CarouselWidget from './carousel-widget/carousel-widget';
 import Banner from '../common/Card/banner/banner';
 import CollectionItem from '../common/collection-item/collection-item';
+import { buildSrcSets } from '../../utils/helper';
 
 export function Widget({
   widgetData,
@@ -10,6 +11,8 @@ export function Widget({
   formatItem,
   onClick,
   settings,
+  showTitle,
+  className,
 }: WidgetProps) {
   const formatTile = (tile: TileData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(tile);
@@ -19,9 +22,12 @@ export function Widget({
           key={tile._id}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          imageUrl={`${imageBaseUrl}${tile.img?.uri}`}
+          imageUrl={`${imageBaseUrl || ''}${tile.image?.uri}`}
           imageAltText={tile._id}
           onClick={() => onClick && onClick(tile)}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          srcSets={buildSrcSets(imageBaseUrl, tile.srcSets)}
         />
       );
     else
@@ -36,20 +42,22 @@ export function Widget({
   if (!widgetData) return null;
   return (
     <div className="kpc_widget">
-      <h2 className="kpc_widget-title">{widgetData.selectionTitle}</h2>
+      {typeof showTitle === 'boolean' && !showTitle ? (
+        <h2 className="kpc_widget-title">{widgetData.selectionTitle}</h2>
+      ) : null}
       <div className="kpc_widget-body">
         {widgetData.selectionType === 'Carousel' ? (
           <CarouselWidget
             settings={settings}
-            imageBaseUrl={imageBaseUrl}
             widgetData={widgetData}
             formatItem={formatTile}
+            className={className}
           />
         ) : (
           <FixedWidget
-            imageBaseUrl={imageBaseUrl}
             widgetData={widgetData}
             formatItem={formatTile}
+            className={className}
           />
         )}
       </div>

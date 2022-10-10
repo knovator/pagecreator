@@ -99,7 +99,8 @@ const Widget = ({
       pageSize={pageSize}
       setCurrentPage={setCurrentPage}
       // Tile
-      tilesList={tilesList}
+      webTiles={tilesList.web}
+      mobileTiles={tilesList.mobile}
       tilesLoading={tilesLoading}
       onTileFormSubmit={onTileFormSubmit}
       // Permissions

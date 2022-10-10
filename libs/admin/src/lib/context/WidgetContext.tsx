@@ -49,7 +49,8 @@ const WidgetContextProvider = ({
   loader = <span />,
   onPartialUpdateWidget = () => Promise.resolve(),
   // Tile
-  tilesList = [],
+  webTiles = [],
+  mobileTiles = [],
   tilesLoading = false,
   onTileFormSubmit = () => {},
   // other
@@ -97,7 +98,8 @@ const WidgetContextProvider = ({
         canDelete,
         loader,
         // Tile
-        tilesList,
+        webTiles,
+        mobileTiles,
         tilesLoading,
         onTileFormSubmit,
       }}

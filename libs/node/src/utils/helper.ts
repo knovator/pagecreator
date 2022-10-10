@@ -1,6 +1,11 @@
 import { Widget } from '../models';
 import { commonExcludedFields, defaults } from './defaults';
-import { IWidgetData, IWidgetDataSchema, IWidgetSchema } from '../types';
+import {
+  IWidgetData,
+  IWidgetDataSchema,
+  IWidgetSchema,
+  SrcSetItem,
+} from '../types';
 
 export async function appendCollectionData(widgetData: IWidgetSchema[]) {
   // reduce widget data to optimize query
@@ -96,4 +101,33 @@ export async function appendCollectionData(widgetData: IWidgetSchema[]) {
   }
   // returning widget data as it is if they do not have dynamic collection
   return widgetData;
+}
+
+export function buildSrcSetItem(uri: string, setItem: SrcSetItem) {
+  const imageItemArr = uri?.split('/') || [];
+  imageItemArr.splice(
+    imageItemArr.length - 1,
+    0,
+    `${setItem.width}x${setItem.height}`
+  );
+  return imageItemArr.join('/');
+}
+
+export function AddSrcSetsToTiles(widgetData: IWidgetSchema) {
+  if (Array.isArray(widgetData.tiles) && widgetData.tiles.length > 0) {
+    widgetData.tiles.forEach((tile) => {
+      if (Array.isArray(tile.srcset) && tile.srcset.length > 0 && tile.image) {
+        tile.srcSets = tile.srcset.reduce(
+          (strArr: string[], setItem: SrcSetItem) => {
+            const imageUri = buildSrcSetItem(tile.image.uri, setItem);
+            strArr.push(`${imageUri} ${setItem.screenSize}w`);
+            return strArr;
+          },
+          []
+        );
+
+        tile.srcSets = tile.srcSets.join(', ');
+      }
+    });
+  }
 }

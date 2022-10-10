@@ -1,7 +1,8 @@
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+// import 'slick-carousel/slick/slick.css';
+// import 'slick-carousel/slick/slick-theme.css';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import 'libs/user/assets/style.css';
+import '../styles/global.css';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import Link from 'next/link';

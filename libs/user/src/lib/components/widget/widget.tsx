@@ -3,6 +3,7 @@ import FixedWidget from './fixed-widget/fixed-widget';
 import CarouselWidget from './carousel-widget/carousel-widget';
 import Banner from '../common/Card/banner/banner';
 import CollectionItem from '../common/collection-item/collection-item';
+import { buildSrcSets } from '../../utils/helper';
 
 export function Widget({
   widgetData,
@@ -21,9 +22,12 @@ export function Widget({
           key={tile._id}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          imageUrl={`${imageBaseUrl || ''}${tile.img?.uri}`}
+          imageUrl={`${imageBaseUrl || ''}${tile.image?.uri}`}
           imageAltText={tile._id}
           onClick={() => onClick && onClick(tile)}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          srcSets={buildSrcSets(imageBaseUrl, tile.srcSets)}
         />
       );
     else

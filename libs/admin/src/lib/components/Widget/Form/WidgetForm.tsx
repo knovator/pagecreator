@@ -35,7 +35,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
     data,
     canAdd,
     canUpdate,
-    tilesList,
+    webTiles,
+    mobileTiles,
     formState,
     widgetTypes,
     selectionTypes,
@@ -52,7 +53,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [tilesVisible, setTilesVisible] = useState(false);
+  const [webTilesVisible, setWebTilesVisible] = useState(false);
+  const [mobileTilesVisible, setMobileTilesVisible] = useState(false);
   const [tilesEnabled, setTilesEnabled] = useState(true);
   const [showAutoPlay, setShowAutoPlay] = useState(false);
   const [selectedCollectionItems, setSelectedCollectionItems] = useState<
@@ -342,6 +344,11 @@ const WidgetForm = ({ formRef }: FormProps) => {
       placeholder: t('tile.linkPlaceholder'),
     },
     {
+      label: `${t('tile.srcset')}`,
+      accessor: 'srcset',
+      type: 'srcset',
+    },
+    {
       label: t('tile.image'),
       accessor: 'img',
       Input: ({ field, error, setError, disabled }) => (
@@ -401,24 +408,44 @@ const WidgetForm = ({ formRef }: FormProps) => {
       {tilesEnabled && (
         <>
           {/* Web Items */}
-        <TileItemsAccordian
-          collapseId="imageItems"
-          title={t('widget.imageItems')}
-          id="items"
-          schema={tileFormSchema}
-          show={tilesVisible}
-          tilesData={tilesList}
-          toggleShow={setTilesVisible}
-          onDataSubmit={onTileFormSubmit}
-          tileType="Web"
-          widgetId={data?._id}
-          onDelete={onDeleteTile}
-          addText={t('addButtonText')}
-          cancelText={t('cancelButtonText')}
-          saveText={t('saveButtonText')}
-          editText={t('editButtonText')}
-          deleteText={t('deleteButtonText')}
-        />
+          <TileItemsAccordian
+            collapseId="webItems"
+            title={t('widget.webTiles')}
+            id="webTiles"
+            schema={tileFormSchema}
+            show={webTilesVisible}
+            tilesData={webTiles}
+            toggleShow={setWebTilesVisible}
+            onDataSubmit={onTileFormSubmit}
+            tileType="Web"
+            widgetId={data?._id}
+            onDelete={onDeleteTile}
+            addText={t('addButtonText')}
+            cancelText={t('cancelButtonText')}
+            saveText={t('saveButtonText')}
+            editText={t('editButtonText')}
+            deleteText={t('deleteButtonText')}
+          />
+
+          {/* Mobile Items */}
+          <TileItemsAccordian
+            collapseId="mobileItems"
+            title={t('widget.mobileTiles')}
+            id="mobileTiles"
+            schema={tileFormSchema}
+            show={mobileTilesVisible}
+            tilesData={mobileTiles}
+            toggleShow={setMobileTilesVisible}
+            onDataSubmit={onTileFormSubmit}
+            tileType="Mobile"
+            widgetId={data?._id}
+            onDelete={onDeleteTile}
+            addText={t('addButtonText')}
+            cancelText={t('cancelButtonText')}
+            saveText={t('saveButtonText')}
+            editText={t('editButtonText')}
+            deleteText={t('deleteButtonText')}
+          />
         </>
       )}
     </div>

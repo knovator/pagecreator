@@ -157,6 +157,7 @@ const TileItemsAccordian = ({
               onSubmit={(data) => onTileFormSubmit(index, data)}
               ref={(el) => (formRefs.current[index] = el)}
               enable={editingItemIndex === index || !data[index]}
+              isUpdating={editingItemIndex === index}
             />
           </Accordian>
         ))}

@@ -27,6 +27,9 @@
 .khb_btn-danger {
     @apply text-white bg-red-700 hover:bg-red-800 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900
 }
+.khb_btn-danger:disabled {
+    @apply bg-red-800;
+}
 
 .khb_btn-xs {
     @apply text-xs px-1.5 py-1

@@ -13,6 +13,7 @@ const SrcSetInput = ({
   name,
   inputKey,
   placeholder,
+  disabled = false,
 }: {
   size: InputSizes;
   register: any;
@@ -22,6 +23,7 @@ const SrcSetInput = ({
   name?: string;
   inputKey: string;
   placeholder?: string;
+  disabled?: boolean;
 }) => {
   return (
     <div>
@@ -30,6 +32,7 @@ const SrcSetInput = ({
         type={'number'}
         placeholder={placeholder}
         name={`srcset[${index}].${inputKey}`}
+        disabled={disabled}
         {...register(`srcset[${index}].${inputKey}`, {
           required: `${name} Size is required`,
           validate: (value: string) =>
@@ -55,12 +58,13 @@ const SrcSet = ({
   wrapperClassName,
   control,
   errors,
+  disabled = false,
 }: InputProps) => {
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'srcset',
   });
-  console.log(errors);
+
   return (
     <div className={classNames('khb_input-wrapper', wrapperClassName)}>
       {label && (
@@ -83,6 +87,7 @@ const SrcSet = ({
               size={size}
               placeholder="Screen Size"
               register={register}
+              disabled={disabled}
             />
 
             <span className="p-2">=</span>
@@ -95,6 +100,7 @@ const SrcSet = ({
               name="Width"
               size={size}
               placeholder="Width"
+              disabled={disabled}
             />
 
             <span className="p-2">x</span>
@@ -107,11 +113,13 @@ const SrcSet = ({
               name="Height"
               size={size}
               placeholder="Height"
+              disabled={disabled}
             />
             <button
               type="button"
               className="khb_btn khb_btn-danger khb_btn-xs"
               onClick={() => remove(index)}
+              disabled={disabled}
             >
               <Close />
             </button>
@@ -119,6 +127,7 @@ const SrcSet = ({
         ))}
         <button
           type="button"
+          disabled={disabled}
           onClick={() => append({ screenSize: '', width: '', height: '' })}
           className="khb_btn khb_btn-primary khb_btn-xs"
         >

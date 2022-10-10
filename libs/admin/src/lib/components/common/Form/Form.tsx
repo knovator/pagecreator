@@ -163,6 +163,12 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
                 label={schema.label}
                 required={schema.required}
                 errors={errors[schema.accessor]}
+                disabled={
+                  (isUpdating &&
+                    typeof schema.editable !== 'undefined' &&
+                    !schema.editable) ||
+                  !enable
+                }
               />
             );
             break;

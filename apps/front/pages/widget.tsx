@@ -2,10 +2,12 @@ import { Widget, getData } from '@knovator/pagecreator';
 
 export function WidgetPage({ widgetData }) {
   return (
-    <Widget
-      widgetData={widgetData}
-      imageBaseUrl={process.env.NEXT_PUBLIC_API_BASE_URL}
-    />
+    <div style={{ height: 200, position: 'relative' }}>
+      <Widget
+        widgetData={widgetData}
+        imageBaseUrl={process.env.NEXT_PUBLIC_API_BASE_URL}
+      />
+    </div>
   );
 }
 

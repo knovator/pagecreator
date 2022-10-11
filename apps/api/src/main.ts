@@ -5,6 +5,7 @@ import cors from 'cors';
 import path from 'path';
 import fileUpload from 'express-fileupload';
 import appRoutes from './routes';
+import { resize } from '@knovator/image-resizer';
 import {
   setConfig,
   TileRoutes,
@@ -100,6 +101,7 @@ app.use('/tiles', TileRoutes);
 app.use('/pages', PageRoutes);
 app.use('/users', UserRoutes);
 app.use(appRoutes);
+app.use(resize(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, './public')));
 
 const port = process.env.port || 3333;

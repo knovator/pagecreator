@@ -18,6 +18,7 @@ export interface CardProps {
   imageUrl: string;
   imageAltText: string;
   onClick?: (data?: ObjectType) => void;
+  srcSets?: string;
 }
 export interface ProductCardProps extends CardProps {
   title: string;
@@ -44,7 +45,7 @@ export interface WidgetProps {
   showTitle?: boolean;
   formatItem?: (item: TileData | CollectionItemType) => JSX.Element;
   onClick?: (item: TileData | CollectionItemType) => void;
-  settings?: Settings;
+  settings?: (settings: Settings) => Settings;
   className?: string;
 }
 export interface WidgetTypeProps extends WidgetProps {

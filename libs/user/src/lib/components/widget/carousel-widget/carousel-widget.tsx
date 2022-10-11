@@ -2,6 +2,7 @@ import Slider, { Settings, CustomArrowProps } from 'react-slick';
 import { WidgetTypeProps } from '../../../types';
 import Next from '../../../icons/Next';
 import Previous from '../../../icons/Previous';
+import { filterTileData } from '../../../utils/helper';
 
 const SlickArrowLeft = ({
   currentSlide,
@@ -48,7 +49,7 @@ export function CarouselWidget({
   const defaultSettings: Settings = {
     dots: false,
     infinite: true,
-    slidesToShow: widgetData.mobilePerRow,
+    slidesToShow: widgetData.webPerRow,
     slidesToScroll: 1,
     autoplay: widgetData.autoPlay,
     autoplaySpeed: 1500,
@@ -69,15 +70,30 @@ export function CarouselWidget({
           slidesToShow: widgetData.webPerRow,
         },
       },
+      {
+        // mobile breakpoint
+        breakpoint: 400,
+        settings: {
+          arrows: false,
+          slidesToShow: widgetData.mobilePerRow,
+        },
+      },
     ],
   };
   if (!widgetData) return null;
   return (
-    <Slider {...(settings ? settings : defaultSettings)} className={className}>
+    <Slider
+      {...(typeof settings === 'function'
+        ? settings(defaultSettings)
+        : defaultSettings)}
+      className={className}
+    >
       {widgetData.widgetType === 'Image'
-        ? widgetData.tiles.map((tile) => <div>{formatItem(tile)}</div>)
-        : widgetData.collectionItems.map((item) => (
-            <div>{formatItem(item)}</div>
+        ? widgetData.tiles
+            .filter(filterTileData)
+            .map((tile, index) => <div key={index}>{formatItem(tile)}</div>)
+        : widgetData.collectionItems.map((item, index) => (
+            <div key={index}>{formatItem(item)}</div>
           ))}
     </Slider>
   );

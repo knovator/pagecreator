@@ -67,7 +67,8 @@ const TRANSLATION_PAIRS_WIDGET = {
   'widget.mobilePerRowPlaceholder': 'Enter mobile per row',
   'widget.tabletPerRow': 'Tablet Per Row',
   'widget.tabletPerRowPlaceholder': 'Enter tablet per row',
-  'widget.imageItems': 'Image Items',
+  'widget.mobileTiles': 'Mobile Tiles',
+  'widget.webTiles': 'Web Tiles',
   'widget.searchPlaceholder': 'Search Widgets...',
   'widget.autoPlay': 'Auto Play',
   'widget.tableName': 'Name',
@@ -90,6 +91,7 @@ const TRANSLATION_PAIRS_TILES = {
   'tile.uploadFile': 'Upload File',
   'tile.dragDrop': 'or drag and drop',
   'tile.allowedFormat': 'PNG, JPG, SVG up to 2 MB',
+  'tile.srcset': 'Srcset',
 };
 const TRANSLATION_PAIRS_PAGE = {
   'page.name': 'Name',

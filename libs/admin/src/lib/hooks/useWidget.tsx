@@ -12,6 +12,10 @@ interface UseWidgetProps {
   routes?: Routes_Input;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
 }
+interface TilesList {
+  web: ObjectType[];
+  mobile: ObjectType[];
+}
 
 const useWidget = ({
   defaultLimit,
@@ -19,7 +23,10 @@ const useWidget = ({
   preConfirmDelete,
 }: UseWidgetProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
-  const [tilesList, setTilesList] = useState<ObjectType[]>([]);
+  const [tilesList, setTilesList] = useState<TilesList>({
+    web: [],
+    mobile: [],
+  });
   const [tilesLoading, setTilesLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
@@ -120,7 +127,15 @@ const useWidget = ({
         });
         if (response?.code === 'SUCCESS') {
           setTilesLoading(false);
-          return setTilesList(dataGatter(response));
+          const tilesResponse: TilesList = dataGatter(response).reduce(
+            (acc: TilesList, tileItem: ObjectType) => {
+              if (tileItem['tileType'] === 'Web') acc.web.push(tileItem);
+              else acc.mobile.push(tileItem);
+              return acc;
+            },
+            { web: [], mobile: [] }
+          );
+          return setTilesList(tilesResponse);
         }
         setTilesLoading(false);
       } catch (error) {
@@ -365,7 +380,7 @@ const useWidget = ({
       else getTiles(data['_id']);
     } else if (state === 'ADD') {
       // reset Tile data if widget is adding
-      setTilesList([]);
+      setTilesList({ web: [], mobile: [] });
     }
   };
   const onTileFormSubmit = async (

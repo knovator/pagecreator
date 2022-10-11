@@ -1,5 +1,6 @@
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import 'libs/user/assets/style.css';
+import '../styles/global.css';
 import '../styles/style.css';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
@@ -12,12 +13,12 @@ function CustomApp({ Component, pageProps }: AppProps) {
         <title>Pagecreator</title>
       </Head>
       <main className="app">
-        <ul className="flex flex-row space-x-2 underline text-blue-700">
+        <ul className="flex flex-row justify-around align-middle items-center underline text-white bg-blue-400">
           <li>
-            <Link href="/widget">See Widget example</Link>
+            <Link href="/widget">Widget</Link>
           </li>
           <li>
-            <Link href="/page">See Page example</Link>
+            <Link href="/page">Page</Link>
           </li>
           <li>
             <Link href="/flipkart">Flipkart</Link>

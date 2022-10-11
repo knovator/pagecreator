@@ -1,6 +1,6 @@
 import { AggregateOptions, models } from 'mongoose';
 import { Widget, Page } from './../models';
-import { appendCollectionData } from '../utils/helper';
+import { AddSrcSetsToTiles, appendCollectionData } from '../utils/helper';
 import { successResponse } from './../utils/responseHandlers';
 import { defaults, commonExcludedFields } from '../utils/defaults';
 import { IPageSchema, IRequest, IResponse, IWidgetSchema } from '../types';
@@ -69,6 +69,29 @@ export const getWidgetData = catchAsync(
               },
             },
             {
+              $lookup: {
+                from: 'srcsets',
+                let: { tile: '$_id' },
+                as: 'srcset',
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $eq: ['$tileId', '$$tile'],
+                      },
+                    },
+                  },
+                  {
+                    $project: {
+                      ...commonExcludedFields,
+                      _id: 0,
+                      tileId: 0,
+                    },
+                  },
+                ],
+              },
+            },
+            {
               $unwind: '$image',
             },
           ],
@@ -107,6 +130,7 @@ export const getWidgetData = catchAsync(
       );
       widgetData.collectionItems = collectionItems;
     }
+    AddSrcSetsToTiles(widgetData);
     return successResponse(widgetData, res);
   }
 );
@@ -189,6 +213,29 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
                   },
                 },
                 {
+                  $lookup: {
+                    from: 'srcsets',
+                    let: { tile: '$_id' },
+                    as: 'srcset',
+                    pipeline: [
+                      {
+                        $match: {
+                          $expr: {
+                            $eq: ['$tileId', '$$tile'],
+                          },
+                        },
+                      },
+                      {
+                        $project: {
+                          ...commonExcludedFields,
+                          _id: 0,
+                          tileId: 0,
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
                   $unwind: '$image',
                 },
               ],
@@ -203,6 +250,11 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
 
   if (!pageData.length) throw new Error('Page not found');
   pageData[0].widgets = await appendCollectionData(pageData[0].widgets);
+  if (Array.isArray(pageData[0].widgets) && pageData[0].widgets.length > 0) {
+    pageData[0].widgets.forEach((widget: IWidgetSchema) => {
+      AddSrcSetsToTiles(widget);
+    });
+  }
   res.message = req?.i18n?.t('user.pageData');
   return successResponse(pageData[0], res);
 });

@@ -18,8 +18,13 @@
     @apply container;
 }
 .content {
-    @apply bg-slate-200 space-y-2 container;
+    @apply bg-slate-200 space-y-1 lg:space-y-2 container;
 }
 .container {
     @apply max-w-6xl mx-auto;
 }
+/* :global{
+    .slick-prev, .slick-next{
+      opacity: 1;
+    }
+  } */

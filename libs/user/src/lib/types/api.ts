@@ -51,6 +51,8 @@ export interface TileData {
   link: string;
   tileType: 'Web' | 'Mobile';
   img: ImgData;
+  srcSets?: string;
+  srcset?: SrcSetItem[];
 }
 export interface ImgData {
   _id: string;
@@ -59,4 +61,10 @@ export interface ImgData {
 export interface CollectionItemType {
   _id: string;
   name?: string;
+}
+
+export interface SrcSetItem {
+  screenSize: number;
+  width: number;
+  height: number;
 }

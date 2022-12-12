@@ -6,7 +6,7 @@
 - `code` => string
 - `autoPlay` => boolean
 - `isActive` => boolean
-- `selectionTitle` => string
+- `widgetTitle` => string
 - `webPerRow` => number
 - `mobilePerRow` => number
 - `tabletPerRow`: number

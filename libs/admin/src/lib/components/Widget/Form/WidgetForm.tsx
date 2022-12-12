@@ -228,14 +228,14 @@ const WidgetForm = ({ formRef }: FormProps) => {
         'khb_grid-item-1of2 khb_padding-left-1 khb_align-top khb_margin-top-0',
     },
     {
-      label: `${t('widget.selectionTitle')}`,
-      accessor: 'selectionTitle',
+      label: `${t('widget.widgetTitle')}`,
+      accessor: 'widgetTitle',
       required: true,
       type: 'text',
       onInput: handleCapitalize,
-      placeholder: t('widget.selectionTitlePlaceholder'),
+      placeholder: t('widget.widgetTitlePlaceholder'),
       validations: {
-        required: t('widget.selectionTitleRequired'),
+        required: t('widget.widgetTitleRequired'),
       },
     },
     {

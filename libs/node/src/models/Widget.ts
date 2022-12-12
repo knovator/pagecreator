@@ -14,7 +14,7 @@ const WidgetSchema = new Schema<IWidgetSchema>({
     type: Boolean,
     default: true,
   },
-  selectionTitle: String,
+  widgetTitle: String,
   webPerRow: Number,
   mobilePerRow: Number,
   tabletPerRow: Number,

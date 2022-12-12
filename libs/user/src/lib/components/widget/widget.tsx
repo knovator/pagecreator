@@ -43,7 +43,7 @@ export function Widget({
   return (
     <div className="kpc_widget">
       {typeof showTitle === 'boolean' && !showTitle ? (
-        <h2 className="kpc_widget-title">{widgetData.selectionTitle}</h2>
+        <h2 className="kpc_widget-title">{widgetData.widgetTitle}</h2>
       ) : null}
       <div className="kpc_widget-body">
         {widgetData.selectionType === 'Carousel' ? (

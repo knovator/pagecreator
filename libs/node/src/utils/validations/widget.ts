@@ -29,7 +29,7 @@ const checkUnique = async (value: string) => {
 
 export const create = joi.object<TileValidation>({
   name: joi.string().required(),
-  selectionTitle: joi.string().required(),
+  widgetTitle: joi.string().required(),
   code: joi
     .string()
     .uppercase()
@@ -72,7 +72,7 @@ export const create = joi.object<TileValidation>({
 
 export const update = joi.object<TileValidation>({
   name: joi.string().required(),
-  selectionTitle: joi.string().required(),
+  widgetTitle: joi.string().required(),
   isActive: joi.boolean().optional(),
   webPerRow: joi.number().allow(null).optional(),
   mobilePerRow: joi.number().allow(null).optional(),

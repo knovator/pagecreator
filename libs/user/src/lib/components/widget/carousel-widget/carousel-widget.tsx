@@ -2,7 +2,7 @@ import Slider, { Settings, CustomArrowProps } from 'react-slick';
 import { ItemsTypeProps } from '../../../types';
 import Next from '../../../icons/Next';
 import Previous from '../../../icons/Previous';
-import { filterTileData } from '../../../utils/helper';
+import { filterItemData } from '../../../utils/helper';
 
 const SlickArrowLeft = ({
   currentSlide,
@@ -76,9 +76,9 @@ export function CarouselWidget({
   return (
     <Slider {...(settings ? settings : defaultSettings)} className={className}>
       {widgetData.itemsType === 'Image'
-        ? widgetData.tiles
-            .filter(filterTileData)
-            .map((tile, index) => <div key={index}>{formatItem(tile)}</div>)
+        ? widgetData.items
+            .filter(filterItemData)
+            .map((item, index) => <div key={index}>{formatItem(item)}</div>)
         : widgetData.collectionItems.map((item, index) => (
             <div key={index}>{formatItem(item)}</div>
           ))}

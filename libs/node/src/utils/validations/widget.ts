@@ -11,7 +11,7 @@ import {
   IDefaultValidations,
 } from '../../types';
 
-type TileValidation = IWidgetSchema & IDefaultValidations;
+type ItemValidation = IWidgetSchema & IDefaultValidations;
 
 const checkUnique = async (value: string) => {
   let result;
@@ -27,7 +27,7 @@ const checkUnique = async (value: string) => {
   }
 };
 
-export const create = joi.object<TileValidation>({
+export const create = joi.object<ItemValidation>({
   name: joi.string().required(),
   widgetTitle: joi.string().required(),
   code: joi
@@ -70,7 +70,7 @@ export const create = joi.object<TileValidation>({
   deletedAt: joi.any().optional(),
 });
 
-export const update = joi.object<TileValidation>({
+export const update = joi.object<ItemValidation>({
   name: joi.string().required(),
   widgetTitle: joi.string().required(),
   isActive: joi.boolean().optional(),

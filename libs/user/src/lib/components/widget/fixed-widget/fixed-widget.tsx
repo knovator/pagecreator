@@ -1,5 +1,5 @@
 import { ItemsTypeProps } from '../../../types';
-import { filterTileData } from '../../../utils/helper';
+import { filterItemData } from '../../../utils/helper';
 
 export function FixedWidget({
   widgetData,
@@ -10,9 +10,9 @@ export function FixedWidget({
   return (
     <div className={className || gridClasses}>
       {widgetData.itemsType === 'Image'
-        ? widgetData.tiles
-            .filter(filterTileData)
-            .map((tile) => formatItem(tile))
+        ? widgetData.items
+            .filter(filterItemData)
+            .map((item) => formatItem(item))
         : widgetData.collectionItems.map((item) => formatItem(item))}
     </div>
   );

@@ -5,9 +5,9 @@ const SrcSetSchema = new Schema<ISrcSetSchema>({
   width: Number,
   height: Number,
   screenSize: Number,
-  tileId: {
+  itemId: {
     type: Types.ObjectId,
-    ref: 'Tile',
+    ref: 'Item',
   },
 });
 

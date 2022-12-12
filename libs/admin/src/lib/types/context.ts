@@ -17,7 +17,7 @@ export interface ProviderContextType {
   switchClass: string;
   onLogout: () => void;
   widgetRoutesPrefix: string;
-  tilesRoutesPrefix: string;
+  itemsRoutesPrefix: string;
   pageRoutesPrefix: string;
 }
 export interface ProviderContextProviderProps
@@ -28,7 +28,7 @@ export interface ProviderContextProviderProps
       | 'onSuccess'
       | 'onLogout'
       | 'widgetRoutesPrefix'
-      | 'tilesRoutesPrefix'
+      | 'itemsRoutesPrefix'
       | 'pageRoutesPrefix'
       | 'switchClass'
     > {
@@ -45,7 +45,7 @@ export interface ProviderContextProviderProps
   onLogout?: () => void;
   switchClass?: string;
   widgetRoutesPrefix?: string;
-  tilesRoutesPrefix?: string;
+  itemsRoutesPrefix?: string;
   pageRoutesPrefix?: string;
 }
 export interface WidgetContextType {
@@ -60,7 +60,7 @@ export interface WidgetContextType {
   loading: boolean;
   canAdd: boolean;
   canUpdate: boolean;
-  onDeleteTile: (id: string) => void;
+  onDeleteItem: (id: string) => void;
   getWidgets: (searchText: string) => void;
   onImageUpload: (
     file: File
@@ -89,11 +89,11 @@ export interface WidgetContextType {
   loader?: JSX.Element;
   canDelete?: boolean;
   onPartialUpdateWidget: (data: any, id: string) => Promise<void>;
-  // Tile
-  webTiles: any[];
-  mobileTiles: any[];
-  tilesLoading: boolean;
-  onTileFormSubmit: (state: FormActionTypes, data: any) => void;
+  // Item
+  webItems: any[];
+  mobileItems: any[];
+  itemsLoading: boolean;
+  onItemFormSubmit: (state: FormActionTypes, data: any) => void;
 }
 
 export interface PageContextType {

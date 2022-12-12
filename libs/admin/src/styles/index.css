@@ -238,7 +238,7 @@
 .khb_accordian-footer {
     @apply p-1 flex flex-row space-x-1 justify-end border-t-2 border-gray-300 bg-gray-200;
 }
-.khb_tile-items {
+.khb_item-items {
     @apply space-y-1;
 }
 .khb-form-items {

@@ -5,19 +5,19 @@ import Form from '../../common/Form';
 import {
   CombineObjectType,
   FormActionTypes,
-  TileItemsAccordianProps,
+  ItemsAccordianProps,
 } from '../../../types';
 
-const TileItemsAccordian = ({
+const ItemsAccordian = ({
   schema,
   onDataSubmit,
   show,
   title,
   id,
-  tilesData,
+  itemsData,
   collapseId,
   toggleShow,
-  tileType,
+  itemType,
   widgetId,
   onDelete,
   addText = 'Add',
@@ -25,29 +25,29 @@ const TileItemsAccordian = ({
   cancelText = 'Cancel',
   deleteText = 'Delete',
   editText = 'Edit',
-}: TileItemsAccordianProps) => {
+}: ItemsAccordianProps) => {
   const [data, setData] = useState<CombineObjectType[]>([]);
   const formRefs = useRef<(HTMLFormElement | null)[]>([]);
   const [itemsShow, setItemsShow] = useState<boolean[]>([]);
   const [editingItemIndex, setEditingItemIndex] = useState<number>();
 
   useEffect(() => {
-    if (Array.isArray(tilesData)) {
-      setData(tilesData);
-      formRefs.current = tilesData.map(() => null);
-      setItemsShow(tilesData.map(() => false));
+    if (Array.isArray(itemsData)) {
+      setData(itemsData);
+      formRefs.current = itemsData.map(() => null);
+      setItemsShow(itemsData.map(() => false));
     }
-  }, [tilesData]);
+  }, [itemsData]);
 
-  const onTileFormSubmitClick = (index: number) => {
+  const onItemFormSubmitClick = (index: number) => {
     formRefs.current[index]?.dispatchEvent(
       new Event('submit', { cancelable: true, bubbles: true })
     );
   };
-  const onTileFormSubmit = (index: number, formData: CombineObjectType) => {
+  const onItemFormSubmit = (index: number, formData: CombineObjectType) => {
     const state: FormActionTypes =
       index === editingItemIndex && data[index] ? 'UPDATE' : 'ADD';
-    const finalData: any = { ...formData, widgetId, tileType, sequence: index };
+    const finalData: any = { ...formData, widgetId, itemType, sequence: index };
     if (finalData['img'] && finalData['img']['_id']) {
       const id = finalData['img']['_id'];
       finalData['img'] = id;
@@ -67,25 +67,25 @@ const TileItemsAccordian = ({
     newItemsShow[index] = newStatus;
     setItemsShow(newItemsShow);
   };
-  const onTileRemoveClick = (index: number) => {
+  const onItemRemoveClick = (index: number) => {
     const newItemsShow: boolean[] = [...itemsShow];
     newItemsShow.splice(index, 1);
     setItemsShow(newItemsShow);
     formRefs.current.splice(index, 1);
   };
-  const onTileAddClick = () => {
+  const onItemAddClick = () => {
     const newItemsShow: boolean[] = [...itemsShow];
     newItemsShow.push(false);
     setItemsShow(newItemsShow);
     formRefs.current.push(null);
     onItemsToggleClick(newItemsShow.length - 1);
   };
-  const onTileEditClick = (index: number) => {
+  const onItemEditClick = (index: number) => {
     setEditingItemIndex(index);
   };
-  const onTileCancelClick = (index: number) => {
+  const onItemCancelClick = (index: number) => {
     if (!data[index]) {
-      onTileRemoveClick(index);
+      onItemRemoveClick(index);
     } else {
       setEditingItemIndex(undefined);
     }
@@ -93,7 +93,7 @@ const TileItemsAccordian = ({
   };
   const onDeleteClick = (index: number) => {
     onDelete(data[index]?.['_id'] as string);
-    onTileRemoveClick(index);
+    onItemRemoveClick(index);
   };
 
   return (
@@ -104,12 +104,12 @@ const TileItemsAccordian = ({
       collapseId={collapseId}
       id={id}
       footerContent={
-        <Button size="sm" onClick={onTileAddClick} disabled={!widgetId}>
+        <Button size="sm" onClick={onItemAddClick} disabled={!widgetId}>
           {addText}
         </Button>
       }
     >
-      <div className="khb_tile-items">
+      <div className="khb_item-items">
         {itemsShow.map((status, index) => (
           <Accordian
             key={index}
@@ -123,21 +123,21 @@ const TileItemsAccordian = ({
                 <>
                   <Button
                     size="sm"
-                    onClick={() => onTileFormSubmitClick(index)}
+                    onClick={() => onItemFormSubmitClick(index)}
                   >
                     {saveText}
                   </Button>
                   <Button
                     type="secondary"
                     size="sm"
-                    onClick={() => onTileCancelClick(index)}
+                    onClick={() => onItemCancelClick(index)}
                   >
                     {cancelText}
                   </Button>
                 </>
               ) : (
                 <>
-                  <Button size="sm" onClick={() => onTileEditClick(index)}>
+                  <Button size="sm" onClick={() => onItemEditClick(index)}>
                     {editText}
                   </Button>
                   <Button
@@ -154,7 +154,7 @@ const TileItemsAccordian = ({
             <Form
               schema={schema}
               data={data[index]}
-              onSubmit={(data) => onTileFormSubmit(index, data)}
+              onSubmit={(data) => onItemFormSubmit(index, data)}
               ref={(el) => (formRefs.current[index] = el)}
               enable={editingItemIndex === index || !data[index]}
               isUpdating={editingItemIndex === index}
@@ -166,4 +166,4 @@ const TileItemsAccordian = ({
   );
 };
 
-export default TileItemsAccordian;
+export default ItemsAccordian;

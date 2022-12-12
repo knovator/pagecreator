@@ -41,15 +41,15 @@ export interface WidgetData {
   tabletPerRow: number;
   itemsType: 'Image' | string;
   widgetType: 'FixedCard' | 'Carousel';
-  tiles: TileData[];
+  items: ItemData[];
   collectionItems: CollectionItemType[];
 }
-export interface TileData {
+export interface ItemData {
   _id: string;
   title: string;
   altText: string;
   link: string;
-  tileType: 'Web' | 'Mobile';
+  itemType: 'Web' | 'Mobile';
   img: ImgData;
   srcSets?: string;
   srcset?: SrcSetItem[];

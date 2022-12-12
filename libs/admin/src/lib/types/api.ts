@@ -5,7 +5,7 @@ export type ACTION_TYPES =
   | 'LIST'
   | 'DELETE'
   | 'UPDATE'
-  | 'TILES'
+  | 'ITEM'
   | 'PARTIAL_UPDATE'
   | 'WIDGET_TYPES'
   | 'SELECTION_TYPES'

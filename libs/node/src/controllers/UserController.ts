@@ -1,6 +1,6 @@
 import { AggregateOptions, models } from 'mongoose';
 import { Widget, Page } from './../models';
-import { AddSrcSetsToTiles, appendCollectionData } from '../utils/helper';
+import { AddSrcSetsToItems, appendCollectionData } from '../utils/helper';
 import { successResponse } from './../utils/responseHandlers';
 import { defaults, commonExcludedFields } from '../utils/defaults';
 import { IPageSchema, IRequest, IResponse, IWidgetSchema } from '../types';
@@ -28,9 +28,9 @@ export const getWidgetData = catchAsync(
         },
       },
       {
-        // Get Tiles data
+        // Get Items data
         $lookup: {
-          from: 'tiles',
+          from: 'items',
           let: { widget: '$_id' },
           pipeline: [
             {
@@ -71,13 +71,13 @@ export const getWidgetData = catchAsync(
             {
               $lookup: {
                 from: 'srcsets',
-                let: { tile: '$_id' },
+                let: { item: '$_id' },
                 as: 'srcset',
                 pipeline: [
                   {
                     $match: {
                       $expr: {
-                        $eq: ['$tileId', '$$tile'],
+                        $eq: ['$itemId', '$$item'],
                       },
                     },
                   },
@@ -85,7 +85,7 @@ export const getWidgetData = catchAsync(
                     $project: {
                       ...commonExcludedFields,
                       _id: 0,
-                      tileId: 0,
+                      itemId: 0,
                     },
                   },
                 ],
@@ -95,7 +95,7 @@ export const getWidgetData = catchAsync(
               $unwind: '$image',
             },
           ],
-          as: 'tiles',
+          as: 'items',
         },
       },
     ])) as Array<IWidgetSchema>;
@@ -135,7 +135,7 @@ export const getWidgetData = catchAsync(
       );
       widgetData.collectionItems = collectionItems;
     }
-    AddSrcSetsToTiles(widgetData);
+    AddSrcSetsToItems(widgetData);
     return successResponse(widgetData, res);
   }
 );
@@ -179,7 +179,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
           },
           {
             $lookup: {
-              from: 'tiles',
+              from: 'items',
               let: { widget: '$_id' },
               pipeline: [
                 {
@@ -220,13 +220,13 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
                 {
                   $lookup: {
                     from: 'srcsets',
-                    let: { tile: '$_id' },
+                    let: { item: '$_id' },
                     as: 'srcset',
                     pipeline: [
                       {
                         $match: {
                           $expr: {
-                            $eq: ['$tileId', '$$tile'],
+                            $eq: ['$itemId', '$$item'],
                           },
                         },
                       },
@@ -234,7 +234,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
                         $project: {
                           ...commonExcludedFields,
                           _id: 0,
-                          tileId: 0,
+                          itemId: 0,
                         },
                       },
                     ],
@@ -244,7 +244,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
                   $unwind: '$image',
                 },
               ],
-              as: 'tiles',
+              as: 'items',
             },
           },
         ],
@@ -257,7 +257,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
   pageData[0].widgets = await appendCollectionData(pageData[0].widgets);
   if (Array.isArray(pageData[0].widgets) && pageData[0].widgets.length > 0) {
     pageData[0].widgets.forEach((widget: IWidgetSchema) => {
-      AddSrcSetsToTiles(widget);
+      AddSrcSetsToItems(widget);
     });
   }
   res.message = req?.i18n?.t('user.pageData');

@@ -7,7 +7,7 @@ export enum WidgetTypes {
   Carousel = 'Carousel',
 }
 
-export enum TileTypes {
+export enum ItemTypes {
   Web = 'Web',
   Mobile = 'Mobile',
 }

@@ -12,16 +12,16 @@
 - `tabletPerRow`: number
 - `itemsType` => 'Image' | string
 - `widgetType` => 'FixedCard' | 'Carousel'
-- `tiles` =>  TileData[]
+- `items` =>  ItemData[]
 - `collectionItems` => CollectionItemType[]
 }
 
-## TileData
+## ItemData
 - `_id` => string
 - `title` => string
 - `altText` => string
 - `link` => string
-- `tileType` => 'Web' | 'Mobile'
+- `itemType` => 'Web' | 'Mobile'
 - `img` => ImgData
 
 ## CollectionItemType

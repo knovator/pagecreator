@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { SrcSet, Tile } from './../models';
+import { SrcSet, Item } from '../models';
 import {
   create,
   remove,
@@ -10,57 +10,57 @@ import {
 import {
   successResponse,
   createdDocumentResponse,
-} from './../utils/responseHandlers';
+} from '../utils/responseHandlers';
 
 import { commonExcludedFields, defaults } from '../utils/defaults';
-import { IRequest, IResponse, ITileSchema, SrcSetItem } from '../types';
+import { IRequest, IResponse, IItemSchema, SrcSetItem } from '../types';
 
 const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Notification');
 };
 
-export const createTile = catchAsync(async (req: IRequest, res: IResponse) => {
+export const createItem = catchAsync(async (req: IRequest, res: IResponse) => {
   const data = req.body;
-  const createdTile = (await create(Tile, data)) as ITileSchema;
-  let response = createdTile.toJSON();
+  const createdItem = (await create(Item, data)) as IItemSchema;
+  let response = createdItem.toJSON();
   if (data.srcset) {
     response = {
       ...response,
-      srcset: (await updateTileSrcSet(
-        createdTile._id,
+      srcset: (await updateItemSrcSet(
+        createdItem._id,
         data.srcset
       )) as SrcSetItem[],
     };
   }
-  res.message = req?.i18n?.t('tile.create');
+  res.message = req?.i18n?.t('item.create');
   return createdDocumentResponse(response, res);
 });
 
-export const updateTile = catchAsync(async (req: IRequest, res: IResponse) => {
+export const updateItem = catchAsync(async (req: IRequest, res: IResponse) => {
   const data = req.body;
   const _id = req.params['id'];
-  const updatedTile = (await update(Tile, { _id }, data)) as ITileSchema;
-  let response = updatedTile.toJSON();
+  const updatedItem = (await update(Item, { _id }, data)) as IItemSchema;
+  let response = updatedItem.toJSON();
   if (data.srcset) {
     response = {
       ...response,
-      srcset: (await updateTileSrcSet(_id, data.srcset)) as SrcSetItem[],
+      srcset: (await updateItemSrcSet(_id, data.srcset)) as SrcSetItem[],
     };
   }
-  res.message = req?.i18n?.t('tile.update');
+  res.message = req?.i18n?.t('item.update');
   return successResponse(response, res);
 });
 
-export const deleteTile = catchAsync(async (req: IRequest, res: IResponse) => {
+export const deleteItem = catchAsync(async (req: IRequest, res: IResponse) => {
   const _id = new Types.ObjectId(req.params['id']);
-  const deletedTile = await remove(Tile, { _id });
-  res.message = req?.i18n?.t('tile.delete');
-  return successResponse(deletedTile, res);
+  const deletedItem = await remove(Item, { _id });
+  res.message = req?.i18n?.t('item.delete');
+  return successResponse(deletedItem, res);
 });
 
-export const getTiles = catchAsync(async (req: IRequest, res: IResponse) => {
+export const getItems = catchAsync(async (req: IRequest, res: IResponse) => {
   const widgetId = req.params['widgetId'];
-  const tiles = await Tile.aggregate([
+  const items = await Item.aggregate([
     {
       $match: {
         widgetId: new Types.ObjectId(widgetId),
@@ -99,13 +99,13 @@ export const getTiles = catchAsync(async (req: IRequest, res: IResponse) => {
     {
       $lookup: {
         from: 'srcsets',
-        let: { tile: '$_id' },
+        let: { item: '$_id' },
         as: 'srcset',
         pipeline: [
           {
             $match: {
               $expr: {
-                $eq: ['$tileId', '$$tile'],
+                $eq: ['$itemId', '$$item'],
               },
             },
           },
@@ -113,7 +113,7 @@ export const getTiles = catchAsync(async (req: IRequest, res: IResponse) => {
             $project: {
               ...commonExcludedFields,
               _id: 0,
-              tileId: 0,
+              itemId: 0,
             },
           },
         ],
@@ -123,15 +123,15 @@ export const getTiles = catchAsync(async (req: IRequest, res: IResponse) => {
       $unwind: '$img',
     },
   ]);
-  res.message = req?.i18n?.t('tile.getAll');
-  return successResponse(tiles, res);
+  res.message = req?.i18n?.t('item.getAll');
+  return successResponse(items, res);
 });
 
-const updateTileSrcSet = async (tileId: string, srcSets: SrcSetItem[]) => {
-  await deleteAll(SrcSet, { tileId });
+const updateItemSrcSet = async (itemId: string, srcSets: SrcSetItem[]) => {
+  await deleteAll(SrcSet, { itemId });
   const modifiedSrcSets = srcSets.map((set) => ({
     ...set,
-    tileId,
+    itemId,
   }));
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

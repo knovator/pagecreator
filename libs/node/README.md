@@ -78,7 +78,7 @@
 
 ## Getting Started
 
-To integrate `@knovator/pagecreator-node`, you should be having basic nodejs application up and running with express (optionally using mongoose for mongodb database). `@knovator/pagecreator-node` provides routes for `widget`, `page`, `tile` and `user` to use in application.
+To integrate `@knovator/pagecreator-node`, you should be having basic nodejs application up and running with express (optionally using mongoose for mongodb database). `@knovator/pagecreator-node` provides routes for `widget`, `page`, `item` and `user` to use in application.
 
 ### Prerequisites
 
@@ -172,7 +172,7 @@ App/Main file is a good place to use `@knovator/pagecreator-node`
 const {
   setConfig,
   WidgetRoutes,
-  TileRoutes,
+  ItemRoutes,
   FileUploadRoute,
   PageRoutes,
   UserRoutes,
@@ -190,7 +190,7 @@ setConfig({
 });
 
 app.use('/widgets', WidgetRoutes);
-app.use('/tiles', TileRoutes);
+app.use('/items', ItemRoutes);
 app.use('/media', FileUploadRoute);
 app.use('/pages', PageRoutes);
 app.use('/users', UserRoutes);
@@ -349,14 +349,14 @@ This are the routes that gets integrated by `@knovator/pagecreator-node`,
 | `/:id`  | **PUT**    | Update `page`                       |
 | `/:id`  | **DELETE** | Delete page whose `id` send in body |
 
-#### Tile
+#### Item
 
 | Route        | Method     | Description                         |
 | ------------ | ---------- | ----------------------------------- |
-| `/:widgetId` | **GET**    | Get Tiles data for `widgetId`       |
-| `/`          | **POST**   | Create `tile`                       |
-| `/:id`       | **PUT**    | Update `tile`                       |
-| `/:id`       | **DELETE** | Delete tile whose `id` send in body |
+| `/:widgetId` | **GET**    | Get Items data for `widgetId`       |
+| `/`          | **POST**   | Create `item`                       |
+| `/:id`       | **PUT**    | Update `item`                       |
+| `/:id`       | **DELETE** | Delete item whose `id` send in body |
 
 #### User
 
@@ -388,9 +388,9 @@ req?.i18n?.(CODE);
 | `page.create`              | While creating page                                          |
 | `page.update`              | While updating page                                          |
 | `page.delete`              | While deleting page                                          |
-| `tile.getAll`              | While getting tiles for widget                               |
-| `tile.create`              | While creating tile                                          |
-| `tile.update`              | While updating tile                                          |
+| `item.getAll`              | While getting items for widget                               |
+| `item.create`              | While creating item                                          |
+| `item.update`              | While updating item                                          |
 | `user.getWidgetData`       | While getting widget data                                    |
 | `user.getPageData`         | While getting page data                                      |
 

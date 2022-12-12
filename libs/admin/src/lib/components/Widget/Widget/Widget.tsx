@@ -5,7 +5,7 @@ import { createTranslation } from '../../../helper/utils';
 import {
   TRANSLATION_PAIRS_COMMON,
   TRANSLATION_PAIRS_WIDGET,
-  TRANSLATION_PAIRS_TILES,
+  TRANSLATION_PAIRS_ITEM,
   DEFAULT_PERMISSIONS,
 } from '../../../constants/common';
 import { WidgetProps } from '../../../types';
@@ -35,7 +35,7 @@ const Widget = ({
   const derivedT = createTranslation(t, {
     ...TRANSLATION_PAIRS_COMMON,
     ...TRANSLATION_PAIRS_WIDGET,
-    ...TRANSLATION_PAIRS_TILES,
+    ...TRANSLATION_PAIRS_ITEM,
   });
   const {
     list,
@@ -47,7 +47,7 @@ const Widget = ({
     itemData,
     getWidgets,
     onCofirmDeleteWidget,
-    onDeleteTile,
+    onDeleteItem,
     onImageRemove,
     onImageUpload,
     onPartialUpdateWidget,
@@ -62,10 +62,10 @@ const Widget = ({
     currentPage,
     pageSize,
     setCurrentPage,
-    // Tile
-    tilesList,
-    tilesLoading,
-    onTileFormSubmit,
+    // Item
+    itemsList,
+    itemsLoading,
+    onItemFormSubmit,
   } = useWidget({
     routes,
     defaultLimit: 10,
@@ -80,7 +80,7 @@ const Widget = ({
       loader={loader}
       onWidgetFormSubmit={onWidgetFormSubmit}
       data={itemData}
-      onDeleteTile={onDeleteTile}
+      onDeleteItem={onDeleteItem}
       getWidgets={getWidgets}
       onImageRemove={onImageRemove}
       onImageUpload={onImageUpload}
@@ -98,11 +98,11 @@ const Widget = ({
       currentPage={currentPage}
       pageSize={pageSize}
       setCurrentPage={setCurrentPage}
-      // Tile
-      webTiles={tilesList.web}
-      mobileTiles={tilesList.mobile}
-      tilesLoading={tilesLoading}
-      onTileFormSubmit={onTileFormSubmit}
+      // Item
+      webItems={itemsList.web}
+      mobileItems={itemsList.mobile}
+      itemsLoading={itemsLoading}
+      onItemFormSubmit={onItemFormSubmit}
       // Permissions
       canAdd={permissions.add}
       canDelete={permissions.delete}

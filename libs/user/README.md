@@ -122,9 +122,9 @@ import { Widget } from '@knovator/pagecreator';
     - [widgetData](data-formats.md#widgetdata)
 - `imageBaseUrl`
     - baseUrl to append before image urls
-- `formatItem` (optional): `(item: TileData) => JSX.Element`
+- `formatItem` (optional): `(item: ItemData) => JSX.Element`
     - Customize look of Items
-- `onClick` (optional): `(item: TileData) => void;`
+- `onClick` (optional): `(item: ItemData) => void;`
     - OnItem click handler
 
 ### Page
@@ -144,9 +144,9 @@ import { Page } from '@knovator/pagecreator';
     - baseUrl to start prefix image urls
 - `pageData`
     - [PageData](data-formats.md#pagedata)
-- `formatItem` (optional): `(CODE: string, item: TileData) => JSX.Element;`
+- `formatItem` (optional): `(CODE: string, item: ItemData) => JSX.Element;`
     - Customize look of Items
-- `onClick` (optional): `(CODE: string, item: TileData) => JSX.Element;`
+- `onClick` (optional): `(CODE: string, item: ItemData) => JSX.Element;`
     - On Item click handler
 
 ### getData

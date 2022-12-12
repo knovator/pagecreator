@@ -24,10 +24,10 @@ export function Page({
             }
             formatItem={
               formatItem &&
-              ((tileData) => formatItem(widgetData.code, tileData))
+              ((itemData) => formatItem(widgetData.code, itemData))
             }
             onClick={
-              onClick && ((tileData) => onClick(widgetData.code, tileData))
+              onClick && ((itemData) => onClick(widgetData.code, itemData))
             }
           />
         ))}

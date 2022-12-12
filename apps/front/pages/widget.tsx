@@ -14,7 +14,7 @@ export function WidgetPage({ widgetData }) {
 export async function getServerSideProps() {
   const widgetData = await getData({
     url: process.env.NEXT_PUBLIC_GET_WIDGETS_URL,
-    code: 'BIG_BILLION_DAYS_OFFERS',
+    code: process.env.NEXT_WIDGET_CODE,
   });
   return { props: { widgetData } };
 }

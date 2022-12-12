@@ -12,7 +12,7 @@ const Provider = ({
   onSuccess = () => {},
   onLogout = () => {},
   switchClass = 'khb_switch',
-  tilesRoutesPrefix = 'tiles',
+  itemsRoutesPrefix = 'items',
   widgetRoutesPrefix = 'widgets',
   pageRoutesPrefix = 'pages',
 }: ProviderContextProviderProps) => {
@@ -25,7 +25,7 @@ const Provider = ({
         onSuccess,
         onLogout,
         switchClass,
-        tilesRoutesPrefix,
+        itemsRoutesPrefix,
         widgetRoutesPrefix,
         pageRoutesPrefix,
       }}

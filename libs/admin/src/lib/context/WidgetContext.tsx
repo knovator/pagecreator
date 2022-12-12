@@ -21,12 +21,12 @@ const WidgetContextProvider = ({
   updateData = null,
   canAdd = false,
   canUpdate = false,
-  onDeleteTile = () => {},
+  onDeleteItem = () => {},
   getWidgets = () => {},
   onImageUpload = async (file: File) => {},
   onImageRemove = async (id: string) => {},
+  itemsTypes = [],
   widgetTypes = [],
-  selectionTypes = [],
   getCollectionData = () => Promise.resolve(),
   collectionDataLoading = false,
   collectionData = [],
@@ -48,11 +48,11 @@ const WidgetContextProvider = ({
   canDelete = false,
   loader = <span />,
   onPartialUpdateWidget = () => Promise.resolve(),
-  // Tile
-  webTiles = [],
-  mobileTiles = [],
-  tilesLoading = false,
-  onTileFormSubmit = () => {},
+  // Item
+  webItems = [],
+  mobileItems = [],
+  itemsLoading = false,
+  onItemFormSubmit = () => {},
   // other
   children,
 }: WidgetContextProviderProps) => {
@@ -70,13 +70,13 @@ const WidgetContextProvider = ({
         updateData,
         canAdd,
         canUpdate,
-        onDeleteTile,
+        onDeleteItem,
         getWidgets,
         onImageUpload,
         onImageRemove,
         onPartialUpdateWidget,
+        itemsTypes,
         widgetTypes,
-        selectionTypes,
         getCollectionData,
         collectionDataLoading,
         collectionData,
@@ -97,11 +97,11 @@ const WidgetContextProvider = ({
         data,
         canDelete,
         loader,
-        // Tile
-        webTiles,
-        mobileTiles,
-        tilesLoading,
-        onTileFormSubmit,
+        // Item
+        webItems,
+        mobileItems,
+        itemsLoading,
+        onItemFormSubmit,
       }}
     >
       {children}

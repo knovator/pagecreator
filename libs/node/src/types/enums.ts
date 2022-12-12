@@ -1,13 +1,13 @@
-export enum WidgetType {
+export enum ItemsType {
   Image = 'Image',
 }
 
-export enum SelectionTypes {
+export enum WidgetTypes {
   FixedCard = 'FixedCard',
   Carousel = 'Carousel',
 }
 
-export enum TileTypes {
+export enum ItemTypes {
   Web = 'Web',
   Mobile = 'Mobile',
 }

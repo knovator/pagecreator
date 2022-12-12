@@ -176,15 +176,15 @@ export interface PaginationProps {
   pageText?: string;
   ofText?: string;
 }
-export interface TileItemsAccordianProps {
+export interface ItemsAccordianProps {
   id: string;
   show: boolean;
   title: string;
-  tilesData: any[];
+  itemsData: any[];
   widgetId: string;
   collapseId: string;
   schema: SchemaType[];
-  tileType: 'Web' | 'Mobile';
+  itemType: 'Web' | 'Mobile';
   toggleShow: (status: boolean) => void;
   onDataSubmit: (state: FormActionTypes, data: any, updateId?: string) => void;
   onDelete: (id: string) => void;

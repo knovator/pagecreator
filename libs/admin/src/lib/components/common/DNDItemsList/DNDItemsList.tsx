@@ -1,3 +1,4 @@
+import React from 'react';
 import { DNDItemsListProps } from '../../../types';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 

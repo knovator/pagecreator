@@ -1,6 +1,6 @@
 import Widget from './Widget';
-import Tile from './Tile';
+import Item from './Item';
 import Page from './Page';
 import SrcSet from './SrcSet';
 
-export { Widget, Tile, Page, SrcSet };
+export { Widget, Item, Page, SrcSet };

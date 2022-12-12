@@ -1,3 +1,4 @@
+import React from 'react';
 import { IconProps } from '../types';
 
 const Close = ({ srText, className }: IconProps) => {

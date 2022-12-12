@@ -5,7 +5,7 @@ export type ACTION_TYPES =
   | 'LIST'
   | 'DELETE'
   | 'UPDATE'
-  | 'TILES'
+  | 'ITEM'
   | 'PARTIAL_UPDATE'
   | 'WIDGET_TYPES'
   | 'SELECTION_TYPES'
@@ -22,8 +22,8 @@ export type Routes_Input = {
   [K in ACTION_TYPES]?: (data: API_INPUT_TYPE) => API_TYPE;
 };
 
+export type ItemsType = { value: string; label: string };
 export type WidgetType = { value: string; label: string };
-export type SelectionType = { value: string; label: string };
 
 export interface BaseAPIProps {
   config?: any;

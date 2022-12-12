@@ -1,7 +1,7 @@
 import joi from 'joi';
-import { ITileSchema, IDefaultValidations, TileTypes } from '../../types';
+import { IItemSchema, IDefaultValidations, ItemTypes } from '../../types';
 
-type TileValidation = ITileSchema & IDefaultValidations;
+type ItemValidation = IItemSchema & IDefaultValidations;
 
 const srcset = joi.object().keys({
   screenSize: joi.number().required(),
@@ -9,7 +9,7 @@ const srcset = joi.object().keys({
   height: joi.number().required(),
 });
 
-export const create = joi.object<TileValidation>({
+export const create = joi.object<ItemValidation>({
   widgetId: joi.string().required(),
   title: joi.string().required(),
   altText: joi.string().optional(),
@@ -17,18 +17,18 @@ export const create = joi.object<TileValidation>({
   sequence: joi.number().optional(),
   srcset: joi.array().items(srcset),
   img: joi.string().allow(null).optional(),
-  tileType: joi
+  itemType: joi
     .string()
-    .valid(...Object.values(TileTypes))
+    .valid(...Object.values(ItemTypes))
     .optional()
-    .default(TileTypes.Web),
+    .default(ItemTypes.Web),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),
   deletedBy: joi.any().optional(),
   deletedAt: joi.any().optional(),
 });
 
-export const update = joi.object<TileValidation>({
+export const update = joi.object<ItemValidation>({
   widgetId: joi.string().required(),
   title: joi.string().required(),
   altText: joi.string().optional(),
@@ -36,9 +36,9 @@ export const update = joi.object<TileValidation>({
   sequence: joi.number().optional(),
   img: joi.string().allow(null).optional(),
   srcset: joi.array().items(srcset),
-  tileType: joi
+  itemType: joi
     .string()
-    .valid(...Object.values(TileTypes))
+    .valid(...Object.values(ItemTypes))
     .optional(),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),

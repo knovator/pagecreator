@@ -7,7 +7,7 @@ export function Page({
   pageData,
   formatItem,
   onClick,
-  showWidgetTitles,
+  hideWidgetTitles,
 }: PageProps) {
   if (!pageData) return null;
   return (
@@ -19,15 +19,13 @@ export function Page({
             widgetData={widgetData}
             key={index}
             imageBaseUrl={imageBaseUrl}
-            showTitle={
-              typeof showWidgetTitles === 'boolean' ? showWidgetTitles : true
-            }
+            hideTitle={hideWidgetTitles === true}
             formatItem={
               formatItem &&
-              ((tileData) => formatItem(widgetData.code, tileData))
+              ((itemData) => formatItem(widgetData.code, itemData))
             }
             onClick={
-              onClick && ((tileData) => onClick(widgetData.code, tileData))
+              onClick && ((itemData) => onClick(widgetData.code, itemData))
             }
           />
         ))}

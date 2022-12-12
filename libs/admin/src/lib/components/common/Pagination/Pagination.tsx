@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { PaginationProps } from '../../../types';
 import { TRANSLATION_PAIRS_COMMON } from '../../../constants/common';
 import ChevronLeft from '../../../icons/chevronLeft';

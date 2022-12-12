@@ -1,6 +1,6 @@
 import { Settings } from 'react-slick';
 import {
-  TileData,
+  ItemData,
   WidgetData,
   ObjectType,
   PageData,
@@ -42,26 +42,28 @@ export interface ReviewCardProps extends UserCardProps {
 export interface WidgetProps {
   widgetData: WidgetData;
   imageBaseUrl?: string;
-  showTitle?: boolean;
-  formatItem?: (item: TileData | CollectionItemType) => JSX.Element;
-  onClick?: (item: TileData | CollectionItemType) => void;
+  hideTitle?: boolean;
+  formatItem?: (item: ItemData | CollectionItemType) => JSX.Element;
+  onClick?: (item: ItemData | CollectionItemType) => void;
   settings?: Settings;
   className?: string;
+  formatHeader?: (title: string, data: WidgetData) => string | JSX.Element;
+  formatFooter?: (data: WidgetData) => string | JSX.Element;
 }
-export interface WidgetTypeProps extends WidgetProps {
-  formatItem: (item: CollectionItemType | TileData) => JSX.Element;
+export interface ItemsTypeProps extends WidgetProps {
+  formatItem: (item: CollectionItemType | ItemData) => JSX.Element;
 }
 
 export interface PageProps {
   title?: string;
   imageBaseUrl?: string;
   pageData: PageData;
-  showWidgetTitles?: boolean;
+  hideWidgetTitles?: boolean;
   formatItem?: (
     CODE: string,
-    item: TileData | CollectionItemType
+    item: ItemData | CollectionItemType
   ) => JSX.Element;
-  onClick?: (CODE: string, item: TileData | CollectionItemType) => JSX.Element;
+  onClick?: (CODE: string, item: ItemData | CollectionItemType) => JSX.Element;
 }
 
 export interface CollectionItemProps {

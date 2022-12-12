@@ -1,4 +1,4 @@
-import { useWidgetState } from '../../../context/WidgetContext';
+import React, { useWidgetState } from '../../../context/WidgetContext';
 import Pagination from '../../common/Pagination';
 
 const WidgetPagination = () => {

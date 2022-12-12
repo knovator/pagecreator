@@ -1,4 +1,4 @@
-import { CollectionItemType, TileData, WidgetProps } from '../../types';
+import { CollectionItemType, ItemData, WidgetProps } from '../../types';
 import FixedWidget from './fixed-widget/fixed-widget';
 import CarouselWidget from './carousel-widget/carousel-widget';
 import Banner from '../common/Card/banner/banner';
@@ -11,56 +11,61 @@ export function Widget({
   formatItem,
   onClick,
   settings,
-  showTitle,
+  hideTitle,
   className,
+  formatFooter,
+  formatHeader,
 }: WidgetProps) {
-  const formatTile = (tile: TileData | CollectionItemType): JSX.Element => {
-    if (typeof formatItem === 'function' && formatItem) return formatItem(tile);
-    else if (widgetData.widgetType === 'Image')
+  const formatItems = (item: ItemData | CollectionItemType): JSX.Element => {
+    if (typeof formatItem === 'function' && formatItem) return formatItem(item);
+    else if (widgetData.itemsType === 'Image')
       return (
         <Banner
-          key={tile._id}
+          key={item._id}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          imageUrl={`${imageBaseUrl || ''}${tile.image?.uri}`}
-          imageAltText={tile._id}
-          onClick={() => onClick && onClick(tile)}
+          imageUrl={`${imageBaseUrl || ''}${item.image?.uri}`}
+          imageAltText={item._id}
+          onClick={() => onClick && onClick(item)}
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          srcSets={buildSrcSets(imageBaseUrl, tile.srcSets)}
+          srcSets={buildSrcSets(imageBaseUrl, item.srcSets)}
         />
       );
     else
       return (
         <CollectionItem
-          key={tile._id}
-          onClick={() => onClick && onClick(tile)}
-          {...tile}
+          key={item._id}
+          onClick={() => onClick && onClick(item)}
+          {...item}
         />
       );
   };
   if (!widgetData) return null;
   return (
     <div className="kpc_widget">
-      {typeof showTitle === 'boolean' && !showTitle ? (
-        <h2 className="kpc_widget-title">{widgetData.selectionTitle}</h2>
-      ) : null}
+      {hideTitle === true ? null : typeof formatHeader === 'function' ? (
+        formatHeader(widgetData.widgetTitle, widgetData)
+      ) : (
+        <h2 className="kpc_widget-title">{widgetData.widgetTitle}</h2>
+      )}
       <div className="kpc_widget-body">
-        {widgetData.selectionType === 'Carousel' ? (
+        {widgetData.widgetType === 'Carousel' ? (
           <CarouselWidget
             settings={settings}
             widgetData={widgetData}
-            formatItem={formatTile}
+            formatItem={formatItems}
             className={className}
           />
         ) : (
           <FixedWidget
             widgetData={widgetData}
-            formatItem={formatTile}
+            formatItem={formatItems}
             className={className}
           />
         )}
       </div>
+      {typeof formatFooter === 'function' ? formatFooter(widgetData) : null}
     </div>
   );
 }

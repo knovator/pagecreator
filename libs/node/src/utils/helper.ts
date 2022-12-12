@@ -113,20 +113,20 @@ export function buildSrcSetItem(uri: string, setItem: SrcSetItem) {
   return imageItemArr.join('/');
 }
 
-export function AddSrcSetsToTiles(widgetData: IWidgetSchema) {
-  if (Array.isArray(widgetData.tiles) && widgetData.tiles.length > 0) {
-    widgetData.tiles.forEach((tile) => {
-      if (Array.isArray(tile.srcset) && tile.srcset.length > 0 && tile.image) {
-        tile.srcSets = tile.srcset.reduce(
+export function AddSrcSetsToItems(widgetData: IWidgetSchema) {
+  if (Array.isArray(widgetData.items) && widgetData.items.length > 0) {
+    widgetData.items.forEach((item) => {
+      if (Array.isArray(item.srcset) && item.srcset.length > 0 && item.image) {
+        item.srcSets = item.srcset.reduce(
           (strArr: string[], setItem: SrcSetItem) => {
-            const imageUri = buildSrcSetItem(tile.image.uri, setItem);
+            const imageUri = buildSrcSetItem(item.image.uri, setItem);
             strArr.push(`${imageUri} ${setItem.screenSize}w`);
             return strArr;
           },
           []
         );
 
-        tile.srcSets = tile.srcSets.join(', ');
+        item.srcSets = item.srcSets.join(', ');
       }
     });
   }

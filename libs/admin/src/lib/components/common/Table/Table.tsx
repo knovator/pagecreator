@@ -1,3 +1,4 @@
+import React from 'react';
 import Button from '../Button';
 import Pencil from '../../../icons/pencil';
 import Trash from '../../../icons/trash';

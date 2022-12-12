@@ -146,8 +146,8 @@ import { Provider } from '@knovator/pagecreator-admin';
     - `class` name to apply to `Toggle` component, default is `khb_switch`
 - `widgetRoutesPrefix`
     - Prefix to apply after `baseUrl` while calling `widget` API
-- `tilesRoutesPrefix`
-    - Prefix to apply after `baseUrl` while calling `tiles` API
+- `itemsRoutesPrefix`
+    - Prefix to apply after `baseUrl` while calling `items` API
 - `pageRoutesPrefix`
     - Prefix to apply after `baseUrl` while calling `page` API
 

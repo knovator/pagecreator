@@ -11,7 +11,7 @@ const descriptorPrefix = process.env['PAGECREATOR_DESCRIPTOR_PREFIX'] || '';
 const routes = express.Router() as IRouter;
 routes.use(express.json());
 
-// Tile Routes
+// Item Routes
 // Get Widget Data
 routes
   .post(
@@ -20,7 +20,7 @@ routes
     userController.getWidgetData
   )
   .descriptor(`${descriptorPrefix}user.getWidgetData`);
-
+// Get Page Data
 routes
   .post(
     '/page-data',

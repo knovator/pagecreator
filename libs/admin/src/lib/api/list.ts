@@ -29,7 +29,7 @@ const apiList = {
     url: `${prefix}/selection-types`,
     method: 'GET',
   }),
-  TILES: ({ prefix, id }: API_INPUT_TYPE) => ({
+  ITEM: ({ prefix, id }: API_INPUT_TYPE) => ({
     url: `${prefix}/${id}`,
     method: 'GET',
   }),

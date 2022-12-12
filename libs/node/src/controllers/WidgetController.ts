@@ -13,9 +13,9 @@ import {
   IModel,
   IRequest,
   IResponse,
-  SelectionTypes,
+  WidgetTypes,
   TypesType,
-  WidgetType,
+  ItemsType,
 } from '../types';
 
 const catchAsync = (fn: any) => {
@@ -96,33 +96,33 @@ export const partialUpdateWidget = catchAsync(
   }
 );
 
-export const getWidgetTypes = catchAsync(
+export const getItemsTypes = catchAsync(
   async (req: IRequest, res: IResponse) => {
-    const widgetTypes: TypesType[] = [
+    const itemsTypes: TypesType[] = [
       {
-        value: Object.keys(WidgetType)[0],
-        label: Object.values(WidgetType)[0],
+        value: Object.keys(ItemsType)[0],
+        label: Object.values(ItemsType)[0],
       },
     ];
     defaults.collections.forEach((item: CollectionItem) => {
-      widgetTypes.push({
+      itemsTypes.push({
         value: item.collectionName,
         label: item.title,
       });
     });
-    res.message = req?.i18n?.t('widget.getWidgetTypes');
-    return successResponse(widgetTypes, res);
+    res.message = req?.i18n?.t('widget.getItemsTypes');
+    return successResponse(itemsTypes, res);
   }
 );
 
-export const getSelectionTypes = catchAsync(
+export const getWidgetTypes = catchAsync(
   async (req: IRequest, res: IResponse) => {
-    const selectionTypes = Object.entries(SelectionTypes).map((e) => ({
+    const widgetTypes = Object.entries(WidgetTypes).map((e) => ({
       label: e[1],
       value: e[0],
     }));
-    res.message = req?.i18n?.t('widget.getSelectionTypes');
-    return successResponse(selectionTypes, res);
+    res.message = req?.i18n?.t('widget.getWidgetTypes');
+    return successResponse(widgetTypes, res);
   }
 );
 

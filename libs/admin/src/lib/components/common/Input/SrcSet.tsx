@@ -1,3 +1,4 @@
+import React from 'react';
 import classNames from 'classnames';
 import { useFieldArray } from 'react-hook-form';
 import Close from '../../../icons/close';

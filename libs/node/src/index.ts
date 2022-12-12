@@ -1,9 +1,9 @@
 import { defaults } from './utils/defaults';
 import WidgetRoutes from './routes/WidgetRoute';
-import TileRoutes from './routes/TileRoute';
+import ItemRoutes from './routes/ItemRoute';
 import PageRoutes from './routes/PageRoute';
 import UserRoutes from './routes/UserRoute';
-import { Widget, Tile, Page } from './models';
+import { Widget, Item, Page } from './models';
 import { IConfig } from './types';
 
 function setConfig(config: Partial<IConfig>) {
@@ -19,11 +19,11 @@ function setConfig(config: Partial<IConfig>) {
 
 export {
   WidgetRoutes,
-  TileRoutes,
+  ItemRoutes,
   PageRoutes,
   UserRoutes,
   Widget,
-  Tile,
+  Item,
   Page,
   setConfig,
 };

@@ -5,11 +5,15 @@ import { DropResult } from 'react-beautiful-dnd';
 import { SimpleForm } from '../../common/Form';
 import ImageUpload from '../../common/ImageUpload';
 import DNDItemsList from '../../common/DNDItemsList';
-import TileItemsAccordian from './TileItemsAccordian';
+import ItemsAccordian from './ItemsAccordian';
 
 import { useWidgetState } from '../../../context/WidgetContext';
 import { useProviderState } from '../../../context/ProviderContext';
-import { capitalizeFirstLetter, changeToCode, isEmpty } from '../../../helper/utils';
+import {
+  capitalizeFirstLetter,
+  changeToCode,
+  isEmpty,
+} from '../../../helper/utils';
 import {
   CombineObjectType,
   FormProps,
@@ -35,14 +39,14 @@ const WidgetForm = ({ formRef }: FormProps) => {
     data,
     canAdd,
     canUpdate,
-    webTiles,
-    mobileTiles,
+    webItems,
+    mobileItems,
     formState,
+    itemsTypes,
     widgetTypes,
-    selectionTypes,
-    onTileFormSubmit,
+    onItemFormSubmit,
     onWidgetFormSubmit,
-    onDeleteTile,
+    onDeleteItem,
     onImageRemove,
     onImageUpload,
     getCollectionData,
@@ -53,28 +57,28 @@ const WidgetForm = ({ formRef }: FormProps) => {
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [webTilesVisible, setWebTilesVisible] = useState(false);
-  const [mobileTilesVisible, setMobileTilesVisible] = useState(false);
-  const [tilesEnabled, setTilesEnabled] = useState(true);
+  const [webItemsVisible, setWebItemsVisible] = useState(false);
+  const [mobileItemsVisible, setMobileItemsVisible] = useState(false);
+  const [itemsEnabled, setItemsEnabled] = useState(true);
   const [showAutoPlay, setShowAutoPlay] = useState(false);
   const [selectedCollectionItems, setSelectedCollectionItems] = useState<
     OptionType[]
   >([]);
-  const [selectedWidgetType, setSelectedWidgetType] = useState<
+  const [selectedItemsType, setSelectedItemsType] = useState<
     OptionType | undefined
   >();
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
-      if (data?.selectionType === 'Carousel') {
+      if (data?.widgetType === 'Carousel') {
         setShowAutoPlay(true);
       } else {
         setShowAutoPlay(false);
       }
-      if (data?.widgetType === 'Image') {
-        setTilesEnabled(true);
+      if (data?.itemsType === 'Image') {
+        setItemsEnabled(true);
       } else {
-        setTilesEnabled(false);
+        setItemsEnabled(false);
       }
       if (
         data?.collectionItems &&
@@ -102,20 +106,20 @@ const WidgetForm = ({ formRef }: FormProps) => {
       }
       if (
         data?.collectionName !== 'Image' &&
-        widgetTypes &&
-        widgetTypes.length > 0
+        itemsTypes &&
+        itemsTypes.length > 0
       ) {
-        setSelectedWidgetType(
-          widgetTypes.find((item) => item.value === data?.collectionName)
+        setSelectedItemsType(
+          itemsTypes.find((item) => item.value === data?.collectionName)
         );
       }
     }
-  }, [data, formState, collectionData, widgetTypes]);
+  }, [data, formState, collectionData, itemsTypes]);
 
   useEffect(() => {
     if (formState === 'ADD') {
       setSelectedCollectionItems([]);
-      setTilesEnabled(true);
+      setItemsEnabled(true);
     }
   }, [formState]);
 
@@ -129,7 +133,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
     if (callerRef.current) clearTimeout(callerRef.current);
 
     callerRef.current = setTimeout(() => {
-      if (selectedWidgetType) getCollectionData(selectedWidgetType.value, str);
+      if (selectedItemsType) getCollectionData(selectedItemsType.value, str);
     }, 300);
   };
 
@@ -146,29 +150,29 @@ const WidgetForm = ({ formRef }: FormProps) => {
   // Widget Form Functions
   const onWidgetFormInputChange = useCallback(
     (value: ObjectType, name: string | undefined) => {
-      if (name === 'selectionType') {
-        if (value['selectionType'] === 'Carousel') setShowAutoPlay(true);
+      if (name === 'widgetType') {
+        if (value['widgetType'] === 'Carousel') setShowAutoPlay(true);
         else setShowAutoPlay(false);
-      } else if (name === 'widgetType') {
-        if (value['widgetType'] === 'Image') {
-          setSelectedWidgetType(undefined);
-          setTilesEnabled(true);
+      } else if (name === 'itemsType') {
+        if (value['itemsType'] === 'Image') {
+          setSelectedItemsType(undefined);
+          setItemsEnabled(true);
         } else {
-          const selectedWType = widgetTypes.find(
-            (wType) => wType.value === value['widgetType']
+          const selectedWType = itemsTypes.find(
+            (wType) => wType.value === value['itemsType']
           );
-          setSelectedWidgetType(selectedWType);
-          getCollectionData(value['widgetType']);
-          setTilesEnabled(false);
+          setSelectedItemsType(selectedWType);
+          getCollectionData(value['itemsType']);
+          setItemsEnabled(false);
         }
       }
     },
-    [getCollectionData, widgetTypes]
+    [getCollectionData, itemsTypes]
   );
   const onFormSubmit = (data: CombineObjectType) => {
     const formData = { ...data };
-    if (selectedWidgetType && formState === 'ADD') {
-      formData['collectionName'] = selectedWidgetType.value;
+    if (selectedItemsType && formState === 'ADD') {
+      formData['collectionName'] = selectedItemsType.value;
     }
     if (
       Array.isArray(selectedCollectionItems) &&
@@ -228,36 +232,36 @@ const WidgetForm = ({ formRef }: FormProps) => {
         'khb_grid-item-1of2 khb_padding-left-1 khb_align-top khb_margin-top-0',
     },
     {
-      label: `${t('widget.selectionTitle')}`,
-      accessor: 'selectionTitle',
+      label: `${t('widget.widgetTitle')}`,
+      accessor: 'widgetTitle',
       required: true,
       type: 'text',
       onInput: handleCapitalize,
-      placeholder: t('widget.selectionTitlePlaceholder'),
+      placeholder: t('widget.widgetTitlePlaceholder'),
       validations: {
-        required: t('widget.selectionTitleRequired'),
+        required: t('widget.widgetTitleRequired'),
       },
+    },
+    {
+      label: `${t('widget.itemsType')}`,
+      required: true,
+      editable: false,
+      accessor: 'itemsType',
+      type: 'select',
+      validations: {
+        required: t('widget.itemsTypePlaceholder'),
+      },
+      options: itemsTypes,
     },
     {
       label: `${t('widget.widgetType')}`,
       required: true,
-      editable: false,
       accessor: 'widgetType',
       type: 'select',
       validations: {
-        required: t('widget.widgetTypePlaceholder'),
+        required: t('widget.widgetTypeRequired'),
       },
       options: widgetTypes,
-    },
-    {
-      label: `${t('widget.selectionType')}`,
-      required: true,
-      accessor: 'selectionType',
-      type: 'select',
-      validations: {
-        required: t('widget.selectionTypeRequired'),
-      },
-      options: selectionTypes,
     },
     {
       label: t('widget.autoPlay'),
@@ -301,8 +305,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
       },
     },
     {
-      label: selectedWidgetType?.label,
-      placeholder: `Select ${selectedWidgetType?.label}...`,
+      label: selectedItemsType?.label,
+      placeholder: `Select ${selectedItemsType?.label}...`,
       required: true,
       accessor: 'collectionItems',
       type: 'ReactSelect',
@@ -317,39 +321,39 @@ const WidgetForm = ({ formRef }: FormProps) => {
       onChange: setSelectedCollectionItems,
       onSearch: onChangeSearch,
       isLoading: collectionDataLoading,
-      show: !tilesEnabled,
+      show: !itemsEnabled,
       formatOptionLabel: formatOptionLabel,
-      listCode: selectedWidgetType?.value,
+      listCode: selectedItemsType?.value,
     },
   ];
-  const tileFormSchema: SchemaType[] = [
+  const itemFormSchema: SchemaType[] = [
     {
-      label: `${t('tile.title')}`,
+      label: `${t('item.title')}`,
       required: true,
       accessor: 'title',
       type: 'text',
-      placeholder: t('tile.titlePlaceholder'),
+      placeholder: t('item.titlePlaceholder'),
     },
     {
-      label: `${t('tile.altText')}`,
+      label: `${t('item.altText')}`,
       accessor: 'altText',
       type: 'text',
-      placeholder: t('tile.altTextPlaceholder'),
+      placeholder: t('item.altTextPlaceholder'),
     },
     {
-      label: `${t('tile.link')}`,
+      label: `${t('item.link')}`,
       required: true,
       accessor: 'link',
       type: 'url',
-      placeholder: t('tile.linkPlaceholder'),
+      placeholder: t('item.linkPlaceholder'),
     },
     {
-      label: `${t('tile.srcset')}`,
+      label: `${t('item.srcset')}`,
       accessor: 'srcset',
       type: 'srcset',
     },
     {
-      label: t('tile.image'),
+      label: t('item.image'),
       accessor: 'img',
       Input: ({ field, error, setError, disabled }) => (
         <ImageUpload
@@ -366,11 +370,11 @@ const WidgetForm = ({ formRef }: FormProps) => {
             <>
               <div className="khb_img-text-wrapper">
                 <label htmlFor="file-upload" className="khb_img-text-label">
-                  <span>{t('tile.uploadFile')}</span>
+                  <span>{t('item.uploadFile')}</span>
                 </label>
-                <p className="khb_img-text-1">{t('tile.dragDrop')}</p>
+                <p className="khb_img-text-1">{t('item.dragDrop')}</p>
               </div>
-              <p className="khb_img-text-2">{t('tile.allowedFormat')}</p>
+              <p className="khb_img-text-2">{t('item.allowedFormat')}</p>
             </>
           }
           onImageUpload={onImageUpload}
@@ -396,30 +400,30 @@ const WidgetForm = ({ formRef }: FormProps) => {
         control={control}
         setError={setError}
       />
-      {!tilesEnabled && (
+      {!itemsEnabled && (
         <DNDItemsList
           items={selectedCollectionItems}
           onDragEnd={onCollectionIndexChange}
           formatItem={formatListItem}
-          listCode={selectedWidgetType?.value}
+          listCode={selectedItemsType?.value}
         />
       )}
 
-      {tilesEnabled && (
+      {itemsEnabled && (
         <>
           {/* Web Items */}
-          <TileItemsAccordian
+          <ItemsAccordian
             collapseId="webItems"
-            title={t('widget.webTiles')}
-            id="webTiles"
-            schema={tileFormSchema}
-            show={webTilesVisible}
-            tilesData={webTiles}
-            toggleShow={setWebTilesVisible}
-            onDataSubmit={onTileFormSubmit}
-            tileType="Web"
+            title={t('widget.webItems')}
+            id="webItems"
+            schema={itemFormSchema}
+            show={webItemsVisible}
+            itemsData={webItems}
+            toggleShow={setWebItemsVisible}
+            onDataSubmit={onItemFormSubmit}
+            itemType="Web"
             widgetId={data?._id}
-            onDelete={onDeleteTile}
+            onDelete={onDeleteItem}
             addText={t('addButtonText')}
             cancelText={t('cancelButtonText')}
             saveText={t('saveButtonText')}
@@ -428,18 +432,18 @@ const WidgetForm = ({ formRef }: FormProps) => {
           />
 
           {/* Mobile Items */}
-          <TileItemsAccordian
+          <ItemsAccordian
             collapseId="mobileItems"
-            title={t('widget.mobileTiles')}
-            id="mobileTiles"
-            schema={tileFormSchema}
-            show={mobileTilesVisible}
-            tilesData={mobileTiles}
-            toggleShow={setMobileTilesVisible}
-            onDataSubmit={onTileFormSubmit}
-            tileType="Mobile"
+            title={t('widget.mobileItems')}
+            id="mobileItems"
+            schema={itemFormSchema}
+            show={mobileItemsVisible}
+            itemsData={mobileItems}
+            toggleShow={setMobileItemsVisible}
+            onDataSubmit={onItemFormSubmit}
+            itemType="Mobile"
             widgetId={data?._id}
-            onDelete={onDeleteTile}
+            onDelete={onDeleteItem}
             addText={t('addButtonText')}
             cancelText={t('cancelButtonText')}
             saveText={t('saveButtonText')}

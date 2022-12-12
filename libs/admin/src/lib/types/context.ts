@@ -1,4 +1,4 @@
-import { SelectionType, WidgetType } from './api';
+import { WidgetType, ItemsType } from './api';
 import { FormActionTypes, OptionType } from './common';
 
 export interface ProviderContextType {
@@ -17,7 +17,7 @@ export interface ProviderContextType {
   switchClass: string;
   onLogout: () => void;
   widgetRoutesPrefix: string;
-  tilesRoutesPrefix: string;
+  itemsRoutesPrefix: string;
   pageRoutesPrefix: string;
 }
 export interface ProviderContextProviderProps
@@ -28,7 +28,7 @@ export interface ProviderContextProviderProps
       | 'onSuccess'
       | 'onLogout'
       | 'widgetRoutesPrefix'
-      | 'tilesRoutesPrefix'
+      | 'itemsRoutesPrefix'
       | 'pageRoutesPrefix'
       | 'switchClass'
     > {
@@ -45,7 +45,7 @@ export interface ProviderContextProviderProps
   onLogout?: () => void;
   switchClass?: string;
   widgetRoutesPrefix?: string;
-  tilesRoutesPrefix?: string;
+  itemsRoutesPrefix?: string;
   pageRoutesPrefix?: string;
 }
 export interface WidgetContextType {
@@ -60,14 +60,14 @@ export interface WidgetContextType {
   loading: boolean;
   canAdd: boolean;
   canUpdate: boolean;
-  onDeleteTile: (id: string) => void;
+  onDeleteItem: (id: string) => void;
   getWidgets: (searchText: string) => void;
   onImageUpload: (
     file: File
   ) => Promise<{ fileUrl: string; fileId: string; fileUri: string } | void>;
   onImageRemove: (id: string) => Promise<void>;
+  itemsTypes: ItemsType[];
   widgetTypes: WidgetType[];
-  selectionTypes: SelectionType[];
   getCollectionData: (collectionName: string, search?: string) => Promise<void>;
   collectionDataLoading: boolean;
   collectionData: any[];
@@ -89,11 +89,11 @@ export interface WidgetContextType {
   loader?: JSX.Element;
   canDelete?: boolean;
   onPartialUpdateWidget: (data: any, id: string) => Promise<void>;
-  // Tile
-  webTiles: any[];
-  mobileTiles: any[];
-  tilesLoading: boolean;
-  onTileFormSubmit: (state: FormActionTypes, data: any) => void;
+  // Item
+  webItems: any[];
+  mobileItems: any[];
+  itemsLoading: boolean;
+  onItemFormSubmit: (state: FormActionTypes, data: any) => void;
 }
 
 export interface PageContextType {

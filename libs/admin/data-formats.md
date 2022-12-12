@@ -3,7 +3,7 @@
 ### `Routes_Input`
 - Accepts Object with key as `ACTION_TYPES` and value as funcion
 - Function provides avails parameters
-    - `prefix` => `widgetRoutesPrefix`, `tilesRoutesPrefix` or `pageRoutesPrefix`
+    - `prefix` => `widgetRoutesPrefix`, `itemsRoutesPrefix` or `pageRoutesPrefix`
     - `id` => id of record, in case of update/delete
 - Function need following parameters in return
     - `url` => relative url like `/admin/widget/update`

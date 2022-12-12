@@ -1,6 +1,6 @@
 import { Settings } from 'react-slick';
 import {
-  TileData,
+  ItemData,
   WidgetData,
   ObjectType,
   PageData,
@@ -43,13 +43,13 @@ export interface WidgetProps {
   widgetData: WidgetData;
   imageBaseUrl?: string;
   showTitle?: boolean;
-  formatItem?: (item: TileData | CollectionItemType) => JSX.Element;
-  onClick?: (item: TileData | CollectionItemType) => void;
+  formatItem?: (item: ItemData | CollectionItemType) => JSX.Element;
+  onClick?: (item: ItemData | CollectionItemType) => void;
   settings?: Settings;
   className?: string;
 }
-export interface WidgetTypeProps extends WidgetProps {
-  formatItem: (item: CollectionItemType | TileData) => JSX.Element;
+export interface ItemsTypeProps extends WidgetProps {
+  formatItem: (item: CollectionItemType | ItemData) => JSX.Element;
 }
 
 export interface PageProps {
@@ -59,9 +59,9 @@ export interface PageProps {
   showWidgetTitles?: boolean;
   formatItem?: (
     CODE: string,
-    item: TileData | CollectionItemType
+    item: ItemData | CollectionItemType
   ) => JSX.Element;
-  onClick?: (CODE: string, item: TileData | CollectionItemType) => JSX.Element;
+  onClick?: (CODE: string, item: ItemData | CollectionItemType) => JSX.Element;
 }
 
 export interface CollectionItemProps {

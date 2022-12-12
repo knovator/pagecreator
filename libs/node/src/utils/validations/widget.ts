@@ -4,14 +4,14 @@ import { defaults } from '../defaults';
 import { VALIDATION } from '../../constants';
 import { getOne } from '../../services/dbService';
 import {
-  WidgetType,
-  SelectionTypes,
+  ItemsType,
+  WidgetTypes,
   IWidgetSchema,
   CollectionItem,
   IDefaultValidations,
 } from '../../types';
 
-type TileValidation = IWidgetSchema & IDefaultValidations;
+type ItemValidation = IWidgetSchema & IDefaultValidations;
 
 const checkUnique = async (value: string) => {
   let result;
@@ -27,9 +27,9 @@ const checkUnique = async (value: string) => {
   }
 };
 
-export const create = joi.object<TileValidation>({
+export const create = joi.object<ItemValidation>({
   name: joi.string().required(),
-  selectionTitle: joi.string().required(),
+  widgetTitle: joi.string().required(),
   code: joi
     .string()
     .uppercase()
@@ -43,10 +43,10 @@ export const create = joi.object<TileValidation>({
   tabletPerRow: joi.number().allow(null).optional(),
   collectionName: joi.string().optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
-  widgetType: joi
+  itemsType: joi
     .string()
     .custom((value) => {
-      if (Object.keys(WidgetType).includes(value)) {
+      if (Object.keys(ItemsType).includes(value)) {
         return value;
       }
       const collectionIndex = defaults.collections.findIndex(
@@ -58,30 +58,30 @@ export const create = joi.object<TileValidation>({
       throw new Error(`${value} is not a valid widget type`);
     })
     .optional()
-    .default(WidgetType.Image),
-  selectionType: joi
+    .default(ItemsType.Image),
+  widgetType: joi
     .string()
-    .valid(...Object.values(SelectionTypes))
+    .valid(...Object.values(WidgetTypes))
     .optional()
-    .default(SelectionTypes.FixedCard),
+    .default(WidgetTypes.FixedCard),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),
   deletedBy: joi.any().optional(),
   deletedAt: joi.any().optional(),
 });
 
-export const update = joi.object<TileValidation>({
+export const update = joi.object<ItemValidation>({
   name: joi.string().required(),
-  selectionTitle: joi.string().required(),
+  widgetTitle: joi.string().required(),
   isActive: joi.boolean().optional(),
   webPerRow: joi.number().allow(null).optional(),
   mobilePerRow: joi.number().allow(null).optional(),
   tabletPerRow: joi.number().allow(null).optional(),
   autoPlay: joi.boolean().default(false).optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
-  selectionType: joi
+  widgetType: joi
     .string()
-    .valid(...Object.values(SelectionTypes))
+    .valid(...Object.values(WidgetTypes))
     .optional(),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),

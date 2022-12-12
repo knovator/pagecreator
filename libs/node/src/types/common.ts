@@ -6,7 +6,7 @@ import {
   QueryOptions,
   HydratedDocument,
 } from 'mongoose';
-import { WidgetType, SelectionTypes, TileTypes } from '.';
+import { ItemsType, WidgetTypes, ItemTypes } from '.';
 
 export type TypesType = { value: string; label: string };
 // export type CollectionItem = {
@@ -33,30 +33,30 @@ export interface ISrcSetSchema extends Document {
   width: number;
   height: number;
   screenSize: number;
-  tileId: typeof Types.ObjectId;
+  itemId: typeof Types.ObjectId;
 }
 export interface IWidgetSchema extends Document {
-  tiles: any;
+  items: any;
   name: string;
   code: string;
   autoPlay: boolean;
   isActive: boolean;
-  selectionTitle: string;
+  widgetTitle: string;
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;
-  widgetType: WidgetType;
-  selectionType: SelectionTypes;
+  itemsType: ItemsType;
+  widgetType: WidgetTypes;
   collectionName: string;
   collectionItems: string[];
 }
-export interface ITileSchema extends Document {
+export interface IItemSchema extends Document {
   widgetId: typeof Types.ObjectId;
   title: string;
   altText: string;
   link: string;
   sequence: number;
-  tileType: TileTypes;
+  itemType: ItemTypes;
   img: any;
   srcset?: SrcSetItem[];
 }
@@ -88,7 +88,7 @@ export interface IConfig {
 
 export type EntityType =
   | IWidgetSchema
-  | ITileSchema
+  | IItemSchema
   | IPageSchema
   | ISrcSetSchema;
 export type ReturnDocument = EntityType;

@@ -1,9 +1,9 @@
 import { Schema, Types, model } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { softDeletePlugin } from '../plugins/softDelete';
-import { IModel, ITileSchema, TileTypes } from '../types';
+import { IModel, IItemSchema, ItemTypes } from '../types';
 
-const TileSchema = new Schema<ITileSchema>({
+const ItemSchema = new Schema<IItemSchema>({
   widgetId: {
     type: Types.ObjectId,
     ref: 'Widget',
@@ -13,17 +13,17 @@ const TileSchema = new Schema<ITileSchema>({
   link: String,
   sequence: Number,
   img: { type: Schema.Types.ObjectId, ref: 'file' },
-  tileType: {
+  itemType: {
     type: String,
-    enum: Object.values(TileTypes),
-    default: TileTypes.Web,
+    enum: Object.values(ItemTypes),
+    default: ItemTypes.Web,
     required: true,
   },
 });
 
-TileSchema.plugin(softDeletePlugin);
-TileSchema.plugin(mongoosePaginate);
+ItemSchema.plugin(softDeletePlugin);
+ItemSchema.plugin(mongoosePaginate);
 
-const Tile = model('Tile', TileSchema) as unknown as IModel<ITileSchema>;
+const Item = model('Item', ItemSchema) as unknown as IModel<IItemSchema>;
 
-export default Tile;
+export default Item;

@@ -4,7 +4,7 @@ import { useProviderState } from '../context/ProviderContext';
 import { paginationDataGatter, dataGatter, build_path } from '../helper/utils';
 import usePagination from './usePagination';
 import request, { getApiType } from '../api';
-import { Routes_Input, SelectionType, WidgetType } from '../types';
+import { Routes_Input, WidgetType, ItemsType } from '../types';
 import { FormActionTypes, ObjectType } from '../types/common';
 
 interface UseWidgetProps {
@@ -12,7 +12,7 @@ interface UseWidgetProps {
   routes?: Routes_Input;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
 }
-interface TilesList {
+interface ItemsList {
   web: ObjectType[];
   mobile: ObjectType[];
 }
@@ -23,18 +23,18 @@ const useWidget = ({
   preConfirmDelete,
 }: UseWidgetProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
-  const [tilesList, setTilesList] = useState<TilesList>({
+  const [itemsList, setItemsList] = useState<ItemsList>({
     web: [],
     mobile: [],
   });
-  const [tilesLoading, setTilesLoading] = useState(false);
+  const [itemsLoading, setItemsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
   const [itemData, setItemData] = useState<ObjectType | null>(null);
   const [formState, setFormState] = useState<FormActionTypes>();
+  const [itemsTypes, setItemsTypes] = useState<ItemsType[]>([]);
   const [widgetTypes, setWidgetTypes] = useState<WidgetType[]>([]);
-  const [selectionTypes, setSelectionTypes] = useState<SelectionType[]>([]);
   const [collectionDataLoading, setCollectionDataLoading] =
     useState<boolean>(false);
   const [collectionData, setCollectionData] = useState<any[]>([]);
@@ -46,7 +46,7 @@ const useWidget = ({
     onSuccess,
     onLogout,
     widgetRoutesPrefix,
-    tilesRoutesPrefix,
+    itemsRoutesPrefix,
   } = useProviderState();
   const { setPageSize, pageSize, currentPage, setCurrentPage, filter } =
     usePagination({ defaultLimit });
@@ -108,14 +108,14 @@ const useWidget = ({
       widgetRoutesPrefix,
     ]
   );
-  const getTiles = useCallback(
+  const getItems = useCallback(
     async (id: string) => {
       try {
-        setTilesLoading(true);
+        setItemsLoading(true);
         const api = getApiType({
           routes,
-          action: 'TILES',
-          prefix: tilesRoutesPrefix,
+          action: 'ITEM',
+          prefix: itemsRoutesPrefix,
           id,
         });
         const response = await request({
@@ -126,31 +126,31 @@ const useWidget = ({
           onError: handleError(CALLBACK_CODES.GET_ALL),
         });
         if (response?.code === 'SUCCESS') {
-          setTilesLoading(false);
-          const tilesResponse: TilesList = dataGatter(response).reduce(
-            (acc: TilesList, tileItem: ObjectType) => {
-              if (tileItem['tileType'] === 'Web') acc.web.push(tileItem);
-              else acc.mobile.push(tileItem);
+          setItemsLoading(false);
+          const itemsResponse: ItemsList = dataGatter(response).reduce(
+            (acc: ItemsList, itemItem: ObjectType) => {
+              if (itemItem['itemType'] === 'Web') acc.web.push(itemItem);
+              else acc.mobile.push(itemItem);
               return acc;
             },
             { web: [], mobile: [] }
           );
-          return setTilesList(tilesResponse);
+          return setItemsList(itemsResponse);
         }
-        setTilesLoading(false);
+        setItemsLoading(false);
       } catch (error) {
-        setTilesLoading(false);
+        setItemsLoading(false);
       }
     },
-    [baseUrl, handleError, routes, tilesRoutesPrefix, token]
+    [baseUrl, handleError, routes, itemsRoutesPrefix, token]
   );
-  const onDeleteTile = async (id: string) => {
+  const onDeleteItem = async (id: string) => {
     try {
-      setTilesLoading(true);
+      setItemsLoading(true);
       const api = getApiType({
         routes,
         action: 'DELETE',
-        prefix: tilesRoutesPrefix,
+        prefix: itemsRoutesPrefix,
         id,
       });
       const response = await request({
@@ -161,15 +161,15 @@ const useWidget = ({
         onError: handleError(CALLBACK_CODES.DELETE),
       });
       if (response?.code === 'SUCCESS') {
-        setTilesLoading(false);
+        setItemsLoading(false);
         onSuccess(CALLBACK_CODES.DELETE, response?.code, response?.message);
-        if (itemData) getTiles(itemData['_id']);
+        if (itemData) getItems(itemData['_id']);
         return;
       }
-      setTilesLoading(false);
+      setItemsLoading(false);
       onError(CALLBACK_CODES.DELETE, response?.code, response?.message);
     } catch (error) {
-      setTilesLoading(false);
+      setItemsLoading(false);
       onError(
         CALLBACK_CODES.DELETE,
         INTERNAL_ERROR_CODE,
@@ -260,7 +260,7 @@ const useWidget = ({
     }
   };
   const getWidgetsTypes = async () => {
-    if (widgetTypes?.length > 0) return;
+    if (itemsTypes?.length > 0) return;
     setLoading(true);
     const api = getApiType({
       routes,
@@ -276,12 +276,12 @@ const useWidget = ({
     });
     if (response?.code === 'SUCCESS') {
       setLoading(false);
-      return setWidgetTypes(dataGatter(response));
+      return setItemsTypes(dataGatter(response));
     }
     setLoading(false);
   };
-  const getSelectionTypes = async () => {
-    if (selectionTypes?.length > 0) return;
+  const getWidgetTypes = async () => {
+    if (widgetTypes?.length > 0) return;
     setLoading(true);
     const api = getApiType({
       routes,
@@ -297,7 +297,7 @@ const useWidget = ({
     });
     if (response?.code === 'SUCCESS') {
       setLoading(false);
-      return setSelectionTypes(dataGatter(response));
+      return setWidgetTypes(dataGatter(response));
     }
     setLoading(false);
   };
@@ -368,34 +368,34 @@ const useWidget = ({
   const onChangeFormState = (state: FormActionTypes, data?: ObjectType) => {
     setItemData(data || null);
     setFormState(state);
-    // fetch WidgetTypes & SelectionTypes if needed
+    // fetch ItemsTypes & WidgetTypes if needed
     if (state === 'ADD' || state === 'UPDATE') {
       getWidgetsTypes();
-      getSelectionTypes();
+      getWidgetTypes();
     }
-    // get Tile data if widget is updating
+    // get Item data if widget is updating
     if (state === 'UPDATE' && data) {
-      if (data['widgetType'] !== 'Image' && data['collectionName'])
+      if (data['itemsType'] !== 'Image' && data['collectionName'])
         getCollectionData(data['collectionName']);
-      else getTiles(data['_id']);
+      else getItems(data['_id']);
     } else if (state === 'ADD') {
-      // reset Tile data if widget is adding
-      setTilesList({ web: [], mobile: [] });
+      // reset Item data if widget is adding
+      setItemsList({ web: [], mobile: [] });
     }
   };
-  const onTileFormSubmit = async (
+  const onItemFormSubmit = async (
     state: FormActionTypes,
     data: ObjectType,
     updateId?: string
   ) => {
-    setTilesLoading(true);
+    setItemsLoading(true);
     const code =
       state === 'ADD' ? CALLBACK_CODES.CREATE : CALLBACK_CODES.UPDATE;
     try {
       const api = getApiType({
         routes,
         action: state === 'ADD' ? 'CREATE' : 'UPDATE',
-        prefix: tilesRoutesPrefix,
+        prefix: itemsRoutesPrefix,
         id: updateId,
       });
       const response = await request({
@@ -407,15 +407,15 @@ const useWidget = ({
         onError: handleError(code),
       });
       if (response?.code === 'SUCCESS') {
-        setTilesLoading(false);
+        setItemsLoading(false);
         onSuccess(code, response?.code, response?.message);
-        if (itemData) getTiles(itemData['_id']);
+        if (itemData) getItems(itemData['_id']);
       } else {
-        setTilesLoading(false);
+        setItemsLoading(false);
         onError(code, response?.code, response?.message);
       }
     } catch (error) {
-      setTilesLoading(false);
+      setItemsLoading(false);
       onError(code, INTERNAL_ERROR_CODE, (error as Error).message);
     }
   };
@@ -513,22 +513,22 @@ const useWidget = ({
     itemData,
     onChangeFormState,
     onCloseForm,
-    onDeleteTile,
+    onDeleteItem,
     onWidgetFormSubmit,
     onCofirmDeleteWidget,
     onPartialUpdateWidget,
     onImageUpload,
     onImageRemove,
+    itemsTypes,
     widgetTypes,
-    selectionTypes,
     collectionDataLoading,
     getCollectionData,
     collectionData,
 
-    // Tiles
-    tilesList,
-    tilesLoading,
-    onTileFormSubmit,
+    // Items
+    itemsList,
+    itemsLoading,
+    onItemFormSubmit,
   };
 };
 

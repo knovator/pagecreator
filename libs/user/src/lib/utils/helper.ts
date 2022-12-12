@@ -1,4 +1,4 @@
-import { WidgetData, PageData, TileData } from '../types';
+import { WidgetData, PageData, ItemData } from '../types';
 
 interface GetDataParams {
   url: string;
@@ -40,5 +40,5 @@ export function buildSrcSets(imageBaseUrl?: string, srcSets?: string) {
 export const isMobileDevice =
   typeof window !== 'undefined' && /Mobi/i.test(window?.navigator?.userAgent);
 
-export const filterTileData = (data: TileData): boolean =>
-  isMobileDevice ? data.tileType === 'Mobile' : data.tileType === 'Web';
+export const filterItemData = (data: ItemData): boolean =>
+  isMobileDevice ? data.itemType === 'Mobile' : data.itemType === 'Web';

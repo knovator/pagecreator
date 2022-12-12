@@ -35,21 +35,21 @@ export interface WidgetData {
   code: string;
   autoPlay: boolean;
   isActive: boolean;
-  selectionTitle: string;
+  widgetTitle: string;
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;
-  widgetType: 'Image' | string;
-  selectionType: 'FixedCard' | 'Carousel';
-  tiles: TileData[];
+  itemsType: 'Image' | string;
+  widgetType: 'FixedCard' | 'Carousel';
+  items: ItemData[];
   collectionItems: CollectionItemType[];
 }
-export interface TileData {
+export interface ItemData {
   _id: string;
   title: string;
   altText: string;
   link: string;
-  tileType: 'Web' | 'Mobile';
+  itemType: 'Web' | 'Mobile';
   img: ImgData;
   srcSets?: string;
   srcset?: SrcSetItem[];

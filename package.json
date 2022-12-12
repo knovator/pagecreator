@@ -8,6 +8,7 @@
     "test": "nx test",
     "start:admin": "nx run pagecreator:serve",
     "start:api": "nx run api:serve",
+    "start:front": "nx run front:serve",
     "lint:admin": "nx lint:admin",
     "build:admin": "nx run admin:build",
     "lint:node": "nx run node:lint",

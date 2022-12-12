@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import useWidget from '../../../hooks/useWidget';
 import WidgetContextProvider from '../../../context/WidgetContext';
 import { createTranslation } from '../../../helper/utils';

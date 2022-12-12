@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import usePage from '../../../hooks/usePage';
 import { createTranslation } from '../../../helper/utils';
 import PageContextProvider from '../../../context/PageContext';

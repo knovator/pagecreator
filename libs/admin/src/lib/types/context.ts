@@ -1,4 +1,4 @@
-import { SelectionType, ItemsType } from './api';
+import { WidgetType, ItemsType } from './api';
 import { FormActionTypes, OptionType } from './common';
 
 export interface ProviderContextType {
@@ -67,7 +67,7 @@ export interface WidgetContextType {
   ) => Promise<{ fileUrl: string; fileId: string; fileUri: string } | void>;
   onImageRemove: (id: string) => Promise<void>;
   itemsTypes: ItemsType[];
-  selectionTypes: SelectionType[];
+  widgetTypes: WidgetType[];
   getCollectionData: (collectionName: string, search?: string) => Promise<void>;
   collectionDataLoading: boolean;
   collectionData: any[];

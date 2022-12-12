@@ -2,7 +2,7 @@ export enum ItemsType {
   Image = 'Image',
 }
 
-export enum SelectionTypes {
+export enum WidgetTypes {
   FixedCard = 'FixedCard',
   Carousel = 'Carousel',
 }

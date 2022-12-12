@@ -52,7 +52,7 @@ const Widget = ({
     onImageUpload,
     onPartialUpdateWidget,
     itemsTypes,
-    selectionTypes,
+    widgetTypes,
     getCollectionData,
     collectionData,
     collectionDataLoading,
@@ -86,7 +86,7 @@ const Widget = ({
       onImageUpload={onImageUpload}
       onPartialUpdateWidget={onPartialUpdateWidget}
       itemsTypes={itemsTypes}
-      selectionTypes={selectionTypes}
+      widgetTypes={widgetTypes}
       getCollectionData={getCollectionData}
       collectionData={collectionData}
       collectionDataLoading={collectionDataLoading}

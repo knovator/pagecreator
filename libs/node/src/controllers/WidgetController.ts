@@ -13,7 +13,7 @@ import {
   IModel,
   IRequest,
   IResponse,
-  SelectionTypes,
+  WidgetTypes,
   TypesType,
   ItemsType,
 } from '../types';
@@ -115,14 +115,14 @@ export const getItemsTypes = catchAsync(
   }
 );
 
-export const getSelectionTypes = catchAsync(
+export const getWidgetTypes = catchAsync(
   async (req: IRequest, res: IResponse) => {
-    const selectionTypes = Object.entries(SelectionTypes).map((e) => ({
+    const widgetTypes = Object.entries(WidgetTypes).map((e) => ({
       label: e[1],
       value: e[0],
     }));
-    res.message = req?.i18n?.t('widget.getSelectionTypes');
-    return successResponse(selectionTypes, res);
+    res.message = req?.i18n?.t('widget.getWidgetTypes');
+    return successResponse(widgetTypes, res);
   }
 );
 

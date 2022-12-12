@@ -18,8 +18,8 @@ routes
   .descriptor(`${descriptorPrefix}widget.getItemsTypes`);
 // Get widget selection types
 routes
-  .get('/selection-types', widgetController.getSelectionTypes)
-  .descriptor(`${descriptorPrefix}widget.getSelectionTypes`);
+  .get('/selection-types', widgetController.getWidgetTypes)
+  .descriptor(`${descriptorPrefix}widget.getWidgetTypes`);
 // Get all widgets
 routes
   .post(`/list`, validate(widgetValidation.list), widgetController.getWidgets)

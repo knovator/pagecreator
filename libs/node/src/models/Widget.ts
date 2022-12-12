@@ -1,7 +1,7 @@
 import { Schema, model, Types } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { softDeletePlugin } from '../plugins/softDelete';
-import { IModel, IWidgetSchema, SelectionTypes, ItemsType } from '../types';
+import { IModel, IWidgetSchema, WidgetTypes, ItemsType } from '../types';
 
 const WidgetSchema = new Schema<IWidgetSchema>({
   name: String,
@@ -25,10 +25,10 @@ const WidgetSchema = new Schema<IWidgetSchema>({
     default: ItemsType.Image,
     required: true,
   },
-  selectionType: {
+  widgetType: {
     type: String,
-    enum: Object.values(SelectionTypes),
-    default: SelectionTypes.FixedCard,
+    enum: Object.values(WidgetTypes),
+    default: WidgetTypes.FixedCard,
     required: true,
   },
 });

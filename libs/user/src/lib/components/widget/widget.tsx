@@ -46,7 +46,7 @@ export function Widget({
         <h2 className="kpc_widget-title">{widgetData.widgetTitle}</h2>
       ) : null}
       <div className="kpc_widget-body">
-        {widgetData.selectionType === 'Carousel' ? (
+        {widgetData.widgetType === 'Carousel' ? (
           <CarouselWidget
             settings={settings}
             widgetData={widgetData}

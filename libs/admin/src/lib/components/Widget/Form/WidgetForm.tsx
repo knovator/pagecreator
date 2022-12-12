@@ -39,7 +39,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
     mobileTiles,
     formState,
     itemsTypes,
-    selectionTypes,
+    widgetTypes,
     onTileFormSubmit,
     onWidgetFormSubmit,
     onDeleteTile,
@@ -66,7 +66,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
-      if (data?.selectionType === 'Carousel') {
+      if (data?.widgetType === 'Carousel') {
         setShowAutoPlay(true);
       } else {
         setShowAutoPlay(false);
@@ -146,8 +146,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
   // Widget Form Functions
   const onWidgetFormInputChange = useCallback(
     (value: ObjectType, name: string | undefined) => {
-      if (name === 'selectionType') {
-        if (value['selectionType'] === 'Carousel') setShowAutoPlay(true);
+      if (name === 'widgetType') {
+        if (value['widgetType'] === 'Carousel') setShowAutoPlay(true);
         else setShowAutoPlay(false);
       } else if (name === 'itemsType') {
         if (value['itemsType'] === 'Image') {
@@ -250,14 +250,14 @@ const WidgetForm = ({ formRef }: FormProps) => {
       options: itemsTypes,
     },
     {
-      label: `${t('widget.selectionType')}`,
+      label: `${t('widget.widgetType')}`,
       required: true,
-      accessor: 'selectionType',
+      accessor: 'widgetType',
       type: 'select',
       validations: {
-        required: t('widget.selectionTypeRequired'),
+        required: t('widget.widgetTypeRequired'),
       },
-      options: selectionTypes,
+      options: widgetTypes,
     },
     {
       label: t('widget.autoPlay'),

@@ -6,7 +6,7 @@ import {
   QueryOptions,
   HydratedDocument,
 } from 'mongoose';
-import { ItemsType, SelectionTypes, TileTypes } from '.';
+import { ItemsType, WidgetTypes, TileTypes } from '.';
 
 export type TypesType = { value: string; label: string };
 // export type CollectionItem = {
@@ -46,7 +46,7 @@ export interface IWidgetSchema extends Document {
   mobilePerRow: number;
   tabletPerRow: number;
   itemsType: ItemsType;
-  selectionType: SelectionTypes;
+  widgetType: WidgetTypes;
   collectionName: string;
   collectionItems: string[];
 }

@@ -5,7 +5,7 @@ import { VALIDATION } from '../../constants';
 import { getOne } from '../../services/dbService';
 import {
   ItemsType,
-  SelectionTypes,
+  WidgetTypes,
   IWidgetSchema,
   CollectionItem,
   IDefaultValidations,
@@ -59,11 +59,11 @@ export const create = joi.object<TileValidation>({
     })
     .optional()
     .default(ItemsType.Image),
-  selectionType: joi
+  widgetType: joi
     .string()
-    .valid(...Object.values(SelectionTypes))
+    .valid(...Object.values(WidgetTypes))
     .optional()
-    .default(SelectionTypes.FixedCard),
+    .default(WidgetTypes.FixedCard),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),
   deletedBy: joi.any().optional(),
@@ -79,9 +79,9 @@ export const update = joi.object<TileValidation>({
   tabletPerRow: joi.number().allow(null).optional(),
   autoPlay: joi.boolean().default(false).optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
-  selectionType: joi
+  widgetType: joi
     .string()
-    .valid(...Object.values(SelectionTypes))
+    .valid(...Object.values(WidgetTypes))
     .optional(),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),

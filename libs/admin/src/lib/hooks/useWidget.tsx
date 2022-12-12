@@ -4,7 +4,7 @@ import { useProviderState } from '../context/ProviderContext';
 import { paginationDataGatter, dataGatter, build_path } from '../helper/utils';
 import usePagination from './usePagination';
 import request, { getApiType } from '../api';
-import { Routes_Input, SelectionType, ItemsType } from '../types';
+import { Routes_Input, WidgetType, ItemsType } from '../types';
 import { FormActionTypes, ObjectType } from '../types/common';
 
 interface UseWidgetProps {
@@ -34,7 +34,7 @@ const useWidget = ({
   const [itemData, setItemData] = useState<ObjectType | null>(null);
   const [formState, setFormState] = useState<FormActionTypes>();
   const [itemsTypes, setItemsTypes] = useState<ItemsType[]>([]);
-  const [selectionTypes, setSelectionTypes] = useState<SelectionType[]>([]);
+  const [widgetTypes, setWidgetTypes] = useState<WidgetType[]>([]);
   const [collectionDataLoading, setCollectionDataLoading] =
     useState<boolean>(false);
   const [collectionData, setCollectionData] = useState<any[]>([]);
@@ -280,8 +280,8 @@ const useWidget = ({
     }
     setLoading(false);
   };
-  const getSelectionTypes = async () => {
-    if (selectionTypes?.length > 0) return;
+  const getWidgetTypes = async () => {
+    if (widgetTypes?.length > 0) return;
     setLoading(true);
     const api = getApiType({
       routes,
@@ -297,7 +297,7 @@ const useWidget = ({
     });
     if (response?.code === 'SUCCESS') {
       setLoading(false);
-      return setSelectionTypes(dataGatter(response));
+      return setWidgetTypes(dataGatter(response));
     }
     setLoading(false);
   };
@@ -368,10 +368,10 @@ const useWidget = ({
   const onChangeFormState = (state: FormActionTypes, data?: ObjectType) => {
     setItemData(data || null);
     setFormState(state);
-    // fetch ItemsTypes & SelectionTypes if needed
+    // fetch ItemsTypes & WidgetTypes if needed
     if (state === 'ADD' || state === 'UPDATE') {
       getWidgetsTypes();
-      getSelectionTypes();
+      getWidgetTypes();
     }
     // get Tile data if widget is updating
     if (state === 'UPDATE' && data) {
@@ -520,7 +520,7 @@ const useWidget = ({
     onImageUpload,
     onImageRemove,
     itemsTypes,
-    selectionTypes,
+    widgetTypes,
     collectionDataLoading,
     getCollectionData,
     collectionData,

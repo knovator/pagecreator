@@ -377,7 +377,7 @@ req?.i18n?.(CODE);
 | CODE                       | Description                                                  |
 | -------------------------- | ------------------------------------------------------------ |
 | `widget.getItemsTypes`    | While fetching widget types                                  |
-| `widget.getSelectionTypes` | While fetching selection types                               |
+| `widget.getWidgetTypes` | While fetching selection types                               |
 | `widget.getAll`            | While fetching widgets                                       |
 | `widget.create`            | While creating widget                                        |
 | `widget.update`            | While updating widget                                        |

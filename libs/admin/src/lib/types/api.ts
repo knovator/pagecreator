@@ -23,7 +23,7 @@ export type Routes_Input = {
 };
 
 export type ItemsType = { value: string; label: string };
-export type SelectionType = { value: string; label: string };
+export type WidgetType = { value: string; label: string };
 
 export interface BaseAPIProps {
   config?: any;

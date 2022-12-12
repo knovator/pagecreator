@@ -11,8 +11,10 @@ export function Widget({
   formatItem,
   onClick,
   settings,
-  showTitle,
+  hideTitle,
   className,
+  formatFooter,
+  formatHeader,
 }: WidgetProps) {
   const formatItems = (item: ItemData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(item);
@@ -42,9 +44,11 @@ export function Widget({
   if (!widgetData) return null;
   return (
     <div className="kpc_widget">
-      {typeof showTitle === 'boolean' && !showTitle ? (
+      {hideTitle === true ? null : typeof formatHeader === 'function' ? (
+        formatHeader(widgetData.widgetTitle, widgetData)
+      ) : (
         <h2 className="kpc_widget-title">{widgetData.widgetTitle}</h2>
-      ) : null}
+      )}
       <div className="kpc_widget-body">
         {widgetData.widgetType === 'Carousel' ? (
           <CarouselWidget
@@ -61,6 +65,7 @@ export function Widget({
           />
         )}
       </div>
+      {typeof formatFooter === 'function' ? formatFooter(widgetData) : null}
     </div>
   );
 }

@@ -14,7 +14,7 @@ export function PagePage({ pageData }) {
 export async function getServerSideProps() {
   const pageData = await getData({
     url: process.env.NEXT_PUBLIC_GET_PAGE_URL,
-    code: 'ASEER_ASDFDF_ASER',
+    code: process.env.NEXT_PAGE_CODE,
   });
   return { props: { pageData } };
 }

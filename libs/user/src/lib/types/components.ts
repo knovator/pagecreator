@@ -42,11 +42,13 @@ export interface ReviewCardProps extends UserCardProps {
 export interface WidgetProps {
   widgetData: WidgetData;
   imageBaseUrl?: string;
-  showTitle?: boolean;
+  hideTitle?: boolean;
   formatItem?: (item: ItemData | CollectionItemType) => JSX.Element;
   onClick?: (item: ItemData | CollectionItemType) => void;
   settings?: Settings;
   className?: string;
+  formatHeader?: (title: string, data: WidgetData) => string | JSX.Element;
+  formatFooter?: (data: WidgetData) => string | JSX.Element;
 }
 export interface ItemsTypeProps extends WidgetProps {
   formatItem: (item: CollectionItemType | ItemData) => JSX.Element;
@@ -56,7 +58,7 @@ export interface PageProps {
   title?: string;
   imageBaseUrl?: string;
   pageData: PageData;
-  showWidgetTitles?: boolean;
+  hideWidgetTitles?: boolean;
   formatItem?: (
     CODE: string,
     item: ItemData | CollectionItemType

@@ -126,6 +126,16 @@ import { Widget } from '@knovator/pagecreator';
     - Customize look of Items
 - `onClick` (optional): `(item: ItemData) => void;`
     - OnItem click handler
+- `hideTitle` (optional): boolean;
+    - Do not show the title if true
+- `settings` (optional): [react-slick Settings](https://react-slick.neostack.com/docs/api)
+    - Settings to apply for carousel widget
+- `className` (optional): string
+    - Class name for widget
+- `formatHeader` (optional): `(title: string, data: WidgetData) => string | JSX.Element`
+    - Function to format the widget header
+- `formatFooter` (optional): `(data: WidgetData) => string | JSX.Element`
+    - Function to format the widget footer
 
 ### Page
 ```jsx
@@ -148,6 +158,8 @@ import { Page } from '@knovator/pagecreator';
     - Customize look of Items
 - `onClick` (optional): `(CODE: string, item: ItemData) => JSX.Element;`
     - On Item click handler
+- `hideWidgetTitles` (optional): boolean
+    - Flag to hide widget titles
 
 ### getData
 It's possible to fetch data by yourself and pass them to `Widget` or `Page` components, but if you need easy solution you can use `getData` function.

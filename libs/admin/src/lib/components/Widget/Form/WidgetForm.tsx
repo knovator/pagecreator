@@ -38,7 +38,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
     webTiles,
     mobileTiles,
     formState,
-    widgetTypes,
+    itemsTypes,
     selectionTypes,
     onTileFormSubmit,
     onWidgetFormSubmit,
@@ -60,7 +60,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
   const [selectedCollectionItems, setSelectedCollectionItems] = useState<
     OptionType[]
   >([]);
-  const [selectedWidgetType, setSelectedWidgetType] = useState<
+  const [selectedItemsType, setSelectedItemsType] = useState<
     OptionType | undefined
   >();
 
@@ -71,7 +71,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       } else {
         setShowAutoPlay(false);
       }
-      if (data?.widgetType === 'Image') {
+      if (data?.itemsType === 'Image') {
         setTilesEnabled(true);
       } else {
         setTilesEnabled(false);
@@ -102,15 +102,15 @@ const WidgetForm = ({ formRef }: FormProps) => {
       }
       if (
         data?.collectionName !== 'Image' &&
-        widgetTypes &&
-        widgetTypes.length > 0
+        itemsTypes &&
+        itemsTypes.length > 0
       ) {
-        setSelectedWidgetType(
-          widgetTypes.find((item) => item.value === data?.collectionName)
+        setSelectedItemsType(
+          itemsTypes.find((item) => item.value === data?.collectionName)
         );
       }
     }
-  }, [data, formState, collectionData, widgetTypes]);
+  }, [data, formState, collectionData, itemsTypes]);
 
   useEffect(() => {
     if (formState === 'ADD') {
@@ -129,7 +129,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
     if (callerRef.current) clearTimeout(callerRef.current);
 
     callerRef.current = setTimeout(() => {
-      if (selectedWidgetType) getCollectionData(selectedWidgetType.value, str);
+      if (selectedItemsType) getCollectionData(selectedItemsType.value, str);
     }, 300);
   };
 
@@ -149,26 +149,26 @@ const WidgetForm = ({ formRef }: FormProps) => {
       if (name === 'selectionType') {
         if (value['selectionType'] === 'Carousel') setShowAutoPlay(true);
         else setShowAutoPlay(false);
-      } else if (name === 'widgetType') {
-        if (value['widgetType'] === 'Image') {
-          setSelectedWidgetType(undefined);
+      } else if (name === 'itemsType') {
+        if (value['itemsType'] === 'Image') {
+          setSelectedItemsType(undefined);
           setTilesEnabled(true);
         } else {
-          const selectedWType = widgetTypes.find(
-            (wType) => wType.value === value['widgetType']
+          const selectedWType = itemsTypes.find(
+            (wType) => wType.value === value['itemsType']
           );
-          setSelectedWidgetType(selectedWType);
-          getCollectionData(value['widgetType']);
+          setSelectedItemsType(selectedWType);
+          getCollectionData(value['itemsType']);
           setTilesEnabled(false);
         }
       }
     },
-    [getCollectionData, widgetTypes]
+    [getCollectionData, itemsTypes]
   );
   const onFormSubmit = (data: CombineObjectType) => {
     const formData = { ...data };
-    if (selectedWidgetType && formState === 'ADD') {
-      formData['collectionName'] = selectedWidgetType.value;
+    if (selectedItemsType && formState === 'ADD') {
+      formData['collectionName'] = selectedItemsType.value;
     }
     if (
       Array.isArray(selectedCollectionItems) &&
@@ -239,15 +239,15 @@ const WidgetForm = ({ formRef }: FormProps) => {
       },
     },
     {
-      label: `${t('widget.widgetType')}`,
+      label: `${t('widget.itemsType')}`,
       required: true,
       editable: false,
-      accessor: 'widgetType',
+      accessor: 'itemsType',
       type: 'select',
       validations: {
-        required: t('widget.widgetTypePlaceholder'),
+        required: t('widget.itemsTypePlaceholder'),
       },
-      options: widgetTypes,
+      options: itemsTypes,
     },
     {
       label: `${t('widget.selectionType')}`,
@@ -301,8 +301,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
       },
     },
     {
-      label: selectedWidgetType?.label,
-      placeholder: `Select ${selectedWidgetType?.label}...`,
+      label: selectedItemsType?.label,
+      placeholder: `Select ${selectedItemsType?.label}...`,
       required: true,
       accessor: 'collectionItems',
       type: 'ReactSelect',
@@ -319,7 +319,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       isLoading: collectionDataLoading,
       show: !tilesEnabled,
       formatOptionLabel: formatOptionLabel,
-      listCode: selectedWidgetType?.value,
+      listCode: selectedItemsType?.value,
     },
   ];
   const tileFormSchema: SchemaType[] = [
@@ -401,7 +401,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
           items={selectedCollectionItems}
           onDragEnd={onCollectionIndexChange}
           formatItem={formatListItem}
-          listCode={selectedWidgetType?.value}
+          listCode={selectedItemsType?.value}
         />
       )}
 

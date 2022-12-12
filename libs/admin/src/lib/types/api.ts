@@ -22,7 +22,7 @@ export type Routes_Input = {
   [K in ACTION_TYPES]?: (data: API_INPUT_TYPE) => API_TYPE;
 };
 
-export type WidgetType = { value: string; label: string };
+export type ItemsType = { value: string; label: string };
 export type SelectionType = { value: string; label: string };
 
 export interface BaseAPIProps {

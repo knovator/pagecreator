@@ -4,7 +4,7 @@ import { useProviderState } from '../context/ProviderContext';
 import { paginationDataGatter, dataGatter, build_path } from '../helper/utils';
 import usePagination from './usePagination';
 import request, { getApiType } from '../api';
-import { Routes_Input, SelectionType, WidgetType } from '../types';
+import { Routes_Input, SelectionType, ItemsType } from '../types';
 import { FormActionTypes, ObjectType } from '../types/common';
 
 interface UseWidgetProps {
@@ -33,7 +33,7 @@ const useWidget = ({
   const [totalRecords, setTotalRecords] = useState(0);
   const [itemData, setItemData] = useState<ObjectType | null>(null);
   const [formState, setFormState] = useState<FormActionTypes>();
-  const [widgetTypes, setWidgetTypes] = useState<WidgetType[]>([]);
+  const [itemsTypes, setItemsTypes] = useState<ItemsType[]>([]);
   const [selectionTypes, setSelectionTypes] = useState<SelectionType[]>([]);
   const [collectionDataLoading, setCollectionDataLoading] =
     useState<boolean>(false);
@@ -260,7 +260,7 @@ const useWidget = ({
     }
   };
   const getWidgetsTypes = async () => {
-    if (widgetTypes?.length > 0) return;
+    if (itemsTypes?.length > 0) return;
     setLoading(true);
     const api = getApiType({
       routes,
@@ -276,7 +276,7 @@ const useWidget = ({
     });
     if (response?.code === 'SUCCESS') {
       setLoading(false);
-      return setWidgetTypes(dataGatter(response));
+      return setItemsTypes(dataGatter(response));
     }
     setLoading(false);
   };
@@ -368,14 +368,14 @@ const useWidget = ({
   const onChangeFormState = (state: FormActionTypes, data?: ObjectType) => {
     setItemData(data || null);
     setFormState(state);
-    // fetch WidgetTypes & SelectionTypes if needed
+    // fetch ItemsTypes & SelectionTypes if needed
     if (state === 'ADD' || state === 'UPDATE') {
       getWidgetsTypes();
       getSelectionTypes();
     }
     // get Tile data if widget is updating
     if (state === 'UPDATE' && data) {
-      if (data['widgetType'] !== 'Image' && data['collectionName'])
+      if (data['itemsType'] !== 'Image' && data['collectionName'])
         getCollectionData(data['collectionName']);
       else getTiles(data['_id']);
     } else if (state === 'ADD') {
@@ -519,7 +519,7 @@ const useWidget = ({
     onPartialUpdateWidget,
     onImageUpload,
     onImageRemove,
-    widgetTypes,
+    itemsTypes,
     selectionTypes,
     collectionDataLoading,
     getCollectionData,

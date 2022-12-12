@@ -14,8 +14,8 @@ routes.use(express.json());
 // Widget Routes
 // Get widget types
 routes
-  .get('/widget-types', widgetController.getWidgetTypes)
-  .descriptor(`${descriptorPrefix}widget.getWidgetTypes`);
+  .get('/widget-types', widgetController.getItemsTypes)
+  .descriptor(`${descriptorPrefix}widget.getItemsTypes`);
 // Get widget selection types
 routes
   .get('/selection-types', widgetController.getSelectionTypes)

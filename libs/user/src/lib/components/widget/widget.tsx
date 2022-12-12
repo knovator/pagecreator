@@ -16,7 +16,7 @@ export function Widget({
 }: WidgetProps) {
   const formatTile = (tile: TileData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(tile);
-    else if (widgetData.widgetType === 'Image')
+    else if (widgetData.itemsType === 'Image')
       return (
         <Banner
           key={tile._id}

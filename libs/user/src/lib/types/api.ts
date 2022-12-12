@@ -39,7 +39,7 @@ export interface WidgetData {
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;
-  widgetType: 'Image' | string;
+  itemsType: 'Image' | string;
   selectionType: 'FixedCard' | 'Carousel';
   tiles: TileData[];
   collectionItems: CollectionItemType[];

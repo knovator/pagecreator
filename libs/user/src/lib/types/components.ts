@@ -48,7 +48,7 @@ export interface WidgetProps {
   settings?: Settings;
   className?: string;
 }
-export interface WidgetTypeProps extends WidgetProps {
+export interface ItemsTypeProps extends WidgetProps {
   formatItem: (item: CollectionItemType | TileData) => JSX.Element;
 }
 

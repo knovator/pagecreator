@@ -1,5 +1,5 @@
 import Slider, { Settings, CustomArrowProps } from 'react-slick';
-import { WidgetTypeProps } from '../../../types';
+import { ItemsTypeProps } from '../../../types';
 import Next from '../../../icons/Next';
 import Previous from '../../../icons/Previous';
 import { filterTileData } from '../../../utils/helper';
@@ -45,7 +45,7 @@ export function CarouselWidget({
   formatItem,
   settings,
   className,
-}: WidgetTypeProps) {
+}: ItemsTypeProps) {
   const defaultSettings: Settings = {
     dots: false,
     infinite: true,
@@ -75,7 +75,7 @@ export function CarouselWidget({
   if (!widgetData) return null;
   return (
     <Slider {...(settings ? settings : defaultSettings)} className={className}>
-      {widgetData.widgetType === 'Image'
+      {widgetData.itemsType === 'Image'
         ? widgetData.tiles
             .filter(filterTileData)
             .map((tile, index) => <div key={index}>{formatItem(tile)}</div>)

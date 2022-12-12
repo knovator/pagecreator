@@ -1,4 +1,4 @@
-export enum WidgetType {
+export enum ItemsType {
   Image = 'Image',
 }
 

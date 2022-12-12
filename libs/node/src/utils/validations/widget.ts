@@ -4,7 +4,7 @@ import { defaults } from '../defaults';
 import { VALIDATION } from '../../constants';
 import { getOne } from '../../services/dbService';
 import {
-  WidgetType,
+  ItemsType,
   SelectionTypes,
   IWidgetSchema,
   CollectionItem,
@@ -43,10 +43,10 @@ export const create = joi.object<TileValidation>({
   tabletPerRow: joi.number().allow(null).optional(),
   collectionName: joi.string().optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
-  widgetType: joi
+  itemsType: joi
     .string()
     .custom((value) => {
-      if (Object.keys(WidgetType).includes(value)) {
+      if (Object.keys(ItemsType).includes(value)) {
         return value;
       }
       const collectionIndex = defaults.collections.findIndex(
@@ -58,7 +58,7 @@ export const create = joi.object<TileValidation>({
       throw new Error(`${value} is not a valid widget type`);
     })
     .optional()
-    .default(WidgetType.Image),
+    .default(ItemsType.Image),
   selectionType: joi
     .string()
     .valid(...Object.values(SelectionTypes))

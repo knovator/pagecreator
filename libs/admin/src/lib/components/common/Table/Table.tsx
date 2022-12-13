@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from '../Button';
 import Pencil from '../../../icons/pencil';
 import Trash from '../../../icons/trash';
 import { ObjectType, TableDataItemFormat, TableProps } from '../../../types';
@@ -36,7 +35,7 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
           <div className="khb_table-height">{loader}</div>
         ) : (
           <table className="khb_table">
-            <thead className="khb_table-thead">
+            <thead className="khb_thead">
               <tr>
                 {dataKeys.map((key, i) => (
                   <th scope="col" className="khb_table-heading" key={i}>
@@ -50,7 +49,7 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
                 )}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="khb_tbody">
               {data.length > 0 ? (
                 data.map((item: ObjectType, i: number) => (
                   <tr
@@ -61,18 +60,20 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
                     {actions && (
                       <td className="khb_table-row-actions">
                         {actions.edit && (
-                          <Button size="xs" onClick={() => actions.edit!(item)}>
+                          <button
+                            className="khb_actions-update"
+                            onClick={() => actions.edit!(item)}
+                          >
                             <Pencil />
-                          </Button>
+                          </button>
                         )}
                         {actions.delete && (
-                          <Button
-                            size="xs"
-                            type="danger"
+                          <button
+                            className="khb_actions-delete"
                             onClick={() => actions.delete!(item)}
                           >
                             <Trash />
-                          </Button>
+                          </button>
                         )}
                       </td>
                     )}

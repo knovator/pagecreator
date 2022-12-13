@@ -59,7 +59,7 @@
 .khb_table {
     @apply w-full text-sm text-left text-gray-500 dark:text-gray-400;
 }
-.khb_table-thead {
+.khb_thead {
     @apply text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400;
 }
 .khb_table-heading {
@@ -76,6 +76,12 @@
 }
 .khb_table-row-actions {
     @apply p-0.5;
+}
+.khb_actions-update {
+    @apply khb_btn khb_btn-primary khb_btn-xs;
+}
+.khb_actions-delete {
+    @apply khb_btn khb_btn-danger khb_btn-xs;
 }
 /* \ End of Table */
 

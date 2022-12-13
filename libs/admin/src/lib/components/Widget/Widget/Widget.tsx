@@ -147,6 +147,13 @@ const Widget = ({
           itemData={itemData}
           onClose={onCloseForm}
           onConfirmDelete={onCofirmDeleteWidget}
+          confirmationRequired={derivedT('confirmationRequired')}
+          confirm={derivedT('confirm')}
+          lossOfData={derivedT('lossOfData')}
+          permanentlyDelete={derivedT('permanentlyDelete')}
+          pleaseType={derivedT('pleaseType')}
+          toProceedOrCancel={derivedT('toProceedOrCancel')}
+          typeHerePlaceholder={derivedT('typeHerePlaceholder')}
         />
       )}
     </WidgetContextProvider>

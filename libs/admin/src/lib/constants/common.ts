@@ -26,6 +26,7 @@ const DEFAULT_PERMISSIONS = {
 };
 
 const TRANSLATION_PAIRS_COMMON = {
+  confirmationRequired: 'Confirmation Required',
   permanentlyDelete: 'You are about to permanently delete the',
   lossOfData:
     'This action can lead to data loss. To prevent accidental actions we ask you to confirm your intention.',
@@ -45,6 +46,7 @@ const TRANSLATION_PAIRS_COMMON = {
   saveButtonText: 'Save',
   showing: 'Showing',
   of: 'of',
+  typeHerePlaceholder: 'Type Here',
 };
 
 const TRANSLATION_PAIRS_WIDGET = {

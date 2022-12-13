@@ -59,7 +59,7 @@ const Drawer = ({
                 <div className="khb_drawer-header">
                   <p className="khb_drawer-header-title">{title}</p>
                 </div>
-                <div className="relative flex-1 px-6 py-6 overflow-auto">
+                <div className="khb_darwer-content">
                   {/* Replace with your content */}
                   {children}
                   {/* /End replace */}

@@ -10,6 +10,8 @@ const WidgetPagination = () => {
       ofText={t('of')}
       pageText={t('page')}
       showingText={t('showing')}
+      nextContent={t('nextContent')}
+      previousContent={t('previousContent')}
       totalPages={totalPages}
       totalRecords={totalRecords}
       currentPage={currentPage}

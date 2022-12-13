@@ -175,6 +175,8 @@ export interface PaginationProps {
   showingText?: string;
   pageText?: string;
   ofText?: string;
+  previousContent?: string | React.ReactNode;
+  nextContent?: string | React.ReactNode;
 }
 export interface ItemsAccordianProps {
   id: string;
@@ -221,11 +223,13 @@ export interface DeleteModalProps {
   onClose: () => void;
   itemData: ObjectType;
   onConfirmDelete: () => void;
+  confirmationRequired?: string;
   permanentlyDelete?: string;
   lossOfData?: string;
   pleaseType?: string;
   toProceedOrCancel?: string;
   confirm?: string;
+  typeHerePlaceholder?: string;
 }
 // Table
 export type CellInputType = (parameters: {

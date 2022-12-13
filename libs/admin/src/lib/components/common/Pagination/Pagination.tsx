@@ -15,6 +15,8 @@ const Pagination = ({
   showingText = TRANSLATION_PAIRS_COMMON.showing,
   pageText = TRANSLATION_PAIRS_COMMON.page,
   ofText = TRANSLATION_PAIRS_COMMON.of,
+  previousContent,
+  nextContent,
 }: PaginationProps) => {
   const [localCurrentPage, setLocalCurrentPage] = useState(currentPage);
   const updatePagination = () => {
@@ -55,10 +57,11 @@ const Pagination = ({
         <Button
           size="xs"
           type="secondary"
+          className="khb_pagination-previous"
           disabled={currentPage - 1 === 0}
           onClick={() => onPaginationButtonClick('previous')}
         >
-          <ChevronLeft srText="Previous" />
+          {previousContent || <ChevronLeft srText="Previous" />}
         </Button>
         <div className="khb_pagination-pager">
           {pageText}{' '}
@@ -76,10 +79,11 @@ const Pagination = ({
         <Button
           size="xs"
           type="secondary"
+          className="khb_pagination-next"
           disabled={currentPage === totalPages}
           onClick={() => onPaginationButtonClick('next')}
         >
-          <ChevronRight srText="Next" />
+          {nextContent || <ChevronRight srText="Next" />}
         </Button>
       </ul>
     </nav>

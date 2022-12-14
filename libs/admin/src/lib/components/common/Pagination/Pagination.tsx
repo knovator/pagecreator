@@ -73,6 +73,7 @@ const Pagination = ({
             value={localCurrentPage}
             onChange={(e) => setLocalCurrentPage(Number(e.target.value))}
             onBlur={updatePagination}
+            disabled={!totalRecords}
           />{' '}
           / {totalPages}
         </div>
@@ -80,7 +81,7 @@ const Pagination = ({
           size="xs"
           type="secondary"
           className="khb_pagination-next"
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || !totalRecords}
           onClick={() => onPaginationButtonClick('next')}
         >
           {nextContent || <ChevronRight srText="Next" />}

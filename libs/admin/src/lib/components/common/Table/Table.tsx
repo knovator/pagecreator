@@ -59,22 +59,27 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
                     {dataKeys.map((key, j) => cellItemRenderer(item, key, j))}
                     {actions && (
                       <td className="khb_table-row-actions">
-                        {actions.edit && (
+                        {actions.edit && typeof actions.edit === 'function' ? (
                           <button
                             className="khb_actions-update"
-                            onClick={() => actions.edit!(item)}
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            onClick={() => actions.edit(item)}
                           >
                             <Pencil />
                           </button>
-                        )}
-                        {actions.delete && (
-                          <button
-                            className="khb_actions-delete"
-                            onClick={() => actions.delete!(item)}
-                          >
-                            <Trash />
-                          </button>
-                        )}
+                        ) : null}
+                        {actions.delete &&
+                          typeof actions.delete === 'function' && (
+                            <button
+                              className="khb_actions-delete"
+                              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                              // @ts-ignore
+                              onClick={() => actions.delete!(item)}
+                            >
+                              <Trash />
+                            </button>
+                          )}
                       </td>
                     )}
                   </tr>

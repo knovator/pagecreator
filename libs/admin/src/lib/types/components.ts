@@ -163,8 +163,9 @@ export interface PageProps {
   t?: any;
   loader?: any;
   explicitForm?: boolean;
-  permissions?: PermissionsObj;
   children?: JSX.Element;
+  permissions?: PermissionsObj;
+  preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
 }
 export interface PaginationProps {
   totalPages: number;
@@ -248,8 +249,8 @@ export interface TableProps {
   loading?: boolean;
   loader?: any;
   actions?: {
-    edit?: (data: { [key: string]: any }) => void;
-    delete?: (data: { [key: string]: any }) => void;
+    edit?: ((data: { [key: string]: any }) => void) | boolean;
+    delete?: ((data: { [key: string]: any }) => void) | boolean;
   };
 }
 // \ End Table

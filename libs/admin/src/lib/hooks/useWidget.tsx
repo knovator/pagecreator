@@ -8,6 +8,7 @@ import { Routes_Input, WidgetType, ItemsType } from '../types';
 import { FormActionTypes, ObjectType } from '../types/common';
 
 interface UseWidgetProps {
+  canList?: boolean;
   defaultLimit: number;
   routes?: Routes_Input;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
@@ -18,6 +19,7 @@ interface ItemsList {
 }
 
 const useWidget = ({
+  canList = true,
   defaultLimit,
   routes,
   preConfirmDelete,
@@ -490,9 +492,9 @@ const useWidget = ({
   };
 
   useEffect(() => {
-    getWidgets();
+    if (canList) getWidgets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, currentPage]);
+  }, [pageSize, currentPage, canList]);
 
   return {
     list,

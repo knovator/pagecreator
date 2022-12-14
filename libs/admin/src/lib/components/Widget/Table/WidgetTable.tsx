@@ -9,7 +9,9 @@ const WidgetTable = () => {
   const { switchClass } = useProviderState();
   const {
     list,
-    canList,
+    canUpdate,
+    canDelete,
+    canPartialUpdate,
     onChangeFormState,
     onPartialUpdateWidget,
     loading,
@@ -27,7 +29,24 @@ const WidgetTable = () => {
   const onDeleteClick = (item: CombineObjectType) =>
     onChangeFormState('DELETE', item);
 
-  if (!canList) return null;
+  const dataKeys: any[] = [
+    { label: t('widget.tableName'), dataKey: 'name', highlight: true },
+    { label: t('widget.tableCode'), dataKey: 'code' },
+  ];
+  if (canPartialUpdate)
+    dataKeys.push({
+      label: t('widget.tableActive'),
+      dataKey: 'isActive',
+      Cell: ({ row }: any) =>
+        canPartialUpdate ? (
+          <ToggleWidget
+            switchClass={switchClass}
+            isChecked={row?.isActive}
+            onChange={(status) => updateClosure(row, 'isActive', status)}
+          />
+        ) : null,
+    });
+
   return (
     <Table
       data={list}
@@ -36,21 +55,10 @@ const WidgetTable = () => {
       dataKeys={[
         { label: t('widget.tableName'), dataKey: 'name', highlight: true },
         { label: t('widget.tableCode'), dataKey: 'code' },
-        {
-          label: t('widget.tableActive'),
-          dataKey: 'isActive',
-          Cell: ({ row }) => (
-            <ToggleWidget
-              switchClass={switchClass}
-              isChecked={row?.isActive}
-              onChange={(status) => updateClosure(row, 'isActive', status)}
-            />
-          ),
-        },
       ]}
       actions={{
-        edit: onUpdateClick,
-        delete: onDeleteClick,
+        edit: canUpdate ? onUpdateClick : false,
+        delete: canDelete ? onDeleteClick : false,
       }}
     />
   );

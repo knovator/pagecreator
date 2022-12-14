@@ -24,8 +24,12 @@ const Page = ({
   loader,
   explicitForm = false,
   children,
-  permissions = DEFAULT_PERMISSIONS,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  permissions = {},
+  preConfirmDelete,
 }: PageProps) => {
+  const derivedPermissions = Object.assign(DEFAULT_PERMISSIONS, permissions);
   const formRef = useRef<HTMLFormElement | null>(null);
   const derivedT = createTranslation(t, {
     ...TRANSLATION_PAIRS_COMMON,
@@ -52,6 +56,8 @@ const Page = ({
     getPages,
   } = usePage({
     defaultLimit: 10,
+    preConfirmDelete,
+    canList: derivedPermissions.list,
   });
 
   return (
@@ -76,10 +82,10 @@ const Page = ({
       formState={formState}
       closeForm={onCloseForm}
       // permissions
-      canAdd={permissions?.add}
-      canDelete={permissions?.delete}
-      canUpdate={permissions?.update}
-      canList={permissions?.list}
+      canAdd={derivedPermissions.add}
+      canDelete={derivedPermissions.delete}
+      canUpdate={derivedPermissions.update}
+      canList={derivedPermissions.list}
     >
       {children ? (
         children

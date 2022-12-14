@@ -7,12 +7,18 @@ import request, { getApiType } from '../api';
 import { FormActionTypes, ObjectType, Routes_Input } from '../types';
 
 interface UsePageProps {
+  canList?: boolean;
   defaultLimit: number;
   routes?: Routes_Input;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
 }
 
-const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
+const usePage = ({
+  routes,
+  defaultLimit,
+  canList = true,
+  preConfirmDelete,
+}: UsePageProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
   const [loading, setLoading] = useState(false);
   const [widgets, setWidgets] = useState<ObjectType[]>([]);
@@ -238,10 +244,10 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
   };
 
   useEffect(() => {
-    getPages();
+    if (canList) getPages();
     getWidgets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, currentPage]);
+  }, [pageSize, currentPage, canList]);
 
   return {
     list,

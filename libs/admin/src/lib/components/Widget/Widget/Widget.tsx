@@ -25,12 +25,15 @@ const Widget = ({
   routes,
   loader,
   explicitForm = false,
-  permissions = DEFAULT_PERMISSIONS,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  permissions = {},
   preConfirmDelete,
   formatListItem,
   formatOptionLabel,
   children,
 }: WidgetProps) => {
+  const derivedPermissions = Object.assign(DEFAULT_PERMISSIONS, permissions);
   const widgetFormRef = useRef<HTMLFormElement | null>(null);
   const derivedT = createTranslation(t, {
     ...TRANSLATION_PAIRS_COMMON,
@@ -67,6 +70,7 @@ const Widget = ({
     itemsLoading,
     onItemFormSubmit,
   } = useWidget({
+    canList: derivedPermissions.list,
     routes,
     defaultLimit: 10,
     preConfirmDelete,
@@ -104,11 +108,11 @@ const Widget = ({
       itemsLoading={itemsLoading}
       onItemFormSubmit={onItemFormSubmit}
       // Permissions
-      canAdd={permissions.add}
-      canDelete={permissions.delete}
-      canList={permissions.list}
-      canUpdate={permissions.update}
-      canPartialUpdate={permissions.partialUpdate}
+      canAdd={derivedPermissions.add}
+      canDelete={derivedPermissions.delete}
+      canList={derivedPermissions.list}
+      canUpdate={derivedPermissions.update}
+      canPartialUpdate={derivedPermissions.partialUpdate}
       formState={formState}
       closeForm={onCloseForm}
     >

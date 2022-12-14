@@ -21,7 +21,7 @@ const WidgetFormActions = ({ formRef }: FormActionWrapperProps) => {
       return onError(
         CALLBACK_CODES.INTERNAL,
         'error',
-        `formRef is empty, make sure it's passed as 'ref' prop to the form!`
+        `formRef is empty, make sure it's passed as 'formRef' prop to the form!`
       );
     }
     // formRef is provided

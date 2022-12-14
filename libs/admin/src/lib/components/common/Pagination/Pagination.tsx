@@ -45,7 +45,7 @@ const Pagination = ({
       <span className="khb_pagination-total">
         {showingText}{' '}
         <span className="khb_pagination-total-showing">
-          {(currentPage - 1) * pageSize + 1}
+          {!totalRecords ? 0 : (currentPage - 1) * pageSize + 1}
         </span>{' '}
         -{' '}
         <span className="khb_pagination-total-showing">

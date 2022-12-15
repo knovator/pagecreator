@@ -29,6 +29,11 @@ export interface IPageSchema extends Document {
   code: string;
   widgets: string[];
 }
+export interface ITabSchema extends Document {
+  name: string;
+  widgetId: typeof Types.ObjectId;
+  collectionItems: string[];
+}
 export interface ISrcSetSchema extends Document {
   width: number;
   height: number;
@@ -90,7 +95,8 @@ export type EntityType =
   | IWidgetSchema
   | IItemSchema
   | IPageSchema
-  | ISrcSetSchema;
+  | ISrcSetSchema
+  | ITabSchema;
 export type ReturnDocument = EntityType;
 export interface IModel<T> extends Model<T> {
   paginate: (

@@ -4,8 +4,10 @@ require('express-list-endpoints-descriptor')(express);
 import { IRouter } from '../types';
 
 import validate from '../utils/validate';
+import * as tabValidation from '../utils/validations/tab';
 import * as widgetValidation from '../utils/validations/widget';
 import * as widgetController from '../controllers/WidgetController';
+import * as tabController from '../controllers/TabController';
 
 const descriptorPrefix = process.env['PAGECREATOR_DESCRIPTOR_PREFIX'] || '';
 const routes = express.Router() as IRouter;
@@ -52,5 +54,18 @@ routes
     widgetController.getCollectionData
   )
   .descriptor(`${descriptorPrefix}widget.getCollectionData`);
+// Tabs
+routes
+  .post('/tabs', validate(tabValidation.create), tabController.createTab)
+  .descriptor(`${descriptorPrefix}tab.create`);
+routes
+  .put('/tabs/:tabId', validate(tabValidation.update), tabController.updateTab)
+  .descriptor(`${descriptorPrefix}tab.update`);
+routes
+  .delete('/tabs/:tabId', tabController.deleteTab)
+  .descriptor(`${descriptorPrefix}tab.delete`);
+routes
+  .get('/tabs/:widgetId', tabController.getTabs)
+  .descriptor(`${descriptorPrefix}tab.getAll`);
 
 export default routes;

@@ -1,5 +1,4 @@
 import { Types, model, Schema, models } from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
 import { Widget } from './../models';
 import { create, remove, update, list, getAll } from '../services/dbService';
 import {
@@ -19,7 +18,7 @@ import {
 } from '../types';
 
 const catchAsync = (fn: any) => {
-  return defaults.catchAsync(fn, 'Notification');
+  return defaults.catchAsync(fn, 'Widget');
 };
 
 export const createWidget = catchAsync(

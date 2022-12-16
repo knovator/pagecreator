@@ -30,6 +30,12 @@ export function Widget({
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           srcSets={buildSrcSets(imageBaseUrl, item.srcSets)}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          title={item.title}
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          subtitle={item.subtitle}
         />
       );
     else
@@ -43,7 +49,10 @@ export function Widget({
   };
   if (!widgetData) return null;
   return (
-    <div className="kpc_widget">
+    <div
+      className="kpc_widget"
+      style={{ backgroundColor: widgetData.backgroundColor }}
+    >
       {hideTitle === true ? null : typeof formatHeader === 'function' ? (
         formatHeader(widgetData.widgetTitle, widgetData)
       ) : (

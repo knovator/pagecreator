@@ -60,6 +60,7 @@ const TRANSLATION_PAIRS_WIDGET = {
   'widget.itemsTypePlaceholder': 'Select Items Type',
   'widget.widgetType': 'Widget Type',
   'widget.widgetTypeRequired': 'Widget Type is required',
+  'widget.color': 'Color',
   'widget.code': 'Code',
   'widget.codePlaceholder': 'Enter code',
   'widget.codeRequired': 'Code is required',
@@ -85,6 +86,8 @@ const TRANSLATION_PAIRS_WIDGET = {
 const TRANSLATION_PAIRS_ITEM = {
   'item.title': 'Title',
   'item.titlePlaceholder': 'Enter title',
+  'item.subtitle': 'Subtitle',
+  'item.subTitlePlaceholder': 'Enter Subtitle',
   'item.altText': 'Alt Text',
   'item.altTextPlaceholder': 'Enter alt text',
   'item.link': 'Link',

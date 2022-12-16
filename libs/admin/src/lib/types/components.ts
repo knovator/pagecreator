@@ -148,7 +148,8 @@ export interface SchemaType extends ReactSelectProps {
     | 'file'
     | 'url'
     | 'ReactSelect'
-    | 'srcset';
+    | 'srcset'
+    | 'color';
   options?: { value: string; label: string }[];
   selectedOptions?: { value: string; label: string }[];
   isMulti?: boolean;

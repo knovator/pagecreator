@@ -49,10 +49,12 @@ export interface IWidgetSchema extends Document {
   widgetType: WidgetTypes;
   collectionName: string;
   collectionItems: string[];
+  backgroundColor: string;
 }
 export interface IItemSchema extends Document {
   widgetId: typeof Types.ObjectId;
   title: string;
+  subtitle: string;
   altText: string;
   link: string;
   sequence: number;

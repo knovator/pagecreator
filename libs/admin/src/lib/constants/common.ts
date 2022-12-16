@@ -60,6 +60,7 @@ const TRANSLATION_PAIRS_WIDGET = {
   'widget.itemsTypePlaceholder': 'Select Items Type',
   'widget.widgetType': 'Widget Type',
   'widget.widgetTypeRequired': 'Widget Type is required',
+  'widget.color': 'Color',
   'widget.code': 'Code',
   'widget.codePlaceholder': 'Enter code',
   'widget.codeRequired': 'Code is required',

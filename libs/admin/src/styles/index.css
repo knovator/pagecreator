@@ -140,6 +140,9 @@
 .khb_input-srcset-items {
     @apply space-y-1;
 }
+.khb_input-color {
+    @apply h-14;
+}
 /* \ End of Input */
 
 /* Drawer */

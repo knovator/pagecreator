@@ -1,10 +1,7 @@
+import classNames from 'classnames';
 import React, { forwardRef, MutableRefObject } from 'react';
 import { Controller } from 'react-hook-form';
-import {
-  CombineObjectType,
-  OptionType,
-  SchemaType,
-} from '../../../types';
+import { CombineObjectType, OptionType, SchemaType } from '../../../types';
 
 import Input from '../Input';
 import CustomReactSelect from '../Input/ReactSelect';
@@ -122,6 +119,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
           case 'text':
           case 'number':
           case 'url':
+          case 'color':
           default:
             input = (
               <Input
@@ -129,7 +127,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
                 label={schema.label}
                 error={errors[schema.accessor]?.message?.toString()}
                 type={schema.type}
-                className="w-full p-2"
+                className={classNames('w-full p-2', schema.className)}
                 placeholder={schema.placeholder}
                 disabled={
                   (isUpdating &&

@@ -271,6 +271,12 @@ const WidgetForm = ({ formRef }: FormProps) => {
       switchClass: switchClass,
     },
     {
+      label: t('widget.color'),
+      accessor: 'backgroundColor',
+      type: 'color',
+      className: 'khb_input-color',
+    },
+    {
       label: t('widget.webPerRow'),
       accessor: 'webPerRow',
       type: 'number',

@@ -1,3 +1,4 @@
+import React from 'react';
 import { CardProps } from '../../../../types';
 
 export function Banner({

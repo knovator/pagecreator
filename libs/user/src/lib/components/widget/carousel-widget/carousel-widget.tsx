@@ -1,3 +1,4 @@
+import React from 'react';
 import Slider, { Settings, CustomArrowProps } from 'react-slick';
 import { ItemsTypeProps } from '../../../types';
 import Next from '../../../icons/Next';

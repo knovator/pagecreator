@@ -45,6 +45,7 @@ export interface WidgetProps {
   widgetData: WidgetData;
   imageBaseUrl?: string;
   hideTitle?: boolean;
+  hideBackgroundColor?: boolean;
   formatItem?: (item: ItemData | CollectionItemType) => JSX.Element;
   onClick?: (item: ItemData | CollectionItemType) => void;
   settings?: Settings;

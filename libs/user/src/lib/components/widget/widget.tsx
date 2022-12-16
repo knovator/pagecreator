@@ -16,6 +16,7 @@ export function Widget({
   className,
   formatFooter,
   formatHeader,
+  hideBackgroundColor,
 }: WidgetProps) {
   const formatItems = (item: ItemData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(item);
@@ -52,7 +53,11 @@ export function Widget({
   return (
     <div
       className="kpc_widget"
-      style={{ backgroundColor: widgetData.backgroundColor }}
+      style={{
+        ...(hideBackgroundColor
+          ? {}
+          : { backgroundColor: widgetData.backgroundColor }),
+      }}
     >
       {hideTitle === true ? null : typeof formatHeader === 'function' ? (
         formatHeader(widgetData.widgetTitle, widgetData)

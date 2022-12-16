@@ -43,10 +43,12 @@ export interface WidgetData {
   widgetType: 'FixedCard' | 'Carousel';
   items: ItemData[];
   collectionItems: CollectionItemType[];
+  backgroundColor: string;
 }
 export interface ItemData {
   _id: string;
   title: string;
+  subtitle?: string;
   altText: string;
   link: string;
   itemType: 'Web' | 'Mobile';

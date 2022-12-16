@@ -1,3 +1,4 @@
+import React from 'react';
 import { CollectionItemProps } from '../../../types';
 
 export function CollectionItem({ name, onClick }: CollectionItemProps) {

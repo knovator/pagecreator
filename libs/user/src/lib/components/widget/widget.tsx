@@ -1,3 +1,4 @@
+import React from 'react';
 import { CollectionItemType, ItemData, WidgetProps } from '../../types';
 import FixedWidget from './fixed-widget/fixed-widget';
 import CarouselWidget from './carousel-widget/carousel-widget';

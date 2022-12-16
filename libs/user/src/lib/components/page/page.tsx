@@ -1,3 +1,4 @@
+import React from 'react';
 import { PageProps } from '../../types';
 import Widget from '../widget/widget';
 

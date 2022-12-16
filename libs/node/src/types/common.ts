@@ -53,6 +53,7 @@ export interface IWidgetSchema extends Document {
 export interface IItemSchema extends Document {
   widgetId: typeof Types.ObjectId;
   title: string;
+  subtitle: string;
   altText: string;
   link: string;
   sequence: number;

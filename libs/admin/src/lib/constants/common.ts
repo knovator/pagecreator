@@ -85,6 +85,8 @@ const TRANSLATION_PAIRS_WIDGET = {
 const TRANSLATION_PAIRS_ITEM = {
   'item.title': 'Title',
   'item.titlePlaceholder': 'Enter title',
+  'item.subtitle': 'Subtitle',
+  'item.subTitlePlaceholder': 'Enter Subtitle',
   'item.altText': 'Alt Text',
   'item.altTextPlaceholder': 'Enter alt text',
   'item.link': 'Link',

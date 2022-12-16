@@ -335,6 +335,12 @@ const WidgetForm = ({ formRef }: FormProps) => {
       placeholder: t('item.titlePlaceholder'),
     },
     {
+      label: `${t('item.subtitle')}`,
+      accessor: 'subtitle',
+      type: 'text',
+      placeholder: t('item.subTitlePlaceholder'),
+    },
+    {
       label: `${t('item.altText')}`,
       accessor: 'altText',
       type: 'text',

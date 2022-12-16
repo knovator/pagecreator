@@ -21,6 +21,18 @@ import {
   OptionType,
   SchemaType,
 } from '../../../types';
+import Tabs from './Tabs';
+
+const constants = {
+  widgetTypeAccessor: 'widgetType',
+  itemTypeAccessor: 'itemsType',
+  collectionNameAccessor: 'collectionName',
+  tabsWidgetTypeValue: 'Tabs',
+  fixedCardWidgetTypeValue: 'FixedCard',
+  carouselWidgetTypeValue: 'Carousel',
+  imageItemsTypeValue: 'Image',
+  tabsAccessor: 'tabs',
+};
 
 const WidgetForm = ({ formRef }: FormProps) => {
   const {
@@ -32,7 +44,10 @@ const WidgetForm = ({ formRef }: FormProps) => {
     control,
     watch,
     setError,
-  } = useForm();
+    getValues,
+  } = useForm({
+    shouldUnregister: false,
+  });
   const { baseUrl, switchClass } = useProviderState();
   const {
     t,
@@ -59,22 +74,20 @@ const WidgetForm = ({ formRef }: FormProps) => {
 
   const [webItemsVisible, setWebItemsVisible] = useState(false);
   const [mobileItemsVisible, setMobileItemsVisible] = useState(false);
+  const [selectedWidgetType, setSelectedWidgetType] = useState<
+    'FixedCard' | 'Carousel' | 'Tabs'
+  >();
   const [itemsEnabled, setItemsEnabled] = useState(true);
-  const [showAutoPlay, setShowAutoPlay] = useState(false);
   const [selectedCollectionItems, setSelectedCollectionItems] = useState<
     OptionType[]
   >([]);
-  const [selectedItemsType, setSelectedItemsType] = useState<
+  const [selectedCollectionType, setSelectedCollectionType] = useState<
     OptionType | undefined
   >();
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
-      if (data?.widgetType === 'Carousel') {
-        setShowAutoPlay(true);
-      } else {
-        setShowAutoPlay(false);
-      }
+      setSelectedWidgetType(data?.widgetType);
       if (data?.itemsType === 'Image') {
         setItemsEnabled(true);
       } else {
@@ -86,21 +99,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
         collectionData &&
         collectionData.length > 0
       ) {
-        let item;
-        setSelectedCollectionItems(
-          data?.collectionItems?.map((itemId: string) => {
-            item = collectionData.find(
-              (item) => item._id === itemId || item.id === itemId
-            );
-            return item
-              ? {
-                  label: item.name,
-                  value: item._id || item.id,
-                  ...item,
-                }
-              : {};
-          }) || []
-        );
+        setSelectedCollectionItems(data?.collectionItems || []);
       } else {
         setSelectedCollectionItems([]);
       }
@@ -109,12 +108,12 @@ const WidgetForm = ({ formRef }: FormProps) => {
         itemsTypes &&
         itemsTypes.length > 0
       ) {
-        setSelectedItemsType(
+        setSelectedCollectionType(
           itemsTypes.find((item) => item.value === data?.collectionName)
         );
       }
     }
-  }, [data, formState, collectionData, itemsTypes]);
+  }, [data, formState, collectionData, itemsTypes, setValue]);
 
   useEffect(() => {
     if (formState === 'ADD') {
@@ -133,7 +132,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
     if (callerRef.current) clearTimeout(callerRef.current);
 
     callerRef.current = setTimeout(() => {
-      if (selectedItemsType) getCollectionData(selectedItemsType.value, str);
+      if (selectedCollectionType)
+        getCollectionData(selectedCollectionType.value, str);
     }, 300);
   };
 
@@ -146,34 +146,84 @@ const WidgetForm = ({ formRef }: FormProps) => {
     event.target.value = changeToCode(event.target.value);
     return event;
   }
+  const getFirstItemTypeValue = useCallback(
+    (widgetType: string) => {
+      const derivedItemTypes =
+        widgetType === constants.tabsWidgetTypeValue
+          ? itemsTypes.filter((item) => item.label !== 'Image')
+          : itemsTypes;
+      return derivedItemTypes[0]?.value;
+    },
+    [itemsTypes]
+  );
+  const getFirstWidgetTypeValue = useCallback(() => {
+    return widgetTypes[0].value;
+  }, [widgetTypes]);
 
   // Widget Form Functions
   const onWidgetFormInputChange = useCallback(
     (value: ObjectType, name: string | undefined) => {
       if (name === 'widgetType') {
-        if (value['widgetType'] === 'Carousel') setShowAutoPlay(true);
-        else setShowAutoPlay(false);
-      } else if (name === 'itemsType') {
-        if (value['itemsType'] === 'Image') {
-          setSelectedItemsType(undefined);
+        setSelectedWidgetType(value[name] as any);
+        if (value[name] === 'Tabs') {
+          getCollectionData(getFirstItemTypeValue(value[name]));
+        }
+      } else if (name === constants.itemTypeAccessor) {
+        if (
+          value[constants.itemTypeAccessor] === constants.imageItemsTypeValue
+        ) {
+          setSelectedCollectionType(undefined);
           setItemsEnabled(true);
         } else {
           const selectedWType = itemsTypes.find(
-            (wType) => wType.value === value['itemsType']
+            (wType) => wType.value === value[constants.itemTypeAccessor]
           );
-          setSelectedItemsType(selectedWType);
-          getCollectionData(value['itemsType']);
+          setSelectedCollectionType(selectedWType);
+          getCollectionData(value[constants.itemTypeAccessor]);
           setItemsEnabled(false);
         }
       }
     },
-    [getCollectionData, itemsTypes]
+    [getCollectionData, getFirstItemTypeValue, itemsTypes]
   );
   const onFormSubmit = (data: CombineObjectType) => {
     const formData = { ...data };
-    if (selectedItemsType && formState === 'ADD') {
-      formData['collectionName'] = selectedItemsType.value;
+    // setting widget type if undefined
+    if (!formData[constants.widgetTypeAccessor] && formState === 'ADD') {
+      formData[constants.widgetTypeAccessor] = getFirstWidgetTypeValue();
     }
+    // setting tabs data if widgetType tab is selected
+    const tabsData = getValues('tabs');
+    if (
+      Array.isArray(tabsData) &&
+      (formData[constants.widgetTypeAccessor] ===
+        constants.tabsWidgetTypeValue ||
+        formState === 'UPDATE')
+    ) {
+      formData[constants.tabsAccessor] = tabsData.map((tabItem) => ({
+        name: tabItem.name,
+        collectionItems: tabItem.collectionItems.map(
+          (item: OptionType) => item.value
+        ),
+      }));
+    } else formData[constants.tabsAccessor] = [];
+    // setting items type if undefined
+    if (!formData[constants.itemTypeAccessor] && formState === 'ADD') {
+      formData[constants.itemTypeAccessor] = getFirstItemTypeValue(
+        formData[constants.widgetTypeAccessor] as string
+      );
+    }
+    // setting collectionName if widgetType is FixedCard or Carousel and FormState
+    if (
+      formData[constants.itemTypeAccessor] !== constants.imageItemsTypeValue && formState === 'ADD'
+    ) {
+      formData['collectionName'] = selectedCollectionType
+        ? selectedCollectionType.value
+        : getFirstItemTypeValue(
+            formData[constants.widgetTypeAccessor] as string
+          );
+    }
+    // setting colleciton items if collectionItems are there
     if (
       Array.isArray(selectedCollectionItems) &&
       selectedCollectionItems.length > 0
@@ -243,19 +293,9 @@ const WidgetForm = ({ formRef }: FormProps) => {
       },
     },
     {
-      label: `${t('widget.itemsType')}`,
-      required: true,
-      editable: false,
-      accessor: 'itemsType',
-      type: 'select',
-      validations: {
-        required: t('widget.itemsTypePlaceholder'),
-      },
-      options: itemsTypes,
-    },
-    {
       label: `${t('widget.widgetType')}`,
       required: true,
+      editable: false,
       accessor: 'widgetType',
       type: 'select',
       validations: {
@@ -267,8 +307,22 @@ const WidgetForm = ({ formRef }: FormProps) => {
       label: t('widget.autoPlay'),
       accessor: 'autoPlay',
       type: 'checkbox',
-      show: showAutoPlay,
+      show: selectedWidgetType === 'Carousel',
       switchClass: switchClass,
+    },
+    {
+      label: `${t('widget.itemsType')}`,
+      required: true,
+      editable: false,
+      accessor: 'itemsType',
+      type: 'select',
+      validations: {
+        required: t('widget.itemsTypePlaceholder'),
+      },
+      options:
+        selectedWidgetType === 'Tabs'
+          ? itemsTypes.filter((item) => item.label !== 'Image')
+          : itemsTypes,
     },
     {
       label: t('widget.webPerRow'),
@@ -305,8 +359,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
       },
     },
     {
-      label: selectedItemsType?.label,
-      placeholder: `Select ${selectedItemsType?.label}...`,
+      label: selectedCollectionType?.label,
+      placeholder: `Select ${selectedCollectionType?.label}...`,
       required: true,
       accessor: 'collectionItems',
       type: 'ReactSelect',
@@ -321,9 +375,9 @@ const WidgetForm = ({ formRef }: FormProps) => {
       onChange: setSelectedCollectionItems,
       onSearch: onChangeSearch,
       isLoading: collectionDataLoading,
-      show: !itemsEnabled,
+      show: !itemsEnabled && selectedWidgetType !== 'Tabs',
       formatOptionLabel: formatOptionLabel,
-      listCode: selectedItemsType?.value,
+      listCode: selectedCollectionType?.value,
     },
   ];
   const itemFormSchema: SchemaType[] = [
@@ -400,16 +454,29 @@ const WidgetForm = ({ formRef }: FormProps) => {
         control={control}
         setError={setError}
       />
-      {!itemsEnabled && (
+
+      {selectedWidgetType === 'Tabs' ? (
+        <Tabs
+          control={control}
+          register={register}
+          options={collectionData.map((item: ObjectType) => ({
+            value: item['_id'] || item['id'],
+            label: item['name'],
+            ...item,
+          }))}
+        />
+      ) : null}
+
+      {!itemsEnabled && selectedWidgetType !== 'Tabs' && (
         <DNDItemsList
           items={selectedCollectionItems}
           onDragEnd={onCollectionIndexChange}
           formatItem={formatListItem}
-          listCode={selectedItemsType?.value}
+          listCode={selectedCollectionType?.value}
         />
       )}
 
-      {itemsEnabled && (
+      {itemsEnabled && selectedWidgetType !== 'Tabs' && (
         <>
           {/* Web Items */}
           <ItemsAccordian
@@ -454,6 +521,6 @@ const WidgetForm = ({ formRef }: FormProps) => {
       )}
     </div>
   );
-};;
+};
 
 export default WidgetForm;

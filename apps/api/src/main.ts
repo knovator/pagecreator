@@ -26,7 +26,6 @@ setConfig({
     {
       title: 'Notifications',
       collectionName: 'notifications',
-      filters: { isDeleted: false, isActive: true },
       searchColumns: ['name', 'code'],
     },
   ],

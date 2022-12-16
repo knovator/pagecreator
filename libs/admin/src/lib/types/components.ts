@@ -197,6 +197,25 @@ export interface ItemsAccordianProps {
   deleteText?: string;
   saveText?: string;
 }
+export interface TabPanelProps {
+  options?: { value: string; label: string }[];
+  selectedOptions?: OptionType[];
+  onChange: (selectedOptions: OptionType[]) => void;
+}
+export interface TabItemProps {
+  showDelete?: boolean;
+  isDisabled?: boolean;
+  deleteTitle: string;
+  onRemoveTab: () => void;
+  register?: any;
+}
+export interface TabsProps {
+  onSubmit?: () => void;
+  control: any;
+  register: any;
+  options?: { value: string; label: string }[];
+}
+
 export interface ImageUploadProps {
   className?: string;
   text: string | JSX.Element;
@@ -218,6 +237,13 @@ export interface ToggleProps {
   disabled?: boolean;
   onChange?: (status: boolean) => void;
   switchClass?: string;
+}
+export interface ConfirmPopoverProps {
+  children?: JSX.Element;
+  onConfirm: () => void;
+  confirmText?: string;
+  cancelText?: string;
+  title: string;
 }
 export interface DeleteModalProps {
   formState: FormActionTypes | undefined;

@@ -43,6 +43,15 @@ export const create = joi.object<ItemValidation>({
   tabletPerRow: joi.number().allow(null).optional(),
   collectionName: joi.string().optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
+  tabs: joi
+    .array()
+    .items(
+      joi.object({
+        name: joi.string(),
+        collectionItems: joi.array().items(joi.string()).optional(),
+      })
+    )
+    .optional(),
   itemsType: joi
     .string()
     .custom((value) => {
@@ -79,6 +88,15 @@ export const update = joi.object<ItemValidation>({
   tabletPerRow: joi.number().allow(null).optional(),
   autoPlay: joi.boolean().default(false).optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
+  tabs: joi
+    .array()
+    .items(
+      joi.object({
+        name: joi.string(),
+        collectionItems: joi.array().items(joi.string()).optional(),
+      })
+    )
+    .optional(),
   widgetType: joi
     .string()
     .valid(...Object.values(WidgetTypes))

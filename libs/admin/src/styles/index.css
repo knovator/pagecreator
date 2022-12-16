@@ -233,10 +233,10 @@
 
 /* Accordian */
 .khb_accordian-header {
-    @apply flex items-center justify-between w-full p-4 font-medium border-2 bg-gray-100 border-gray-300 hover:bg-gray-200;
+    @apply flex items-center justify-between w-full p-4 font-medium border-2 bg-gray-100 border-gray-300 hover:bg-gray-200 rounded-t-md;
 }
 .khb_accordian-body {
-    @apply border-2 border-t-0 border-gray-300;
+    @apply border-2 border-t-0 border-gray-300 rounded-b-md;
 }
 .khb_accordian-content {
     @apply p-2.5;
@@ -408,4 +408,42 @@ input:checked + .slider:before {
 }
 .khb_DND-item {
     @apply p-3 overflow-hidden bg-white border rounded-md cursor-pointer border-slate-500 hover:shadow hover:border-blue-400 transition-colors duration-200 ease-in-out;
+}
+
+/* Tabs */
+.khb_tabs-item {
+    @apply bg-gray-200 rounded-md transition-colors cursor-pointer p-2 self-center flex;
+}
+.khb_tabs-item:hover {
+    @apply bg-gray-300 cursor-pointer;
+}
+.khb_tabs-input {
+    @apply bg-transparent text-black font-medium cursor-pointer min-w-0 whitespace-pre-wrap focus:ring-1;
+}
+.khb_tabs-item-selected {
+    @apply bg-gray-300 font-medium;
+}
+.khb_tabs-remove {
+    @apply text-red-600 hover:text-red-700 focus:ring-red-300;
+}
+.khb_tabs-add {
+    @apply khb_btn khb_btn-primary khb_btn-xs;
+}
+
+
+.widgets-tab li {
+    padding: 4px 16px;
+    border-radius: 8px;
+    transistion: all 0.5s;
+    border-bottom: 1px solid transparent;
+}
+/* .widgets-tab .react-tabs__tab--selected {
+    background-color: #eeeeee;
+    padding: 4px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+} */
+
+.widgets-tab li:hover {
+    background-color: #eeeeee;
 }

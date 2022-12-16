@@ -18,7 +18,9 @@ export type CombineObjectType = {
     | number
     | string[]
     | null
-    | CombineObjectType;
+    | Record<string | number, CombineObjectType>
+    | CombineObjectType
+    | CombineObjectType[];
 };
 export type ValuesType = string | boolean | number | string[];
 export interface SrcSetItem {

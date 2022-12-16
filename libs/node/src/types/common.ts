@@ -54,6 +54,7 @@ export interface IWidgetSchema extends Document {
   widgetType: WidgetTypes;
   collectionName: string;
   collectionItems: string[];
+  tabs: { name: string; collectionItems: string[] }[];
 }
 export interface IItemSchema extends Document {
   widgetId: typeof Types.ObjectId;

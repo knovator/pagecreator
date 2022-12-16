@@ -31,6 +31,12 @@ const WidgetSchema = new Schema<IWidgetSchema>({
     default: WidgetTypes.FixedCard,
     required: true,
   },
+  tabs: [
+    {
+      name: String,
+      collectionItems: [{ type: Types.ObjectId, refPath: 'collectionName' }],
+    },
+  ],
 });
 
 WidgetSchema.plugin(softDeletePlugin);

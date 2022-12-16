@@ -52,10 +52,7 @@ const WidgetTable = () => {
       data={list}
       loader={loader}
       loading={loading}
-      dataKeys={[
-        { label: t('widget.tableName'), dataKey: 'name', highlight: true },
-        { label: t('widget.tableCode'), dataKey: 'code' },
-      ]}
+      dataKeys={dataKeys}
       actions={{
         edit: canUpdate ? onUpdateClick : false,
         delete: canDelete ? onDeleteClick : false,

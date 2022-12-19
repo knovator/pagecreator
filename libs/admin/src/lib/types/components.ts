@@ -208,12 +208,17 @@ export interface TabItemProps {
   deleteTitle: string;
   onRemoveTab: () => void;
   register?: any;
+  noButtonText: string;
+  yesButtonText: string;
 }
 export interface TabsProps {
   onSubmit?: () => void;
   control: any;
   register: any;
   options?: { value: string; label: string }[];
+  deleteTitle: string;
+  noButtonText: string;
+  yesButtonText: string;
 }
 
 export interface ImageUploadProps {

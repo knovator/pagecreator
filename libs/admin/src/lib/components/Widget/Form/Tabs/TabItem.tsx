@@ -9,6 +9,8 @@ const TabItem = ({
   deleteTitle,
   onRemoveTab,
   register,
+  noButtonText,
+  yesButtonText,
 }: TabItemProps) => {
   return (
     <>
@@ -20,7 +22,12 @@ const TabItem = ({
         {...(register || {})}
       />
       {showDelete ? (
-        <ConfirmPopover onConfirm={onRemoveTab} title={deleteTitle}>
+        <ConfirmPopover
+          onConfirm={onRemoveTab}
+          title={deleteTitle}
+          confirmText={yesButtonText}
+          cancelText={noButtonText}
+        >
           <Trash className="khb_tabs-remove" />
         </ConfirmPopover>
       ) : (

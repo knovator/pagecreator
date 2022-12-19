@@ -411,6 +411,9 @@ input:checked + .slider:before {
 }
 
 /* Tabs */
+.khb_tabs-container {
+    @apply p-3 border rounded;
+}
 .khb_tabs-item {
     @apply bg-gray-200 rounded-md transition-colors cursor-pointer p-2 self-center flex;
 }
@@ -429,21 +432,22 @@ input:checked + .slider:before {
 .khb_tabs-add {
     @apply khb_btn khb_btn-primary khb_btn-xs;
 }
-
-
-.widgets-tab li {
-    padding: 4px 16px;
-    border-radius: 8px;
-    transistion: all 0.5s;
-    border-bottom: 1px solid transparent;
+.khb_tabs-list {
+    @apply flex gap-x-4 gap-y-2.5 flex-wrap;
 }
-/* .widgets-tab .react-tabs__tab--selected {
-    background-color: #eeeeee;
-    padding: 4px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-} */
-
-.widgets-tab li:hover {
-    background-color: #eeeeee;
+.khb_tabs-body {
+    @apply pt-2;
+}
+/* Confirm Popover */
+.khb_confirm-popover {
+    @apply relative bg-white px-4 py-2.5 z-20 border rounded shadow-lg;
+}
+.khb_confirm-popover-content {
+    @apply grid grid-cols-1 gap-1.5;
+}
+.khb_confirm-popover-title {
+    @apply font-bold;
+}
+.khb_confirm-popover-footer {
+    @apply flex justify-center;
 }

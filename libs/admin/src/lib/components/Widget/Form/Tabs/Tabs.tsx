@@ -14,7 +14,14 @@ import Button from '../../../common/Button';
 import TabPanel from './TabPanel';
 import TabItem from './TabItem';
 
-const Tabs = ({ options, control, register }: TabsProps) => {
+const Tabs = ({
+  options,
+  control,
+  register,
+  deleteTitle,
+  noButtonText,
+  yesButtonText,
+}: TabsProps) => {
   const [activeTab, setActiveTab] = useState(0);
   const {
     fields: tabFields,
@@ -30,13 +37,9 @@ const Tabs = ({ options, control, register }: TabsProps) => {
   };
 
   return (
-    <div className="p-3 border rounded">
-      <PkgTabs
-        selectedIndex={activeTab}
-        className="py-2"
-        onSelect={setActiveTab}
-      >
-        <TabList className="flex gap-x-4 gap-y-2.5 flex-wrap ">
+    <div className="khb_tabs-container">
+      <PkgTabs selectedIndex={activeTab} onSelect={setActiveTab}>
+        <TabList className="khb_tabs-list">
           {tabFields?.map((field, index) => {
             return (
               <PkgTab
@@ -47,12 +50,14 @@ const Tabs = ({ options, control, register }: TabsProps) => {
               >
                 <TabItem
                   key={field.id}
-                  deleteTitle="Are you sure?"
+                  deleteTitle={deleteTitle}
                   register={register(`tabs.${index}.name`)}
                   onRemoveTab={() => {
                     removeField(index);
                     setActiveTab(index === 0 ? 0 : index - 1);
                   }}
+                  noButtonText={noButtonText}
+                  yesButtonText={yesButtonText}
                   showDelete={tabFields?.length > 1}
                 />
               </PkgTab>
@@ -62,7 +67,7 @@ const Tabs = ({ options, control, register }: TabsProps) => {
             <Plus />
           </Button>
         </TabList>
-        <div className="pt-2">
+        <div className="khb_tabs-body">
           {tabFields?.map((field, index) => (
             <PkgTabPanel key={field.id}>
               <Controller

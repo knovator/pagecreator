@@ -22,20 +22,15 @@ const ConfirmPopOver = ({
 
   return (
     <Popover
-      containerClassName="relative bg-white px-4 py-2.5 z-20 border border-gray rounded shadow-lg"
+      containerClassName="khb_confirm-popover"
       isOpen={isPopoverOpen}
       padding={10}
-      reposition={false}
       onClickOutside={() => setIsPopoverOpen(false)}
       content={() => (
-        <div className="grid grid-cols-1 gap-1.5">
-          <div className="font-bold">{title}</div>
-          <div className="flex justify-center">
-            <Button
-              type="secondary"
-              onClick={() => setIsPopoverOpen(false)}
-              className="hover:border-primary mr-2"
-            >
+        <div className="khb_confirm-popover-content">
+          <div className="khb_confirm-popover-title">{title}</div>
+          <div className="khb_confirm-popover-footer">
+            <Button type="secondary" onClick={() => setIsPopoverOpen(false)}>
               {cancelText}
             </Button>
             <Button type="primary" onClick={onConfirmClick}>

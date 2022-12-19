@@ -215,7 +215,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
     }
     // setting collectionName if widgetType is FixedCard or Carousel and FormState
     if (
-      formData[constants.itemTypeAccessor] !== constants.imageItemsTypeValue && formState === 'ADD'
+      formData[constants.itemTypeAccessor] !== constants.imageItemsTypeValue &&
+      formState === 'ADD'
     ) {
       formData['collectionName'] = selectedCollectionType
         ? selectedCollectionType.value
@@ -459,6 +460,9 @@ const WidgetForm = ({ formRef }: FormProps) => {
         <Tabs
           control={control}
           register={register}
+          deleteTitle={t('widget.tabDeleteTitle')}
+          yesButtonText={t('yesButtonText')}
+          noButtonText={t('cancelButtonText')}
           options={collectionData.map((item: ObjectType) => ({
             value: item['_id'] || item['id'],
             label: item['name'],

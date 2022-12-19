@@ -448,6 +448,9 @@ const useWidget = ({
       // reset Item data if widget is adding
       setItemsList({ web: [], mobile: [] });
       setItemData(null);
+    } else if(state === 'DELETE' && data) {
+      setItemData(data);
+      setFormState(state);
     }
   };
   const onItemFormSubmit = async (

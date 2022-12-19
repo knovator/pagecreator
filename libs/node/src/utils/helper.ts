@@ -112,7 +112,10 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
   ];
   let collectionConfig, aggregationQueryPiplelines: any[];
   Object.keys(formattedWidgetData).forEach((key: string) => {
-    if (formattedWidgetData[key].collectionItems.length > 0) {
+    if (
+      formattedWidgetData[key].collectionItems &&
+      formattedWidgetData[key].collectionItems.length > 0
+    ) {
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
       );
@@ -176,7 +179,10 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
   ];
   let collectionConfig, aggregationQueryPiplelines: any[];
   Object.keys(formattedWidgetData).forEach((key: string) => {
-    if (formattedWidgetData[key].tabs.length > 0) {
+    if (
+      formattedWidgetData[key].tabs &&
+      formattedWidgetData[key].tabs.length > 0
+    ) {
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
       );

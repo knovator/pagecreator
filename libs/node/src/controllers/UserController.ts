@@ -103,7 +103,11 @@ export const getWidgetData = catchAsync(
     if (!widgetDataArr.length) throw new Error(`Widget not found`);
     const widgetData = widgetDataArr[0];
 
-    if (widgetData.collectionName && widgetData.collectionItems.length > 0) {
+    if (
+      widgetData.collectionName &&
+      widgetData.collectionItems &&
+      widgetData.collectionItems.length > 0
+    ) {
       const collectionConfig = defaults.collections.find(
         (c) => c.collectionName === widgetData.collectionName
       );
@@ -135,7 +139,11 @@ export const getWidgetData = catchAsync(
       );
       widgetData.collectionItems = collectionItems;
     }
-    if (widgetData.collectionName && widgetData.tabs.length > 0) {
+    if (
+      widgetData.collectionName &&
+      widgetData.tabs &&
+      widgetData.tabs.length > 0
+    ) {
       const collectionConfig = defaults.collections.find(
         (c) => c.collectionName === widgetData.collectionName
       );
@@ -299,18 +307,32 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
             },
           },
         ],
-        as: 'widgets',
+        as: 'widgetsData',
       },
     },
   ])) as Array<IPageSchema>;
 
   if (!pageData.length) throw new Error('Page not found');
-  pageData[0].widgets = await appendCollectionData(pageData[0].widgets);
-  if (Array.isArray(pageData[0].widgets) && pageData[0].widgets.length > 0) {
-    pageData[0].widgets.forEach((widget: IWidgetSchema) => {
+  pageData[0].widgetsData = await appendCollectionData(pageData[0].widgetsData);
+  if (
+    Array.isArray(pageData[0].widgetsData) &&
+    pageData[0].widgetsData.length > 0
+  ) {
+    pageData[0].widgetsData.forEach((widget: IWidgetSchema) => {
       AddSrcSetsToItems(widget);
     });
   }
+  pageData[0].widgetsData = pageData[0].widgetsData.reduce(
+    (acc: any, widgetItem: any) => {
+      acc[widgetItem._id] = widgetItem;
+      return acc;
+    },
+    []
+  );
+  pageData[0].widgets = pageData[0].widgets.map(
+    (widgetId: string) => pageData[0].widgetsData[widgetId]
+  );
+  delete pageData[0].widgetsData;
   res.message = req?.i18n?.t('user.pageData');
   return successResponse(pageData[0], res);
 });

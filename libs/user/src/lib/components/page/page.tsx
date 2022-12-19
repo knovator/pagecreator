@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { PageProps } from '../../types';
 import Widget from '../widget/widget';
 
@@ -18,7 +18,7 @@ export function Page({
       <div className="kpc_page-widgets">
         {pageData.widgets.map((widgetData, index) =>
           typeof formatWidget === 'function' ? (
-            formatWidget(widgetData, index)
+            <Fragment key={index}>{formatWidget(widgetData, index)}</Fragment>
           ) : (
             <Widget
               widgetData={widgetData}

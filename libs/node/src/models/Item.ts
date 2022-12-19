@@ -9,6 +9,7 @@ const ItemSchema = new Schema<IItemSchema>({
     ref: 'Widget',
   },
   title: String,
+  subtitle: String,
   altText: String,
   link: String,
   sequence: Number,

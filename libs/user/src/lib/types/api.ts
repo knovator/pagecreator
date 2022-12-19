@@ -48,10 +48,12 @@ export interface WidgetData {
   items: ItemData[];
   tabs: TabData[];
   collectionItems: CollectionItemType[];
+  backgroundColor: string;
 }
 export interface ItemData {
   _id: string;
   title: string;
+  subtitle?: string;
   altText: string;
   link: string;
   itemType: 'Web' | 'Mobile';

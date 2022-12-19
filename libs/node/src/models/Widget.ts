@@ -19,6 +19,7 @@ const WidgetSchema = new Schema<IWidgetSchema>({
   mobilePerRow: Number,
   tabletPerRow: Number,
   collectionName: String,
+  backgroundColor: String,
   collectionItems: [{ type: Types.ObjectId, refPath: 'collectionName' }],
   itemsType: {
     type: String,

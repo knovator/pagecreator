@@ -12,6 +12,7 @@ const srcset = joi.object().keys({
 export const create = joi.object<ItemValidation>({
   widgetId: joi.string().required(),
   title: joi.string().required(),
+  subtitle: joi.string().optional(),
   altText: joi.string().optional(),
   link: joi.string().required(),
   sequence: joi.number().optional(),
@@ -31,6 +32,7 @@ export const create = joi.object<ItemValidation>({
 export const update = joi.object<ItemValidation>({
   widgetId: joi.string().required(),
   title: joi.string().required(),
+  subtitle: joi.string().optional(),
   altText: joi.string().optional(),
   link: joi.string().required(),
   sequence: joi.number().optional(),

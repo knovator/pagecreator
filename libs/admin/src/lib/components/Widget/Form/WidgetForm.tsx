@@ -349,6 +349,12 @@ const WidgetForm = ({ formRef }: FormProps) => {
           : itemsTypes,
     },
     {
+      label: t('widget.color'),
+      accessor: 'backgroundColor',
+      type: 'color',
+      className: 'khb_input-color',
+    },
+    {
       label: t('widget.webPerRow'),
       accessor: 'webPerRow',
       type: 'number',
@@ -411,6 +417,12 @@ const WidgetForm = ({ formRef }: FormProps) => {
       accessor: 'title',
       type: 'text',
       placeholder: t('item.titlePlaceholder'),
+    },
+    {
+      label: `${t('item.subtitle')}`,
+      accessor: 'subtitle',
+      type: 'text',
+      placeholder: t('item.subTitlePlaceholder'),
     },
     {
       label: `${t('item.altText')}`,

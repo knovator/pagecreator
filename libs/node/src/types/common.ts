@@ -55,10 +55,12 @@ export interface IWidgetSchema extends Document {
   collectionName: string;
   collectionItems: string[];
   tabs: { name: string; collectionItems: string[] }[];
+  backgroundColor: string;
 }
 export interface IItemSchema extends Document {
   widgetId: typeof Types.ObjectId;
   title: string;
+  subtitle: string;
   altText: string;
   link: string;
   sequence: number;

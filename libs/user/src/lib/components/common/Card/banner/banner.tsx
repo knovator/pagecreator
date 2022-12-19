@@ -1,3 +1,4 @@
+import React from 'react';
 import { CardProps } from '../../../../types';
 
 export function Banner({
@@ -5,9 +6,13 @@ export function Banner({
   imageUrl,
   onClick,
   srcSets,
+  title,
+  subtitle,
 }: CardProps) {
   return (
     <div className="kpc_banner">
+      <b>{title}</b>
+      {subtitle ? <p>{subtitle}</p> : null}
       <img
         src={imageUrl}
         alt={imageAltText}

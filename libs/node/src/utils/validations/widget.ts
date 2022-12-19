@@ -52,6 +52,10 @@ export const create = joi.object<ItemValidation>({
       })
     )
     .optional(),
+  backgroundColor: joi
+    .string()
+    .regex(/^#[A-Fa-f0-9]{6}/)
+    .optional(),
   itemsType: joi
     .string()
     .custom((value) => {
@@ -96,6 +100,10 @@ export const update = joi.object<ItemValidation>({
         collectionItems: joi.array().items(joi.string()).optional(),
       })
     )
+    .optional(),
+  backgroundColor: joi
+    .string()
+    .regex(/^#[A-Fa-f0-9]{6}/)
     .optional(),
   widgetType: joi
     .string()

@@ -13,12 +13,14 @@ import Plus from '../../../../icons/plus';
 import Button from '../../../common/Button';
 import TabItem from './TabItem';
 import CustomReactSelect from '../../../common/Input/ReactSelect';
+import DNDItemsList from '../../../common/DNDItemsList';
 
 const Tabs = ({
   options,
   control,
   register,
   listCode,
+  formatItem,
   deleteTitle,
   noButtonText,
   yesButtonText,
@@ -26,6 +28,8 @@ const Tabs = ({
   isItemsLoading,
   itemsPlaceholder,
   formatOptionLabel,
+  tabCollectionItems,
+  onCollectionItemsIndexChange,
 }: TabsProps) => {
   const [activeTab, setActiveTab] = useState(0);
   const {
@@ -44,7 +48,11 @@ const Tabs = ({
 
   return (
     <div className="khb_tabs-container">
-      <PkgTabs selectedIndex={activeTab} onSelect={setActiveTab}>
+      <PkgTabs
+        selectedIndex={activeTab}
+        onSelect={setActiveTab}
+        className="khb-tabs"
+      >
         <TabList className="khb_tabs-list">
           {tabFields?.map((field, index) => {
             return (
@@ -104,6 +112,12 @@ const Tabs = ({
           ))}
         </div>
       </PkgTabs>
+      <DNDItemsList
+        items={tabCollectionItems[activeTab]}
+        onDragEnd={(result) => onCollectionItemsIndexChange(activeTab, result)}
+        formatItem={formatItem}
+        listCode={listCode}
+      />
     </div>
   );
 };

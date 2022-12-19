@@ -219,6 +219,9 @@ export interface TabsProps {
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
   isItemsLoading?: boolean;
   onItemsSearch?: (data: any) => void;
+  formatItem?: (code: string, data: any) => JSX.Element;
+  onCollectionItemsIndexChange: (index: number, data: DropResult) => void;
+  tabCollectionItems: any[];
 }
 
 export interface ImageUploadProps {

@@ -32,6 +32,7 @@ const constants = {
   carouselWidgetTypeValue: 'Carousel',
   imageItemsTypeValue: 'Image',
   tabsAccessor: 'tabs',
+  tabCollectionItemsAccessor: 'collectionItems',
 };
 
 const WidgetForm = ({ formRef }: FormProps) => {
@@ -81,6 +82,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
   const [selectedCollectionItems, setSelectedCollectionItems] = useState<
     OptionType[]
   >([]);
+  const [tabCollectionItems, setTabCollectionItems] = useState<any[]>([]);
   const [selectedCollectionType, setSelectedCollectionType] = useState<
     OptionType | undefined
   >();
@@ -119,6 +121,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
     if (formState === 'ADD') {
       setSelectedCollectionItems([]);
       setItemsEnabled(true);
+      setTabCollectionItems([]);
     }
   }, [formState]);
 
@@ -186,6 +189,12 @@ const WidgetForm = ({ formRef }: FormProps) => {
           getCollectionData(value[constants.itemTypeAccessor]);
           setItemsEnabled(false);
         }
+      } else if (name?.includes(constants.tabsAccessor)) {
+        setTabCollectionItems(
+          (value[constants.tabsAccessor] as unknown as any[]).map(
+            (tabItem) => tabItem[constants.tabCollectionItemsAccessor]
+          )
+        );
       }
     },
     [getCollectionData, getFirstItemTypeValue, itemsTypes]
@@ -248,6 +257,16 @@ const WidgetForm = ({ formRef }: FormProps) => {
         temporaryData.splice(destination.index, 0, selectedRow);
         return temporaryData;
       });
+    }
+  };
+  const onTabItemsIndexChange = (index: number, result: DropResult) => {
+    const { destination, source } = result;
+    if (destination) {
+      const tabCollectionItems = getValues(`tabs.${index}.collectionItems`);
+      const temporaryData = [...tabCollectionItems];
+      const [selectedRow] = temporaryData.splice(source.index, 1);
+      temporaryData.splice(destination.index, 0, selectedRow);
+      setValue(`tabs.${index}.collectionItems`, temporaryData);
     }
   };
 
@@ -477,6 +496,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
           isItemsLoading={collectionDataLoading}
           formatOptionLabel={formatOptionLabel}
           listCode={selectedCollectionType?.value || ''}
+          onCollectionItemsIndexChange={onTabItemsIndexChange}
+          tabCollectionItems={tabCollectionItems}
         />
       ) : null}
 

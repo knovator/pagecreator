@@ -41,6 +41,12 @@ export interface ReviewCardProps extends UserCardProps {
   review: string;
 }
 
+type formatTabTitleFunction = (
+  title: string,
+  collectionData: any[],
+  isActive: boolean
+) => JSX.Element;
+
 export interface WidgetProps {
   widgetData: WidgetData;
   imageBaseUrl?: string;
@@ -49,11 +55,13 @@ export interface WidgetProps {
   onClick?: (item: ItemData | CollectionItemType) => void;
   settings?: Settings;
   className?: string;
+  formatTabTitle?: formatTabTitleFunction;
   formatHeader?: (title: string, data: WidgetData) => string | JSX.Element;
   formatFooter?: (data: WidgetData) => string | JSX.Element;
 }
 export interface ItemsTypeProps extends WidgetProps {
   formatItem: (item: CollectionItemType | ItemData) => JSX.Element;
+  formatTabTitle: formatTabTitleFunction;
 }
 
 export interface PageProps {

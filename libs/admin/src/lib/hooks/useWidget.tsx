@@ -303,7 +303,11 @@ const useWidget = ({
     }
     setLoading(false);
   };
-  const getCollectionData = async (collectionName: string, search?: string) => {
+  const getCollectionData = async (
+    collectionName: string,
+    search?: string,
+    callback?: (data: any) => void
+  ) => {
     setCollectionDataLoading(true);
     const api = getApiType({
       routes,
@@ -324,6 +328,8 @@ const useWidget = ({
     });
     if (response?.code === 'SUCCESS') {
       setCollectionDataLoading(false);
+      if (typeof callback === 'function')
+        callback(paginationDataGatter(response));
       return setCollectionData(paginationDataGatter(response));
     }
     setCollectionDataLoading(false);
@@ -367,8 +373,59 @@ const useWidget = ({
     setFormState(undefined);
     setItemData(null);
   };
+  const updateCollectionDataReferences =
+    (itemData: any) => (collectionData: any[]) => {
+      const itemDataUpdated: any = { ...itemData };
+      if (
+        itemDataUpdated['tabs'] &&
+        itemDataUpdated['tabs'].length > 0 &&
+        collectionData &&
+        collectionData.length > 0
+      ) {
+        itemDataUpdated['tabs'] = itemDataUpdated['tabs'].map((item: any) => {
+          return {
+            name: item.name,
+            collectionItems:
+              item?.collectionItems?.map((itemId: string) => {
+                item = collectionData.find(
+                  (item) => item._id === itemId || item.id === itemId
+                );
+                return item
+                  ? {
+                      label: item.name,
+                      value: item._id || item.id,
+                      ...item,
+                    }
+                  : {};
+              }) || [],
+          };
+        });
+      }
+      if (
+        itemDataUpdated['collectionItems'] &&
+        itemDataUpdated['collectionItems'].length > 0 &&
+        collectionData &&
+        collectionData.length > 0
+      ) {
+        let item;
+        itemDataUpdated['collectionItems'] = itemDataUpdated[
+          'collectionItems'
+        ].map((itemId: string) => {
+          item = collectionData.find(
+            (item) => item._id === itemId || item.id === itemId
+          );
+          return item
+            ? {
+                label: item.name,
+                value: item._id || item.id,
+                ...item,
+              }
+            : {};
+        });
+      }
+      setItemData(itemDataUpdated);
+    };
   const onChangeFormState = (state: FormActionTypes, data?: ObjectType) => {
-    setItemData(data || null);
     setFormState(state);
     // fetch ItemsTypes & WidgetTypes if needed
     if (state === 'ADD' || state === 'UPDATE') {
@@ -378,11 +435,19 @@ const useWidget = ({
     // get Item data if widget is updating
     if (state === 'UPDATE' && data) {
       if (data['itemsType'] !== 'Image' && data['collectionName'])
-        getCollectionData(data['collectionName']);
-      else getItems(data['_id']);
+        getCollectionData(
+          data['collectionName'],
+          '',
+          updateCollectionDataReferences(data)
+        );
+      else {
+        getItems(data['_id']);
+        setItemData(data);
+      }
     } else if (state === 'ADD') {
       // reset Item data if widget is adding
       setItemsList({ web: [], mobile: [] });
+      setItemData(null);
     }
   };
   const onItemFormSubmit = async (

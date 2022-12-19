@@ -135,6 +135,57 @@ export const getWidgetData = catchAsync(
       );
       widgetData.collectionItems = collectionItems;
     }
+    if (widgetData.collectionName && widgetData.tabs.length > 0) {
+      const collectionConfig = defaults.collections.find(
+        (c) => c.collectionName === widgetData.collectionName
+      );
+      const tabCollectionItemIds = widgetData.tabs.reduce(
+        (acc: string[], tabItem: any) => {
+          acc.push(...tabItem.collectionItems);
+          return acc;
+        },
+        []
+      );
+      const aggregateQuery: AggregateOptions = {
+        $match: {
+          _id: {
+            $in: tabCollectionItemIds,
+          },
+          ...(collectionConfig?.match || {}),
+        },
+      };
+      if (collectionConfig?.project)
+        aggregateQuery['$project'] = collectionConfig?.project;
+      if (collectionConfig?.lookup)
+        aggregateQuery['$lookup'] = collectionConfig?.lookup;
+
+      const aggregateQueryItem: AggregateOptions[] = [];
+      if (aggregateQuery['$match'])
+        aggregateQueryItem.push({ $match: aggregateQuery['$match'] });
+      if (aggregateQuery['$lookup'])
+        aggregateQueryItem.push({ $lookup: aggregateQuery['$lookup'] });
+      if (aggregateQuery['$project'])
+        aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
+
+      const collectionItems = await models[widgetData.collectionName].aggregate(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        aggregateQueryItem
+      );
+      // converting colleciton items to obj to better access them
+      const collectionItemsObj = collectionItems.reduce((acc, item) => {
+        acc[item._id] = item;
+        return acc;
+      }, {});
+      widgetData.tabs = widgetData.tabs.map((tabItem) => {
+        return {
+          name: tabItem.name,
+          collectionItems: tabItem.collectionItems.map(
+            (collectionId) => collectionItemsObj[collectionId]
+          ),
+        };
+      });
+    }
     AddSrcSetsToItems(widgetData);
     return successResponse(widgetData, res);
   }

@@ -42,6 +42,7 @@ const TRANSLATION_PAIRS_COMMON = {
   addButtonText: 'Add',
   editButtonText: 'Edit',
   cancelButtonText: 'Cancel',
+  yesButtonText: 'Yes',
   deleteButtonText: 'Delete',
   saveButtonText: 'Save',
   showing: 'Showing',
@@ -82,6 +83,7 @@ const TRANSLATION_PAIRS_WIDGET = {
   'widget.webPerRowRequired': 'Web Per Row is required',
   'widget.tabletPerRowRequired': 'Tablet Per Row is required',
   'widget.mobilePerRowRequired': 'Mobile Per Row is required',
+  'widget.tabDeleteTitle': 'Are you sure you want to delete this tab?',
 };
 const TRANSLATION_PAIRS_ITEM = {
   'item.title': 'Title',

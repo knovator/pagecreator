@@ -22,6 +22,7 @@
     "README.md",
     "style.css",
     "index.d.ts",
-    "index.js"
+    "index.js",
+    "index.cjs"
   ]
 }

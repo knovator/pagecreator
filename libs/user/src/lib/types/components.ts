@@ -69,6 +69,7 @@ export interface PageProps {
   imageBaseUrl?: string;
   pageData: PageData;
   hideWidgetTitles?: boolean;
+  formatWidget?: (item: WidgetData, index: number) => JSX.Element;
   formatItem?: (
     CODE: string,
     item: ItemData | CollectionItemType

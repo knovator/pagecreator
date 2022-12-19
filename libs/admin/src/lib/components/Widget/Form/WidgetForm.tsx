@@ -468,6 +468,11 @@ const WidgetForm = ({ formRef }: FormProps) => {
             label: item['name'],
             ...item,
           }))}
+          itemsPlaceholder={`Select ${selectedCollectionType?.label}...`}
+          onItemsSearch={onChangeSearch}
+          isItemsLoading={collectionDataLoading}
+          formatOptionLabel={formatOptionLabel}
+          listCode={selectedCollectionType!.value}
         />
       ) : null}
 

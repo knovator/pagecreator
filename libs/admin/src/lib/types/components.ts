@@ -197,11 +197,6 @@ export interface ItemsAccordianProps {
   deleteText?: string;
   saveText?: string;
 }
-export interface TabPanelProps {
-  options?: { value: string; label: string }[];
-  selectedOptions?: OptionType[];
-  onChange: (selectedOptions: OptionType[]) => void;
-}
 export interface TabItemProps {
   showDelete?: boolean;
   isDisabled?: boolean;
@@ -217,8 +212,13 @@ export interface TabsProps {
   register: any;
   options?: { value: string; label: string }[];
   deleteTitle: string;
+  listCode: string;
   noButtonText: string;
   yesButtonText: string;
+  itemsPlaceholder?: string;
+  formatOptionLabel?: (code: string, data: any) => JSX.Element;
+  isItemsLoading?: boolean;
+  onItemsSearch?: (data: any) => void;
 }
 
 export interface ImageUploadProps {

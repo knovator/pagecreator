@@ -7,20 +7,25 @@ import {
   TabPanel as PkgTabPanel,
 } from 'react-tabs';
 import { useFieldArray, Controller } from 'react-hook-form';
-import { TabsProps } from '../../../../types';
+import { OptionType, TabsProps } from '../../../../types';
 
 import Plus from '../../../../icons/plus';
 import Button from '../../../common/Button';
-import TabPanel from './TabPanel';
 import TabItem from './TabItem';
+import CustomReactSelect from '../../../common/Input/ReactSelect';
 
 const Tabs = ({
   options,
   control,
   register,
+  listCode,
   deleteTitle,
   noButtonText,
   yesButtonText,
+  onItemsSearch,
+  isItemsLoading,
+  itemsPlaceholder,
+  formatOptionLabel,
 }: TabsProps) => {
   const [activeTab, setActiveTab] = useState(0);
   const {
@@ -34,6 +39,7 @@ const Tabs = ({
       name: 'Tab Name',
       collectionItems: [],
     });
+    setActiveTab(tabFields.length);
   };
 
   return (
@@ -74,10 +80,23 @@ const Tabs = ({
                 control={control}
                 name={`tabs.${index}.collectionItems`}
                 render={({ field: { value, onChange } }) => (
-                  <TabPanel
+                  <CustomReactSelect
                     options={options}
-                    onChange={onChange}
+                    onChange={(value: OptionType | OptionType[] | null) => {
+                      if (value) {
+                        if (Array.isArray(value)) onChange(value);
+                        else onChange([value]);
+                      }
+                    }}
                     selectedOptions={value}
+                    isMulti={true}
+                    isSearchable={true}
+                    onSearch={onItemsSearch}
+                    isLoading={isItemsLoading}
+                    placeholder={itemsPlaceholder}
+                    listCode={listCode}
+                    // wrapperClassName={schema.wrapperClassName}
+                    formatOptionLabel={formatOptionLabel}
                   />
                 )}
               />

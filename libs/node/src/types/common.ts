@@ -133,5 +133,6 @@ export interface IWidgetDataSchema {
   code: string;
   collectionName: string;
   collectionItems: string[];
+  tabs: { name: string; collectionItems: string[] }[];
 }
 export type IWidgetData = { [key: string]: IWidgetDataSchema };

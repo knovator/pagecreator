@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ItemsTypeProps } from '../../../types';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 

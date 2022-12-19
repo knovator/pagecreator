@@ -152,7 +152,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
         widgetType === constants.tabsWidgetTypeValue
           ? itemsTypes.filter((item) => item.label !== 'Image')
           : itemsTypes;
-      return derivedItemTypes[0]?.value;
+      return derivedItemTypes[0];
     },
     [itemsTypes]
   );
@@ -166,7 +166,11 @@ const WidgetForm = ({ formRef }: FormProps) => {
       if (name === 'widgetType') {
         setSelectedWidgetType(value[name] as any);
         if (value[name] === 'Tabs') {
-          getCollectionData(getFirstItemTypeValue(value[name]));
+          const firstItemType = getFirstItemTypeValue(value[name]);
+          if (firstItemType) {
+            getCollectionData(firstItemType.value);
+            setSelectedCollectionType(firstItemType);
+          }
         }
       } else if (name === constants.itemTypeAccessor) {
         if (
@@ -211,7 +215,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
     if (!formData[constants.itemTypeAccessor] && formState === 'ADD') {
       formData[constants.itemTypeAccessor] = getFirstItemTypeValue(
         formData[constants.widgetTypeAccessor] as string
-      );
+      )?.value;
     }
     // setting collectionName if widgetType is FixedCard or Carousel and FormState
     if (
@@ -222,7 +226,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
         ? selectedCollectionType.value
         : getFirstItemTypeValue(
             formData[constants.widgetTypeAccessor] as string
-          );
+          )?.value;
     }
     // setting colleciton items if collectionItems are there
     if (
@@ -472,7 +476,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
           onItemsSearch={onChangeSearch}
           isItemsLoading={collectionDataLoading}
           formatOptionLabel={formatOptionLabel}
-          listCode={selectedCollectionType!.value}
+          listCode={selectedCollectionType?.value || ''}
         />
       ) : null}
 

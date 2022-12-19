@@ -29,6 +29,10 @@ export interface PageData {
   code: string;
   widgets: WidgetData[];
 }
+export interface TabData {
+  name: string;
+  collectionItems: any[];
+}
 export interface WidgetData {
   _id: string;
   name: string;
@@ -40,8 +44,9 @@ export interface WidgetData {
   mobilePerRow: number;
   tabletPerRow: number;
   itemsType: 'Image' | string;
-  widgetType: 'FixedCard' | 'Carousel';
+  widgetType: 'FixedCard' | 'Carousel' | 'Tabs';
   items: ItemData[];
+  tabs: TabData[];
   collectionItems: CollectionItemType[];
 }
 export interface ItemData {

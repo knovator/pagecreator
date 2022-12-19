@@ -4,6 +4,7 @@ import CarouselWidget from './carousel-widget/carousel-widget';
 import Banner from '../common/Card/banner/banner';
 import CollectionItem from '../common/collection-item/collection-item';
 import { buildSrcSets } from '../../utils/helper';
+import TabWidget from './tab-widget/tab-widget';
 
 export function Widget({
   widgetData,
@@ -15,6 +16,7 @@ export function Widget({
   className,
   formatFooter,
   formatHeader,
+  formatTabTitle,
 }: WidgetProps) {
   const formatItems = (item: ItemData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(item);
@@ -41,6 +43,15 @@ export function Widget({
         />
       );
   };
+  const formatTabTitles = (
+    title: string,
+    collectionData: any[],
+    isActive: boolean
+  ) => {
+    if (typeof formatTabTitle === 'function' && formatTabTitle)
+      return formatTabTitle(title, collectionData, isActive);
+    return <div>{title}</div>;
+  };
   if (!widgetData) return null;
   return (
     <div className="kpc_widget">
@@ -56,12 +67,21 @@ export function Widget({
             widgetData={widgetData}
             formatItem={formatItems}
             className={className}
+            formatTabTitle={formatTabTitles}
+          />
+        ) : widgetData.widgetType === 'Tabs' ? (
+          <TabWidget
+            formatItem={formatItems}
+            formatTabTitle={formatTabTitles}
+            widgetData={widgetData}
+            className={className}
           />
         ) : (
           <FixedWidget
             widgetData={widgetData}
             formatItem={formatItems}
             className={className}
+            formatTabTitle={formatTabTitles}
           />
         )}
       </div>

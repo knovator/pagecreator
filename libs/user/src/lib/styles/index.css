@@ -1,5 +1,6 @@
 @import url('slick-carousel/slick/slick.css');
 @import url('slick-carousel/slick/slick-theme.css');
+@import url('react-tabs/style/react-tabs.css');
 @tailwind components;
 @tailwind base;
 @tailwind utilities;

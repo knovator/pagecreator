@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { ItemsTypeProps } from '../../../types';
 import { filterItemData } from '../../../utils/helper';
 
@@ -13,8 +13,12 @@ export function FixedWidget({
       {widgetData.itemsType === 'Image'
         ? widgetData.items
             .filter(filterItemData)
-            .map((item) => formatItem(item))
-        : widgetData.collectionItems.map((item) => formatItem(item))}
+            .map((item, index) => (
+              <Fragment key={index}>{formatItem(item)}</Fragment>
+            ))
+        : widgetData.collectionItems.map((item, index) => (
+            <Fragment key={index}>{formatItem(item)}</Fragment>
+          ))}
     </div>
   );
 }

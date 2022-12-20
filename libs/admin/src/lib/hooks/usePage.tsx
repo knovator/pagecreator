@@ -222,9 +222,11 @@ const usePage = ({
     setFormState(state);
     if (state === 'UPDATE' && data?.widgets) {
       setSelectedWidgets(
-        data.widgets.map((widgetId: string) =>
-          widgets.find((widget) => widget['value'] === widgetId)
-        )
+        data.widgets
+          .map((widgetId: string) =>
+            widgets.find((widget) => widget['value'] === widgetId)
+          )
+          .filter((widget: any) => widget)
       );
       // setSelectedWidgets(widgets.filter((widget) => data.widgets.includes(widget.value)));
     } else {

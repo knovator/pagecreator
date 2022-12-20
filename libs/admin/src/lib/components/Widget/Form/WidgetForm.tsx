@@ -510,6 +510,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
           listCode={selectedCollectionType?.value || ''}
           onCollectionItemsIndexChange={onTabItemsIndexChange}
           tabCollectionItems={tabCollectionItems}
+          formatItem={formatListItem}
         />
       ) : null}
 

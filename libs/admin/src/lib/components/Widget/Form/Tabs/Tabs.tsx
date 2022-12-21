@@ -22,6 +22,7 @@ const Tabs = ({
   listCode,
   formatItem,
   deleteTitle,
+  customStyles,
   noButtonText,
   yesButtonText,
   onItemsSearch,
@@ -103,6 +104,7 @@ const Tabs = ({
                     isLoading={isItemsLoading}
                     placeholder={itemsPlaceholder}
                     listCode={listCode}
+                    customStyles={customStyles}
                     // wrapperClassName={schema.wrapperClassName}
                     formatOptionLabel={formatOptionLabel}
                   />

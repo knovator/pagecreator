@@ -19,6 +19,7 @@ const CustomReactSelect = ({
   wrapperClassName,
   formatOptionLabel,
   listCode,
+  customStyles,
 }: ReactSelectProps) => {
   return (
     <div className={wrapperClassName}>
@@ -50,6 +51,7 @@ const CustomReactSelect = ({
             ? (option) => formatOptionLabel(listCode!, option)
             : undefined
         }
+        styles={customStyles}
       />
       {error && <p className="khb_input-error ">{error}</p>}
     </div>

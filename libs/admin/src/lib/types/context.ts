@@ -94,6 +94,7 @@ export interface WidgetContextType {
   mobileItems: any[];
   itemsLoading: boolean;
   onItemFormSubmit: (state: FormActionTypes, data: any) => void;
+  reactSelectStyles?: any;
 }
 
 export interface PageContextType {

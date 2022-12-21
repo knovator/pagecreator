@@ -70,6 +70,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
     collectionDataLoading,
     formatListItem,
     formatOptionLabel,
+    reactSelectStyles,
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -408,6 +409,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       show: !itemsEnabled && selectedWidgetType !== 'Tabs',
       formatOptionLabel: formatOptionLabel,
       listCode: selectedCollectionType?.value,
+      customStyles: reactSelectStyles || {},
     },
   ];
   const itemFormSchema: SchemaType[] = [
@@ -511,6 +513,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
           onCollectionItemsIndexChange={onTabItemsIndexChange}
           tabCollectionItems={tabCollectionItems}
           formatItem={formatListItem}
+          customStyles={reactSelectStyles || {}}
         />
       ) : null}
 

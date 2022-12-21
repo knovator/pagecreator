@@ -159,7 +159,7 @@
     @apply fixed inset-y-0 right-0 flex max-w-full pl-10;
 }
 .khb_drawer-container-2 {
-    @apply relative w-screen max-w-3xl;
+    @apply relative w-screen max-w-6xl;
 }
 .khb_drawer-close-section {
     @apply absolute top-0 left-0 flex pt-4 pr-2 -ml-8 sm:-ml-10 sm:pr-4;

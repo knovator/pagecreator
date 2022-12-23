@@ -35,17 +35,7 @@
             "input": ".",
             "output": "."
           },
-          { "glob": "libs/user/assets/style.css", "input": ".", "output": "." },
-          {
-            "glob": "libs/user/assets/ajax-loader.gif",
-            "input": ".",
-            "output": "."
-          },
-          {
-            "glob": "libs/user/assets/fonts",
-            "input": ".",
-            "output": "."
-          }
+          { "glob": "libs/user/assets/style.css", "input": ".", "output": "." }
         ]
       }
     },

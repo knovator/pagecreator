@@ -18,6 +18,7 @@ export function Widget({
   formatFooter,
   formatHeader,
   formatTabTitle,
+  itemsContainer,
 }: WidgetProps) {
   const formatItems = (item: ItemData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(item);
@@ -81,6 +82,7 @@ export function Widget({
             formatItem={formatItems}
             className={className}
             formatTabTitle={formatTabTitles}
+            itemsContainer={itemsContainer}
           />
         ) : widgetData.widgetType === 'Tabs' ? (
           <TabWidget
@@ -88,6 +90,7 @@ export function Widget({
             formatTabTitle={formatTabTitles}
             widgetData={widgetData}
             className={className}
+            itemsContainer={itemsContainer}
           />
         ) : (
           <FixedWidget
@@ -95,6 +98,7 @@ export function Widget({
             formatItem={formatItems}
             className={className}
             formatTabTitle={formatTabTitles}
+            itemsContainer={itemsContainer}
           />
         )}
       </div>

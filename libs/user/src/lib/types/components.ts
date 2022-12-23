@@ -58,10 +58,12 @@ export interface WidgetProps {
   formatTabTitle?: formatTabTitleFunction;
   formatHeader?: (title: string, data: WidgetData) => string | JSX.Element;
   formatFooter?: (data: WidgetData) => string | JSX.Element;
+  itemsContainer?: (children: JSX.Element) => JSX.Element;
 }
 export interface ItemsTypeProps extends WidgetProps {
   formatItem: (item: CollectionItemType | ItemData) => JSX.Element;
   formatTabTitle: formatTabTitleFunction;
+  itemsContainer?: (children: JSX.Element) => JSX.Element;
 }
 
 export interface PageProps {

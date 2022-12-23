@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Swiper, SwiperSlide, SwiperProps } from 'swiper/react';
 import { Pagination, Autoplay, Virtual } from 'swiper';
 import { ItemsTypeProps } from '../../../types';
@@ -9,6 +9,7 @@ export function CarouselWidget({
   formatItem,
   settings,
   className,
+  itemsContainer,
 }: ItemsTypeProps) {
   const defaultSetting: SwiperProps = {
     slidesPerView: widgetData.mobilePerRow,
@@ -31,6 +32,21 @@ export function CarouselWidget({
     },
   };
   if (!widgetData) return null;
+  if (typeof itemsContainer === 'function')
+    return itemsContainer(
+      // eslint-disable-next-line react/jsx-no-useless-fragment
+      <Fragment>
+        {widgetData.itemsType === 'Image'
+          ? widgetData.items
+              .filter(filterItemData)
+              .map((item, index) => (
+                <Fragment key={index}>{formatItem(item)}</Fragment>
+              ))
+          : widgetData.collectionItems.map((item, index) => (
+              <Fragment key={index}>{formatItem(item)}</Fragment>
+            ))}
+      </Fragment>
+    );
   return (
     <Swiper
       {...{ ...defaultSetting, ...(settings || {}) }}

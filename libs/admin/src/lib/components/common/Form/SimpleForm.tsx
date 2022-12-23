@@ -138,6 +138,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
                 required={schema.required}
                 onInput={schema.onInput}
                 wrapperClassName={schema.wrapperClassName}
+                info={schema.info}
               />
             );
             break;

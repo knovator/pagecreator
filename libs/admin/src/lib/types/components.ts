@@ -57,6 +57,7 @@ export interface InputProps {
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   control?: any;
   register?: any;
+  info?: string;
 }
 export interface CheckboxProps {
   rest?: any;
@@ -159,6 +160,7 @@ export interface SchemaType extends ReactSelectProps {
   show?: boolean;
   wrapperClassName?: string;
   switchClass?: string;
+  info?: string;
 }
 export interface PageProps {
   t?: any;

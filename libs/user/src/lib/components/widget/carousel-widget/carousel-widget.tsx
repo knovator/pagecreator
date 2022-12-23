@@ -34,18 +34,15 @@ export function CarouselWidget({
   if (!widgetData) return null;
   if (typeof itemsContainer === 'function')
     return itemsContainer(
-      // eslint-disable-next-line react/jsx-no-useless-fragment
-      <Fragment>
-        {widgetData.itemsType === 'Image'
-          ? widgetData.items
-              .filter(filterItemData)
-              .map((item, index) => (
-                <Fragment key={index}>{formatItem(item)}</Fragment>
-              ))
-          : widgetData.collectionItems.map((item, index) => (
+      widgetData.itemsType === 'Image'
+        ? widgetData.items
+            .filter(filterItemData)
+            .map((item, index) => (
               <Fragment key={index}>{formatItem(item)}</Fragment>
-            ))}
-      </Fragment>
+            ))
+        : widgetData.collectionItems.map((item, index) => (
+            <Fragment key={index}>{formatItem(item)}</Fragment>
+          ))
     );
   return (
     <Swiper

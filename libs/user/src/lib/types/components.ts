@@ -63,7 +63,7 @@ export interface WidgetProps {
 export interface ItemsTypeProps extends WidgetProps {
   formatItem: (item: CollectionItemType | ItemData) => JSX.Element;
   formatTabTitle: formatTabTitleFunction;
-  itemsContainer?: (children: JSX.Element) => JSX.Element;
+  itemsContainer?: (children: any) => JSX.Element;
 }
 
 export interface PageProps {

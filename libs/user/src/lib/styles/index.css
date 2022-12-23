@@ -4,14 +4,9 @@
 @tailwind base;
 @tailwind utilities;
 
-.kpc_widget {
-    @apply mt-10 lg:mt-16;
-}
 .kpc_widget-title {
     @apply mb-2 font-bold text-2xl;
 }
-
-
 .kpc_simple-card {
     @apply flex flex-col gap-2 p-3 overflow-hidden rounded-lg border border-gray-400;
 }

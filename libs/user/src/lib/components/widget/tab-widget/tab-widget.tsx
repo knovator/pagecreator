@@ -24,11 +24,9 @@ export function TabWidget({
         <TabPanel key={index}>
           {typeof itemsContainer === 'function' ? (
             itemsContainer(
-              <Fragment>
-                {tab.collectionItems.map((item, index) => (
-                  <Fragment key={index}>{formatItem(item)}</Fragment>
-                ))}
-              </Fragment>
+              tab.collectionItems.map((item, index) => (
+                <Fragment key={index}>{formatItem(item)}</Fragment>
+              ))
             )
           ) : (
             <div className={className || gridClasses}>

@@ -100,6 +100,7 @@ export interface ReactSelectProps {
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
   listCode?: string;
   wrapperClassName?: string;
+  customStyles?: any;
 }
 export interface FormProps {
   formRef: MutableRefObject<HTMLFormElement | null>;
@@ -120,6 +121,7 @@ export interface WidgetProps {
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
   children?: JSX.Element;
+  reactSelectStyles?: any;
 }
 
 export interface FormWrapperProps {
@@ -161,6 +163,7 @@ export interface SchemaType extends ReactSelectProps {
   wrapperClassName?: string;
   switchClass?: string;
   info?: string;
+  customStyles?: any;
 }
 export interface PageProps {
   t?: any;
@@ -225,6 +228,7 @@ export interface TabsProps {
   formatItem?: (code: string, data: any) => JSX.Element;
   onCollectionItemsIndexChange: (index: number, data: DropResult) => void;
   tabCollectionItems: any[];
+  customStyles?: any;
 }
 
 export interface ImageUploadProps {

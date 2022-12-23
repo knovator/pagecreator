@@ -53,6 +53,7 @@ const WidgetContextProvider = ({
   mobileItems = [],
   itemsLoading = false,
   onItemFormSubmit = () => {},
+  reactSelectStyles = {},
   // other
   children,
 }: WidgetContextProviderProps) => {
@@ -82,6 +83,7 @@ const WidgetContextProvider = ({
         collectionData,
         formatListItem,
         formatOptionLabel,
+        reactSelectStyles,
         // Pagination
         currentPage,
         limits,

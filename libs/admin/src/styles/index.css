@@ -116,6 +116,9 @@
 .khb_input:disabled {
     @apply bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed;
 }
+.khb_input-info {
+    @apply text-sm text-gray-400 mt-1;
+}
 .khb_input-error {
     @apply text-sm text-red-600 dark:text-red-500;
 }

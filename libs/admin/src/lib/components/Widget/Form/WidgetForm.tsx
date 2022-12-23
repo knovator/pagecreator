@@ -316,6 +316,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       validations: {
         required: t('widget.widgetTitleRequired'),
       },
+      info: t('widget.widgetTitleInfo'),
     },
     {
       label: `${t('widget.widgetType')}`,

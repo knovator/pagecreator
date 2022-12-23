@@ -84,6 +84,7 @@ const TRANSLATION_PAIRS_WIDGET = {
   'widget.tabletPerRowRequired': 'Tablet Per Row is required',
   'widget.mobilePerRowRequired': 'Mobile Per Row is required',
   'widget.tabDeleteTitle': 'Are you sure you want to delete this tab?',
+  'widget.widgetTitleInfo': 'HTML is supported',
 };
 const TRANSLATION_PAIRS_ITEM = {
   'item.title': 'Title',

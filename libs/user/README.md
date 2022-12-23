@@ -71,7 +71,7 @@
 ### Built With
 
 * [React.js](https://reactjs.org/)
-* [react-slick](https://www.npmjs.com/package/react-slick)
+* [swiper/react](https://swiperjs.com/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -128,8 +128,8 @@ import { Widget } from '@knovator/pagecreator';
     - OnItem click handler
 - `hideTitle` (optional): boolean;
     - Do not show the title if true
-- `settings` (optional): [react-slick Settings](https://react-slick.neostack.com/docs/api)
-    - Settings to apply for carousel widget
+- `settings` (optional): [Swiper props](https://swiperjs.com/swiper-api#parameters)
+    - Carousel settings to apply for carousel widget
 - `className` (optional): string
     - Class name for widget
 - `formatHeader` (optional): `(title: string, data: WidgetData) => string | JSX.Element`

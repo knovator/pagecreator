@@ -1,4 +1,4 @@
-import { Settings } from 'react-slick';
+import { SwiperProps } from 'swiper/react';
 import {
   ItemData,
   WidgetData,
@@ -53,7 +53,7 @@ export interface WidgetProps {
   hideTitle?: boolean;
   formatItem?: (item: ItemData | CollectionItemType) => JSX.Element;
   onClick?: (item: ItemData | CollectionItemType) => void;
-  settings?: Settings;
+  settings?: SwiperProps;
   className?: string;
   formatTabTitle?: formatTabTitleFunction;
   formatHeader?: (title: string, data: WidgetData) => string | JSX.Element;

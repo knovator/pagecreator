@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import { ItemsTypeProps } from '../../../types';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
@@ -27,7 +27,9 @@ export function TabWidget({
         {widgetData.tabs.map((tab, index) => (
           <TabPanel key={index}>
             <div className={className || gridClasses}>
-              {tab.collectionItems.map((item) => formatItem(item))}
+              {tab.collectionItems.map((item, index) => (
+                <Fragment key={index}>{formatItem(item)}</Fragment>
+              ))}
             </div>
           </TabPanel>
         ))}

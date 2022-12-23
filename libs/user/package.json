@@ -13,7 +13,7 @@
   ],
   "author": "knovator (https://knovator.com/)",
   "dependencies": {
-    "react-slick": "^0.29.0",
+    "swiper": "^8.4.5",
     "react-tabs": "^6.0.0"
   },
   "files": [

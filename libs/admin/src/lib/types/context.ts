@@ -68,7 +68,12 @@ export interface WidgetContextType {
   onImageRemove: (id: string) => Promise<void>;
   itemsTypes: ItemsType[];
   widgetTypes: WidgetType[];
-  getCollectionData: (collectionName: string, search?: string) => Promise<void>;
+  getCollectionData: (
+    collectionName: string,
+    search?: string,
+    callback?: (options: OptionType[]) => void,
+    collectionItems?: string[]
+  ) => Promise<void>;
   collectionDataLoading: boolean;
   collectionData: any[];
   formatListItem?: (code: string, data: any) => JSX.Element;

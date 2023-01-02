@@ -141,4 +141,5 @@ export const partialUpdate = joi.object({
 export const getCollectionData = joi.object({
   collectionName: joi.string().required(),
   search: joi.string().allow('').optional().default(''),
+  collectionItems: joi.array().optional().default([]),
 });

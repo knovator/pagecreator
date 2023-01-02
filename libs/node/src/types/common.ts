@@ -83,6 +83,8 @@ export type CollectionItem = {
   match?: ObjectType;
   project?: ObjectType;
   lookup?: ObjectType;
+  addFields?: ObjectType;
+  unwind?: ObjectType;
 };
 
 export interface IConfig {

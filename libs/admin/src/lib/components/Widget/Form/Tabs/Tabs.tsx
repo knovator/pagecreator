@@ -16,23 +16,24 @@ import CustomReactSelect from '../../../common/Input/ReactSelect';
 import DNDItemsList from '../../../common/DNDItemsList';
 
 const Tabs = ({
+  activeTab,
+  setActiveTab,
   options,
   control,
   register,
   listCode,
   formatItem,
   deleteTitle,
+  loadOptions,
   customStyles,
   noButtonText,
   yesButtonText,
-  onItemsSearch,
   isItemsLoading,
   itemsPlaceholder,
   formatOptionLabel,
   tabCollectionItems,
   onCollectionItemsIndexChange,
 }: TabsProps) => {
-  const [activeTab, setActiveTab] = useState(0);
   const {
     fields: tabFields,
     append: appendField,
@@ -90,17 +91,18 @@ const Tabs = ({
                 name={`tabs.${index}.collectionItems`}
                 render={({ field: { value, onChange } }) => (
                   <CustomReactSelect
-                    options={options}
+                    options={options || []}
                     onChange={(value: OptionType | OptionType[] | null) => {
                       if (value) {
                         if (Array.isArray(value)) onChange(value);
                         else onChange([value]);
                       }
                     }}
+                    selectKey={`tabs.${index}.collectionItems.${listCode}`}
                     selectedOptions={value}
                     isMulti={true}
                     isSearchable={true}
-                    onSearch={onItemsSearch}
+                    loadOptions={loadOptions}
                     isLoading={isItemsLoading}
                     placeholder={itemsPlaceholder}
                     listCode={listCode}

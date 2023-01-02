@@ -1,3 +1,4 @@
+import { models, model, Schema } from 'mongoose';
 import { Widget } from '../models';
 import { commonExcludedFields, defaults } from './defaults';
 import {
@@ -145,6 +146,16 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
         aggregationQueryPiplelines.push({
           $lookup: collectionConfig?.lookup,
         });
+      // add addFields if it exists
+      if (collectionConfig?.addFields)
+        aggregationQueryPiplelines.push({
+          $addFields: collectionConfig?.addFields,
+        });
+      // add unwind if it exists
+      if (collectionConfig?.unwind)
+        aggregationQueryPiplelines.push({
+          $unwind: collectionConfig?.unwind,
+        });
       // Build Aggregation Query
       aggregationQuery.push({
         $lookup: {
@@ -218,6 +229,16 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
         aggregationQueryPiplelines.push({
           $lookup: collectionConfig?.lookup,
         });
+      // add addFields if it exists
+      if (collectionConfig?.addFields)
+        aggregationQueryPiplelines.push({
+          $addFields: collectionConfig?.addFields,
+        });
+      // add unwind if it exists
+      if (collectionConfig?.unwind)
+        aggregationQueryPiplelines.push({
+          $unwind: collectionConfig?.unwind,
+        });
       // Build Aggregation Query
       aggregationQuery.push({
         $lookup: {
@@ -259,3 +280,12 @@ export function AddSrcSetsToItems(widgetData: IWidgetSchema) {
     });
   }
 }
+
+export const getCollectionModal = (collectionName: string) => {
+  let collectionModal: any = models[collectionName];
+  if (!collectionModal) {
+    const schema = new Schema({}, { strict: false });
+    collectionModal = model(collectionName, schema, collectionName);
+  }
+  return collectionModal;
+};

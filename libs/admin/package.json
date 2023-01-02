@@ -1,6 +1,6 @@
 {
   "name": "@knovator/pagecreator-admin",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "dependencies": {
     "classnames": "^2.3.1",
     "react-beautiful-dnd": "^13.1.0",
@@ -27,7 +27,7 @@
   ],
   "author": "knovator (https://knovator.com/)",
   "files": [
-    "lib",
+    "src",
     "package.json",
     "README.md",
     "index.css",

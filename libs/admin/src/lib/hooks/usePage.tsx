@@ -53,40 +53,44 @@ const usePage = ({
     },
     [onError, onLogout]
   );
-  const getWidgets = useCallback(async () => {
-    try {
-      setWidgetsLoading(true);
-      const api = getApiType({
-        routes,
-        action: 'LIST',
-        prefix: widgetRoutesPrefix,
-      });
-      const response = await request({
-        baseUrl,
-        token,
-        method: api.method,
-        url: api.url,
-        onError: handleError(CALLBACK_CODES.GET_ALL),
-        data: {
-          all: true,
-          isActive: true,
-        },
-      });
-      if (response?.code === 'SUCCESS') {
-        let widgetsData = paginationDataGatter(response);
-        widgetsData = widgetsData.map((item: ObjectType) => {
-          return {
-            label: item['name'],
-            value: item['_id'] || item['id'],
-          };
+  const getWidgets = useCallback(
+    async (callback?: (data: any) => void) => {
+      try {
+        setWidgetsLoading(true);
+        const api = getApiType({
+          routes,
+          action: 'LIST',
+          prefix: widgetRoutesPrefix,
         });
-        return setWidgets(widgetsData);
+        const response = await request({
+          baseUrl,
+          token,
+          method: api.method,
+          url: api.url,
+          onError: handleError(CALLBACK_CODES.GET_ALL),
+          data: {
+            all: true,
+            isActive: true,
+          },
+        });
+        if (response?.code === 'SUCCESS') {
+          let widgetsData = paginationDataGatter(response);
+          widgetsData = widgetsData.map((item: ObjectType) => {
+            return {
+              label: item['name'],
+              value: item['_id'] || item['id'],
+            };
+          });
+          if (typeof callback === 'function') callback(widgetsData);
+          return setWidgets(widgetsData);
+        }
+        setWidgetsLoading(false);
+      } catch (error) {
+        setWidgetsLoading(false);
       }
-      setWidgetsLoading(false);
-    } catch (error) {
-      setWidgetsLoading(false);
-    }
-  }, [baseUrl, handleError, routes, token, widgetRoutesPrefix]);
+    },
+    [baseUrl, handleError, routes, token, widgetRoutesPrefix]
+  );
   const getPages = useCallback(
     async (search?: string) => {
       try {
@@ -221,13 +225,13 @@ const usePage = ({
     setItemData(data || null);
     setFormState(state);
     if (state === 'UPDATE' && data?.widgets) {
-      setSelectedWidgets(
-        data.widgets
-          .map((widgetId: string) =>
-            widgets.find((widget) => widget['value'] === widgetId)
-          )
-          .filter((widget: any) => widget)
-      );
+      // setSelectedWidgets(
+      //   data.widgets
+      //     .map((widgetId: string) =>
+      //       widgets.find((widget) => widget['value'] === widgetId)
+      //     )
+      //     .filter((widget: any) => widget)
+      // );
       // setSelectedWidgets(widgets.filter((widget) => data.widgets.includes(widget.value)));
     } else {
       setSelectedWidgets([]);
@@ -247,7 +251,6 @@ const usePage = ({
 
   useEffect(() => {
     if (canList) getPages();
-    getWidgets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageSize, currentPage, canList]);
 
@@ -269,6 +272,7 @@ const usePage = ({
     widgets,
     itemData,
     formState,
+    getWidgets,
     onCloseForm,
     widgetsLoading,
     selectedWidgets,

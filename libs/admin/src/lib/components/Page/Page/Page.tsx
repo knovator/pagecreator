@@ -46,6 +46,7 @@ const Page = ({
     itemData,
     setCurrentPage,
     formState,
+    getWidgets,
     onChangeFormState,
     onPageFormSubmit,
     onCloseForm,
@@ -73,6 +74,7 @@ const Page = ({
       currentPage={currentPage}
       onChangeFormState={onChangeFormState}
       pageSize={pageSize}
+      getWidgets={getWidgets}
       setCurrentPage={setCurrentPage}
       onPageFormSubmit={onPageFormSubmit}
       selectedWidgets={selectedWidgets}

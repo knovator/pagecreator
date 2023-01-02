@@ -13,6 +13,48 @@ const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'User');
 };
 
+const getAggregationQuery = ({
+  collectionName,
+  ids,
+}: {
+  collectionName: string;
+  ids: string[];
+}) => {
+  const collectionConfig = defaults.collections.find(
+    (c) => c.collectionName === collectionName
+  );
+  const aggregateQuery: AggregateOptions = {
+    $match: {
+      _id: {
+        $in: ids,
+      },
+      ...(collectionConfig?.match || {}),
+    },
+  };
+  if (collectionConfig?.project)
+    aggregateQuery['$project'] = collectionConfig?.project;
+  if (collectionConfig?.lookup)
+    aggregateQuery['$lookup'] = collectionConfig?.lookup;
+  if (collectionConfig?.addFields)
+    aggregateQuery['$addFields'] = collectionConfig?.addFields;
+  if (collectionConfig?.unwind)
+    aggregateQuery['$unwind'] = collectionConfig?.unwind;
+
+  const aggregateQueryItem: AggregateOptions[] = [];
+  if (aggregateQuery['$match'])
+    aggregateQueryItem.push({ $match: aggregateQuery['$match'] });
+  if (aggregateQuery['$lookup'])
+    aggregateQueryItem.push({ $lookup: aggregateQuery['$lookup'] });
+  if (aggregateQuery['$project'])
+    aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
+  if (aggregateQuery['$addFields'])
+    aggregateQueryItem.push({ $addFields: aggregateQuery['$addFields'] });
+  if (aggregateQuery['$unwind'])
+    aggregateQueryItem.push({ $unwind: aggregateQuery['$unwind'] });
+
+  return aggregateQueryItem;
+};
+
 // TO Do: Optimize the following
 export const getWidgetData = catchAsync(
   async (req: IRequest, res: IResponse) => {
@@ -112,36 +154,14 @@ export const getWidgetData = catchAsync(
       widgetData.collectionItems &&
       widgetData.collectionItems.length > 0
     ) {
-      const collectionConfig = defaults.collections.find(
-        (c) => c.collectionName === widgetData.collectionName
-      );
-      const aggregateQuery: AggregateOptions = {
-        $match: {
-          _id: {
-            $in: widgetData.collectionItems,
-          },
-          ...(collectionConfig?.match || {}),
-        },
-      };
-      if (collectionConfig?.project)
-        aggregateQuery['$project'] = collectionConfig?.project;
-      if (collectionConfig?.lookup)
-        aggregateQuery['$lookup'] = collectionConfig?.lookup;
-
-      const aggregateQueryItem: AggregateOptions[] = [];
-      if (aggregateQuery['$match'])
-        aggregateQueryItem.push({ $match: aggregateQuery['$match'] });
-      if (aggregateQuery['$lookup'])
-        aggregateQueryItem.push({ $lookup: aggregateQuery['$lookup'] });
-      if (aggregateQuery['$project'])
-        aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
-
+      const aggregateQueryItem = getAggregationQuery({
+        collectionName: widgetData.collectionName,
+        ids: widgetData.collectionItems,
+      });
       const collectionModal: any = getCollectionModal(
         widgetData.collectionName
       );
       const collectionItems = await collectionModal.aggregate(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         aggregateQueryItem
       );
       widgetData.collectionItems = collectionItems;
@@ -151,9 +171,6 @@ export const getWidgetData = catchAsync(
       widgetData.tabs &&
       widgetData.tabs.length > 0
     ) {
-      const collectionConfig = defaults.collections.find(
-        (c) => c.collectionName === widgetData.collectionName
-      );
       const tabCollectionItemIds = widgetData.tabs.reduce(
         (acc: string[], tabItem: any) => {
           acc.push(...tabItem.collectionItems);
@@ -161,26 +178,10 @@ export const getWidgetData = catchAsync(
         },
         []
       );
-      const aggregateQuery: AggregateOptions = {
-        $match: {
-          _id: {
-            $in: tabCollectionItemIds,
-          },
-          ...(collectionConfig?.match || {}),
-        },
-      };
-      if (collectionConfig?.project)
-        aggregateQuery['$project'] = collectionConfig?.project;
-      if (collectionConfig?.lookup)
-        aggregateQuery['$lookup'] = collectionConfig?.lookup;
-
-      const aggregateQueryItem: AggregateOptions[] = [];
-      if (aggregateQuery['$match'])
-        aggregateQueryItem.push({ $match: aggregateQuery['$match'] });
-      if (aggregateQuery['$lookup'])
-        aggregateQueryItem.push({ $lookup: aggregateQuery['$lookup'] });
-      if (aggregateQuery['$project'])
-        aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
+      const aggregateQueryItem = getAggregationQuery({
+        collectionName: widgetData.collectionName,
+        ids: tabCollectionItemIds,
+      });
 
       const collectionModal: any = getCollectionModal(
         widgetData.collectionName

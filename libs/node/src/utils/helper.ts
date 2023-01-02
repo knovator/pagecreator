@@ -146,6 +146,16 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
         aggregationQueryPiplelines.push({
           $lookup: collectionConfig?.lookup,
         });
+      // add addFields if it exists
+      if (collectionConfig?.addFields)
+        aggregationQueryPiplelines.push({
+          $addFields: collectionConfig?.addFields,
+        });
+      // add unwind if it exists
+      if (collectionConfig?.unwind)
+        aggregationQueryPiplelines.push({
+          $unwind: collectionConfig?.unwind,
+        });
       // Build Aggregation Query
       aggregationQuery.push({
         $lookup: {
@@ -218,6 +228,16 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       if (collectionConfig?.lookup)
         aggregationQueryPiplelines.push({
           $lookup: collectionConfig?.lookup,
+        });
+      // add addFields if it exists
+      if (collectionConfig?.addFields)
+        aggregationQueryPiplelines.push({
+          $addFields: collectionConfig?.addFields,
+        });
+      // add unwind if it exists
+      if (collectionConfig?.unwind)
+        aggregationQueryPiplelines.push({
+          $unwind: collectionConfig?.unwind,
         });
       // Build Aggregation Query
       aggregationQuery.push({

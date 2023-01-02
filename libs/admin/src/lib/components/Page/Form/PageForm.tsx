@@ -17,6 +17,7 @@ const PageForm = ({ formRef }: FormProps) => {
     selectedWidgets,
     setSelectedWidgets,
     widgets,
+    getWidgets,
     onChangeWidgetSequence,
     canAdd,
     canUpdate,
@@ -31,7 +32,19 @@ const PageForm = ({ formRef }: FormProps) => {
     event.target.value = changeToCode(event.target.value);
     return event;
   }
-
+  function loadOptions(value?: string, callback?: (data: any) => void): any {
+    getWidgets((widgetsData: any) => {
+      if (callback) callback(widgetsData);
+      if (formState === 'UPDATE' && data)
+        setSelectedWidgets(
+          data.widgets
+            .map((widgetId: string) =>
+              widgetsData.find((widget: any) => widget['value'] === widgetId)
+            )
+            .filter((widget: any) => widget)
+        );
+    });
+  }
   // Widget Form Functions
   const onDragEnd = (result: DropResult) => {
     const { destination, source } = result;
@@ -70,6 +83,7 @@ const PageForm = ({ formRef }: FormProps) => {
       options: widgets,
       selectedOptions: selectedWidgets,
       isMulti: true,
+      loadOptions: loadOptions,
       onChange: (widgets) => setSelectedWidgets(widgets),
     },
   ];

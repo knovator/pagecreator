@@ -106,6 +106,7 @@ export interface PageContextType {
   t: (key: string) => string;
   // Form
   list: any[];
+  getWidgets: (callback?: (data: any) => void) => void;
   formState: FormActionTypes | undefined;
   closeForm: () => void;
   onPageFormSubmit: (data: any) => void;

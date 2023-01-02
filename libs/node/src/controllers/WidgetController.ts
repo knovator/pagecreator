@@ -1,4 +1,4 @@
-import { Types, model, Schema, models } from 'mongoose';
+import { Types } from 'mongoose';
 import { Widget } from './../models';
 import { create, remove, update, list, getAll } from '../services/dbService';
 import {
@@ -7,9 +7,9 @@ import {
 } from './../utils/responseHandlers';
 
 import { defaults } from '../utils/defaults';
+import { getCollectionModal } from '../utils/helper';
 import {
   CollectionItem,
-  IModel,
   IRequest,
   IResponse,
   WidgetTypes,
@@ -137,24 +137,22 @@ export const getCollectionData = catchAsync(
       throw new Error(`No collection is specified with ${collectionName}`);
     }
     // setting up mongoose model
-    let TempModel = models[collectionName] as unknown as IModel<any>;
-    if (!TempModel) {
-      const tempSchema = new Schema({}, { strict: false });
-      TempModel = model(collectionName, tempSchema) as unknown as IModel<any>;
-    }
+    const TempModel = getCollectionModal(collectionName);
     // fetching data
     let query: any = collectionItem.filters || {};
-    if (search) {
+    if (
+      search &&
+      Array.isArray(collectionItem.searchColumns) &&
+      collectionItem.searchColumns.length
+    ) {
       query = {
         ...query,
-        $or: collectionItem.searchColumns
-          ? collectionItem.searchColumns.map((column) => ({
-              [column]: {
-                $regex: search,
-                $options: 'i',
-              },
-            }))
-          : [],
+        $or: collectionItem.searchColumns.map((column) => ({
+          [column]: {
+            $regex: search,
+            $options: 'i',
+          },
+        })),
       };
     }
     const collectionData = await getAll(TempModel, query, { limit });

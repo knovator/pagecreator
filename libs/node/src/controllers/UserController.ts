@@ -1,6 +1,10 @@
-import { AggregateOptions, models } from 'mongoose';
+import { AggregateOptions } from 'mongoose';
 import { Widget, Page } from './../models';
-import { AddSrcSetsToItems, appendCollectionData } from '../utils/helper';
+import {
+  AddSrcSetsToItems,
+  appendCollectionData,
+  getCollectionModal,
+} from '../utils/helper';
 import { successResponse } from './../utils/responseHandlers';
 import { defaults, commonExcludedFields } from '../utils/defaults';
 import { IPageSchema, IRequest, IResponse, IWidgetSchema } from '../types';
@@ -132,7 +136,10 @@ export const getWidgetData = catchAsync(
       if (aggregateQuery['$project'])
         aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
 
-      const collectionItems = await models[widgetData.collectionName].aggregate(
+      const collectionModal: any = getCollectionModal(
+        widgetData.collectionName
+      );
+      const collectionItems = await collectionModal.aggregate(
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         aggregateQueryItem
@@ -175,16 +182,20 @@ export const getWidgetData = catchAsync(
       if (aggregateQuery['$project'])
         aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
 
-      const collectionItems = await models[widgetData.collectionName].aggregate(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+      const collectionModal: any = getCollectionModal(
+        widgetData.collectionName
+      );
+      const collectionItems: any = await collectionModal.aggregate(
         aggregateQueryItem
       );
       // converting colleciton items to obj to better access them
-      const collectionItemsObj = collectionItems.reduce((acc, item) => {
-        acc[item._id] = item;
-        return acc;
-      }, {});
+      const collectionItemsObj = collectionItems.reduce(
+        (acc: any, item: any) => {
+          acc[item._id] = item;
+          return acc;
+        },
+        {}
+      );
       widgetData.tabs = widgetData.tabs.map((tabItem) => {
         return {
           name: tabItem.name,

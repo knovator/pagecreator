@@ -44,7 +44,6 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
           case 'ReactSelect':
             input = (
               <CustomReactSelect
-                options={schema.options}
                 disabled={!enable}
                 label={schema.label}
                 error={errors[schema.accessor]?.message?.toString()}
@@ -63,13 +62,14 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
                 required={schema.required}
                 isMulti={schema.isMulti}
                 isSearchable={schema.isSearchable}
-                onSearch={schema.onSearch}
                 isLoading={schema.isLoading}
                 placeholder={schema.placeholder}
                 wrapperClassName={schema.wrapperClassName}
                 formatOptionLabel={schema.formatOptionLabel}
                 listCode={schema.listCode}
                 customStyles={schema.customStyles}
+                loadOptions={schema.loadOptions}
+                key={schema.key}
               />
             );
             break;

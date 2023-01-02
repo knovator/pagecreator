@@ -132,12 +132,24 @@ const WidgetForm = ({ formRef }: FormProps) => {
     }
   }, [data, reset]);
 
-  const onChangeSearch = (str: string) => {
+  const onChangeSearch = (
+    str?: string,
+    callback?: (options: OptionType[]) => void
+  ): any => {
     if (callerRef.current) clearTimeout(callerRef.current);
 
     callerRef.current = setTimeout(() => {
       if (selectedCollectionType)
-        getCollectionData(selectedCollectionType.value, str);
+        getCollectionData(selectedCollectionType.value, str, (options) => {
+          if (typeof callback === 'function')
+            callback(
+              options.map((item: ObjectType) => ({
+                value: item['_id'] || item['id'],
+                label: item['name'],
+                ...item,
+              }))
+            );
+        });
     }, 300);
   };
 
@@ -172,7 +184,6 @@ const WidgetForm = ({ formRef }: FormProps) => {
         if (value[name] === 'Tabs') {
           const firstItemType = getFirstItemTypeValue(value[name]);
           if (firstItemType) {
-            getCollectionData(firstItemType.value);
             setSelectedCollectionType(firstItemType);
           }
         }
@@ -187,10 +198,12 @@ const WidgetForm = ({ formRef }: FormProps) => {
             (wType) => wType.value === value[constants.itemTypeAccessor]
           );
           setSelectedCollectionType(selectedWType);
-          getCollectionData(value[constants.itemTypeAccessor]);
           setItemsEnabled(false);
         }
-      } else if (name?.includes(constants.tabsAccessor)) {
+      } else if (
+        name?.includes(constants.tabsAccessor) &&
+        Array.isArray(value[constants.tabsAccessor])
+      ) {
         setTabCollectionItems(
           (value[constants.tabsAccessor] as unknown as any[]).map(
             (tabItem) => tabItem[constants.tabCollectionItemsAccessor]
@@ -198,7 +211,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
         );
       }
     },
-    [getCollectionData, getFirstItemTypeValue, itemsTypes]
+    [getFirstItemTypeValue, itemsTypes]
   );
   const onFormSubmit = (data: CombineObjectType) => {
     const formData = { ...data };
@@ -396,21 +409,18 @@ const WidgetForm = ({ formRef }: FormProps) => {
       required: true,
       accessor: 'collectionItems',
       type: 'ReactSelect',
-      options: collectionData.map((item: ObjectType) => ({
-        value: item['_id'] || item['id'],
-        label: item['name'],
-        ...item,
-      })),
+      options: collectionData,
       selectedOptions: selectedCollectionItems,
       isMulti: true,
       isSearchable: true,
       onChange: setSelectedCollectionItems,
-      onSearch: onChangeSearch,
+      loadOptions: onChangeSearch,
       isLoading: collectionDataLoading,
       show: !itemsEnabled && selectedWidgetType !== 'Tabs',
       formatOptionLabel: formatOptionLabel,
       listCode: selectedCollectionType?.value,
       customStyles: reactSelectStyles || {},
+      key: selectedCollectionType?.value,
     },
   ];
   const itemFormSchema: SchemaType[] = [
@@ -501,13 +511,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
           deleteTitle={t('widget.tabDeleteTitle')}
           yesButtonText={t('yesButtonText')}
           noButtonText={t('cancelButtonText')}
-          options={collectionData.map((item: ObjectType) => ({
-            value: item['_id'] || item['id'],
-            label: item['name'],
-            ...item,
-          }))}
           itemsPlaceholder={`Select ${selectedCollectionType?.label}...`}
-          onItemsSearch={onChangeSearch}
+          loadOptions={onChangeSearch}
           isItemsLoading={collectionDataLoading}
           formatOptionLabel={formatOptionLabel}
           listCode={selectedCollectionType?.value || ''}

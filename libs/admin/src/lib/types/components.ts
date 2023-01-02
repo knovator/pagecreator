@@ -95,12 +95,16 @@ export interface ReactSelectProps {
   selectedOptions?: { value: string; label: string }[];
   isLoading?: boolean;
   isSearchable?: boolean;
-  onSearch?: (text: string) => void;
   placeholder?: string;
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
   listCode?: string;
   wrapperClassName?: string;
   customStyles?: any;
+  loadOptions?: (
+    value?: string,
+    callback?: (options: OptionType[]) => void
+  ) => Promise<OptionType[]>;
+  key?: string;
 }
 export interface FormProps {
   formRef: MutableRefObject<HTMLFormElement | null>;
@@ -224,11 +228,14 @@ export interface TabsProps {
   itemsPlaceholder?: string;
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
   isItemsLoading?: boolean;
-  onItemsSearch?: (data: any) => void;
   formatItem?: (code: string, data: any) => JSX.Element;
   onCollectionItemsIndexChange: (index: number, data: DropResult) => void;
   tabCollectionItems: any[];
   customStyles?: any;
+  loadOptions?: (
+    value?: string,
+    callback?: (options: OptionType[]) => void
+  ) => Promise<OptionType[]>;
 }
 
 export interface ImageUploadProps {

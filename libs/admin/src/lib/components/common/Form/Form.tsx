@@ -85,7 +85,6 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
           case 'ReactSelect':
             input = (
               <CustomReactSelect
-                options={schema.options}
                 disabled={!enable}
                 label={schema.label}
                 error={errors[schema.accessor]?.message?.toString()}
@@ -104,11 +103,12 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
                 required={schema.required}
                 isMulti={schema.isMulti}
                 isSearchable={schema.isSearchable}
-                onSearch={schema.onSearch}
                 isLoading={schema.isLoading}
                 placeholder={schema.placeholder}
                 wrapperClassName={schema.wrapperClassName}
                 formatOptionLabel={schema.formatOptionLabel}
+                key={schema.key}
+                loadOptions={schema.loadOptions}
               />
             );
             break;

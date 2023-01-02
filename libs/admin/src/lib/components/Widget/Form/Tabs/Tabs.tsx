@@ -22,10 +22,10 @@ const Tabs = ({
   listCode,
   formatItem,
   deleteTitle,
+  loadOptions,
   customStyles,
   noButtonText,
   yesButtonText,
-  onItemsSearch,
   isItemsLoading,
   itemsPlaceholder,
   formatOptionLabel,
@@ -97,10 +97,11 @@ const Tabs = ({
                         else onChange([value]);
                       }
                     }}
+                    key={listCode}
                     selectedOptions={value}
                     isMulti={true}
                     isSearchable={true}
-                    onSearch={onItemsSearch}
+                    loadOptions={loadOptions}
                     isLoading={isItemsLoading}
                     placeholder={itemsPlaceholder}
                     listCode={listCode}

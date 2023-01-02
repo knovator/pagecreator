@@ -71,7 +71,8 @@ export interface WidgetContextType {
   getCollectionData: (
     collectionName: string,
     search?: string,
-    callback?: (options: OptionType[]) => void
+    callback?: (options: OptionType[]) => void,
+    collectionItems?: string[]
   ) => Promise<void>;
   collectionDataLoading: boolean;
   collectionData: any[];

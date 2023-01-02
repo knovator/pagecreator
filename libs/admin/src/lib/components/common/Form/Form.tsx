@@ -107,7 +107,7 @@ const Form = forwardRef<HTMLFormElement | null, FormProps>(
                 placeholder={schema.placeholder}
                 wrapperClassName={schema.wrapperClassName}
                 formatOptionLabel={schema.formatOptionLabel}
-                key={schema.key}
+                selectKey={schema.selectKey}
                 loadOptions={schema.loadOptions}
               />
             );

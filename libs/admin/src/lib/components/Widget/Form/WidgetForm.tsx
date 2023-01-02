@@ -27,6 +27,7 @@ const constants = {
   widgetTypeAccessor: 'widgetType',
   itemTypeAccessor: 'itemsType',
   collectionNameAccessor: 'collectionName',
+  collectionItemsAccessor: 'collectionItems',
   tabsWidgetTypeValue: 'Tabs',
   fixedCardWidgetTypeValue: 'FixedCard',
   carouselWidgetTypeValue: 'Carousel',
@@ -74,6 +75,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [activeTab, setActiveTab] = useState(0);
   const [webItemsVisible, setWebItemsVisible] = useState(false);
   const [mobileItemsVisible, setMobileItemsVisible] = useState(false);
   const [selectedWidgetType, setSelectedWidgetType] = useState<
@@ -95,16 +97,6 @@ const WidgetForm = ({ formRef }: FormProps) => {
         setItemsEnabled(true);
       } else {
         setItemsEnabled(false);
-      }
-      if (
-        data?.collectionItems &&
-        data?.collectionItems.length > 0 &&
-        collectionData &&
-        collectionData.length > 0
-      ) {
-        setSelectedCollectionItems(data?.collectionItems || []);
-      } else {
-        setSelectedCollectionItems([]);
       }
       if (
         data?.collectionName !== 'Image' &&
@@ -136,20 +128,63 @@ const WidgetForm = ({ formRef }: FormProps) => {
     str?: string,
     callback?: (options: OptionType[]) => void
   ): any => {
+    let collectionItems: any[] = [];
+    let valueToSet = '';
+    if (formState === 'UPDATE') {
+      if (
+        data[constants.widgetTypeAccessor] === constants.tabsWidgetTypeValue
+      ) {
+        collectionItems =
+          data[constants.tabsAccessor][activeTab]['collectionItems'];
+        valueToSet = `${constants.tabsAccessor}.${activeTab}.${constants.tabCollectionItemsAccessor}`;
+      } else if (
+        Array.isArray(data[constants.collectionItemsAccessor]) &&
+        data[constants.collectionItemsAccessor].length > 0
+      ) {
+        collectionItems = data[constants.collectionItemsAccessor];
+        // valueToSet = constants.collectionItemsAccessor;
+      }
+    }
     if (callerRef.current) clearTimeout(callerRef.current);
+    let item: any;
 
     callerRef.current = setTimeout(() => {
       if (selectedCollectionType)
-        getCollectionData(selectedCollectionType.value, str, (options) => {
-          if (typeof callback === 'function')
-            callback(
-              options.map((item: ObjectType) => ({
-                value: item['_id'] || item['id'],
-                label: item['name'],
-                ...item,
-              }))
-            );
-        });
+        getCollectionData(
+          selectedCollectionType.value,
+          str,
+          (options) => {
+            if (typeof callback === 'function')
+              callback(
+                options.map((item: ObjectType) => ({
+                  value: item['_id'] || item['id'],
+                  label: item['name'],
+                  ...item,
+                }))
+              );
+            if (formState === 'UPDATE') {
+              const selectedOptions =
+                collectionItems?.map((itemId: string) => {
+                  item = (options as any[]).find(
+                    (item) => item._id === itemId || item.id === itemId
+                  );
+                  return item
+                    ? {
+                        label: item.name,
+                        value: item._id || item.id,
+                        ...item,
+                      }
+                    : {};
+                }) || [];
+              if (valueToSet) {
+                setValue(valueToSet, selectedOptions);
+              } else {
+                setSelectedCollectionItems(selectedOptions);
+              }
+            }
+          },
+          collectionItems
+        );
     }, 300);
   };
 
@@ -230,7 +265,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
       formData[constants.tabsAccessor] = tabsData.map((tabItem) => ({
         name: tabItem.name,
         collectionItems: tabItem.collectionItems.map(
-          (item: OptionType) => item.value
+          (item: string | OptionType) =>
+            typeof item == 'string' ? item : item.value
         ),
       }));
     } else formData[constants.tabsAccessor] = [];
@@ -420,7 +456,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       formatOptionLabel: formatOptionLabel,
       listCode: selectedCollectionType?.value,
       customStyles: reactSelectStyles || {},
-      key: selectedCollectionType?.value,
+      selectKey: selectedCollectionType?.value,
     },
   ];
   const itemFormSchema: SchemaType[] = [
@@ -520,6 +556,8 @@ const WidgetForm = ({ formRef }: FormProps) => {
           tabCollectionItems={tabCollectionItems}
           formatItem={formatListItem}
           customStyles={reactSelectStyles || {}}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
         />
       ) : null}
 

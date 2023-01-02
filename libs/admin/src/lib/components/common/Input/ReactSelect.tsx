@@ -19,7 +19,7 @@ const CustomReactSelect = ({
   formatOptionLabel,
   listCode,
   customStyles,
-  key,
+  selectKey,
 }: ReactSelectProps) => {
   return (
     <div className={wrapperClassName}>
@@ -32,7 +32,7 @@ const CustomReactSelect = ({
         </label>
       )}
       <ReactSelect
-        key={key}
+        key={selectKey}
         data-testid={`input-select-${label}`}
         value={selectedOptions}
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

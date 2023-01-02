@@ -104,7 +104,7 @@ export interface ReactSelectProps {
     value?: string,
     callback?: (options: OptionType[]) => void
   ) => Promise<OptionType[]>;
-  key?: string;
+  selectKey?: string;
 }
 export interface FormProps {
   formRef: MutableRefObject<HTMLFormElement | null>;
@@ -217,6 +217,8 @@ export interface TabItemProps {
   yesButtonText: string;
 }
 export interface TabsProps {
+  activeTab: number;
+  setActiveTab: (value: number) => void;
   onSubmit?: () => void;
   control: any;
   register: any;

@@ -69,7 +69,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
                 listCode={schema.listCode}
                 customStyles={schema.customStyles}
                 loadOptions={schema.loadOptions}
-                key={schema.key}
+                selectKey={schema.selectKey}
               />
             );
             break;

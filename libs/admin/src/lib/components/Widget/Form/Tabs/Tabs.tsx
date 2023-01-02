@@ -16,6 +16,8 @@ import CustomReactSelect from '../../../common/Input/ReactSelect';
 import DNDItemsList from '../../../common/DNDItemsList';
 
 const Tabs = ({
+  activeTab,
+  setActiveTab,
   options,
   control,
   register,
@@ -32,7 +34,6 @@ const Tabs = ({
   tabCollectionItems,
   onCollectionItemsIndexChange,
 }: TabsProps) => {
-  const [activeTab, setActiveTab] = useState(0);
   const {
     fields: tabFields,
     append: appendField,
@@ -90,14 +91,14 @@ const Tabs = ({
                 name={`tabs.${index}.collectionItems`}
                 render={({ field: { value, onChange } }) => (
                   <CustomReactSelect
-                    options={options}
+                    options={options || []}
                     onChange={(value: OptionType | OptionType[] | null) => {
                       if (value) {
                         if (Array.isArray(value)) onChange(value);
                         else onChange([value]);
                       }
                     }}
-                    key={listCode}
+                    selectKey={`tabs.${index}.collectionItems.${listCode}`}
                     selectedOptions={value}
                     isMulti={true}
                     isSearchable={true}

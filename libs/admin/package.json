@@ -27,7 +27,7 @@
   ],
   "author": "knovator (https://knovator.com/)",
   "files": [
-    "lib",
+    "src",
     "package.json",
     "README.md",
     "index.css",

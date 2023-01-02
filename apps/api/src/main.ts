@@ -28,6 +28,11 @@ setConfig({
       collectionName: 'notifications',
       searchColumns: ['name', 'code'],
     },
+    {
+      title: 'Project Assessments',
+      collectionName: 'project_assessment',
+      searchColumns: ['assessmentNm', 'projectNm'],
+    },
   ],
 });
 app.get('/status', (_req, res) => {

@@ -127,8 +127,9 @@ export const getWidgetTypes = catchAsync(
 
 export const getCollectionData = catchAsync(
   async (req: IRequest, res: IResponse) => {
-    const limit = 10;
-    const { search, collectionName } = req.body;
+    let limit = 10;
+    const { search, collectionName, collectionItems } = req.body;
+    if (Array.isArray(collectionItems)) limit += collectionItems.length;
     const collectionItem: CollectionItem | undefined =
       defaults.collections.find(
         (collection) => collection.collectionName === collectionName
@@ -140,19 +141,28 @@ export const getCollectionData = catchAsync(
     const TempModel = getCollectionModal(collectionName);
     // fetching data
     let query: any = collectionItem.filters || {};
+    const orOptions: any = [];
     if (
       search &&
       Array.isArray(collectionItem.searchColumns) &&
       collectionItem.searchColumns.length
     ) {
-      query = {
-        ...query,
-        $or: collectionItem.searchColumns.map((column) => ({
+      collectionItem.searchColumns.forEach((column) =>
+        orOptions.push({
           [column]: {
             $regex: search,
             $options: 'i',
           },
-        })),
+        })
+      );
+    }
+    if (Array.isArray(collectionItems) && collectionItems.length) {
+      orOptions.push({ _id: { $in: collectionItems } });
+    }
+    if (orOptions.length > 0) {
+      query = {
+        ...query,
+        $or: orOptions,
       };
     }
     const collectionData = await getAll(TempModel, query, { limit });

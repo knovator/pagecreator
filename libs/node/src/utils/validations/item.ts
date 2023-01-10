@@ -50,4 +50,8 @@ export const update = joi.object<ItemValidation>({
 
 export const list = joi.object({
   search: joi.string().allow('').replace(/\s+/g, '_').default(''),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });

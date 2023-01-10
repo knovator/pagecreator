@@ -128,6 +128,10 @@ export const list = joi.object({
     .default({}),
   isActive: joi.boolean().optional(),
   all: joi.boolean().default(false),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
 export const partialUpdate = joi.object({

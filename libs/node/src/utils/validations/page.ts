@@ -56,4 +56,8 @@ export const list = joi.object({
       pagination: joi.boolean().default(false),
     })
     .default({}),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });

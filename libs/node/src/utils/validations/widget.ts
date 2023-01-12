@@ -146,4 +146,8 @@ export const getCollectionData = joi.object({
   collectionName: joi.string().required(),
   search: joi.string().allow('').optional().default(''),
   collectionItems: joi.array().optional().default([]),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });

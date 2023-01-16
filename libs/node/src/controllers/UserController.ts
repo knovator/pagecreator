@@ -239,6 +239,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
                 $in: ['$_id', '$$widgets'],
               },
               isDeleted: false,
+              isActive: true,
             },
           },
           {
@@ -341,9 +342,9 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
     },
     []
   );
-  pageData[0].widgets = pageData[0].widgets.map(
-    (widgetId: string) => pageData[0].widgetsData[widgetId]
-  );
+  pageData[0].widgets = pageData[0].widgets
+    .map((widgetId: string) => pageData[0].widgetsData[widgetId])
+    .filter(Boolean);
   delete pageData[0].widgetsData;
   res.message = req?.i18n?.t('user.pageData');
   return successResponse(pageData[0], res);

@@ -79,9 +79,9 @@ export async function appendCollectionData(widgetData: IWidgetSchema[]) {
           tabs: widget.tabs.map((tabItem) => {
             return {
               name: tabItem.name,
-              collectionItems: tabItem.collectionItems.map(
-                (collectionId) => collectionItemsObj[collectionId]
-              ),
+              collectionItems: tabItem.collectionItems
+                .map((collectionId) => collectionItemsObj[collectionId])
+                .filter(Boolean),
             };
           }),
         };

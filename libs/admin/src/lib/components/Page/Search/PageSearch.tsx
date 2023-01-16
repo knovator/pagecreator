@@ -3,16 +3,17 @@ import Input from "../../common/Input";
 import { usePageState } from "../../../context/PageContext";
 
 const PageSearch = () => {
-	const { getPages, t, canList } = usePageState();
+	const { t, canList, changeSearch, setCurrentPage } = usePageState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
   const [search, setSearch] = useState<string>('');
 
   const onChangeSearch = (str: string) => {
     setSearch(str);
+    changeSearch(str);
     if (callerRef.current) clearTimeout(callerRef.current);
 
     callerRef.current = setTimeout(() => {
-      getPages(str);
+      setCurrentPage(1);
     }, 300);
   };
 

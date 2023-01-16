@@ -17,6 +17,8 @@ const PageContextProvider = ({
       } as ObjectType
     )[key]),
   // Form
+  searchText = '',
+  changeSearch = () => {},
   list = [],
   widgets = [],
   formState = '',
@@ -54,6 +56,8 @@ const PageContextProvider = ({
         t,
         // Form
         list,
+        searchText,
+        changeSearch,
         widgets,
         closeForm,
         formState,

@@ -108,6 +108,8 @@ export interface PageContextType {
   t: (key: string) => string;
   // Form
   list: any[];
+  searchText: string;
+  changeSearch: (val: string) => void;
   getWidgets: (callback?: (data: any) => void) => void;
   formState: FormActionTypes | undefined;
   closeForm: () => void;

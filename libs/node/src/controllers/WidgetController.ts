@@ -51,7 +51,7 @@ export const deleteWidget = catchAsync(
 
 export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
   const search = req.body.search || '';
-  const { page, limit } = req.body.options;
+  const { page, limit, sort } = req.body.options;
   const all =
     (typeof req.body.all !== 'undefined' && req.body.all === true) || false;
   const isActive =
@@ -60,6 +60,7 @@ export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
       : null;
   const customOptions = {
     pagination: !all,
+    sort,
     ...(page && limit ? { page, limit } : {}),
   };
   const query = {

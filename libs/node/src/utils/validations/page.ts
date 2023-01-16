@@ -48,7 +48,11 @@ export const list = joi.object({
   search: joi.string().allow('').replace(/\s+/g, '_').optional().default(''),
   options: joi
     .object({
-      // sort: joi.alternatives().try(joi.object(), joi.string()).optional(),
+      sort: joi
+        .alternatives()
+        .try(joi.object(), joi.string())
+        .optional()
+        .default({ _id: -1 }),
       populate: joi.array().items().optional().default([]),
       offset: joi.number().optional(),
       page: joi.number().optional(),

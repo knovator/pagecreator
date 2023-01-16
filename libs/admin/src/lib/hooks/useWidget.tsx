@@ -50,8 +50,16 @@ const useWidget = ({
     widgetRoutesPrefix,
     itemsRoutesPrefix,
   } = useProviderState();
-  const { setPageSize, pageSize, currentPage, setCurrentPage, filter } =
-    usePagination({ defaultLimit });
+  const {
+    changeSearch,
+    setPageSize,
+    pageSize,
+    limitRef,
+    currentPageRef,
+    setCurrentPage,
+    offsetRef,
+    searchRef,
+  } = usePagination({ defaultLimit });
 
   const handleError = useCallback(
     (code: CALLBACK_CODES) => (error: any) => {
@@ -82,9 +90,9 @@ const useWidget = ({
           data: {
             search,
             options: {
-              offset: filter.offset,
-              limit: filter.limit,
-              page: currentPage,
+              offset: offsetRef.current,
+              limit: limitRef.current,
+              page: currentPageRef.current,
             },
           },
         });
@@ -101,9 +109,9 @@ const useWidget = ({
     },
     [
       baseUrl,
-      currentPage,
-      filter.limit,
-      filter.offset,
+      currentPageRef,
+      limitRef,
+      offsetRef,
       handleError,
       routes,
       token,
@@ -502,11 +510,15 @@ const useWidget = ({
       );
     }
   };
+  const changeCurrentPage = (page: number) => {
+    setCurrentPage(page);
+    getWidgets(searchRef.current);
+  };
 
   useEffect(() => {
     if (canList) getWidgets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, currentPage, canList]);
+  }, [canList]);
 
   return {
     list,
@@ -515,11 +527,12 @@ const useWidget = ({
     setLoading,
 
     // Pagination
+    searchText: searchRef.current,
     pageSize,
     totalPages,
-    currentPage,
+    currentPage: currentPageRef.current,
     totalRecords,
-    setCurrentPage,
+    setCurrentPage: changeCurrentPage,
     setPageSize,
 
     // Form
@@ -535,6 +548,7 @@ const useWidget = ({
     onImageRemove,
     itemsTypes,
     widgetTypes,
+    changeSearch,
     collectionDataLoading,
     getCollectionData,
     collectionData,

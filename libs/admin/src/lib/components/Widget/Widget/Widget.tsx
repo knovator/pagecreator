@@ -43,6 +43,8 @@ const Widget = ({
   const {
     list,
     loading,
+    searchText,
+    changeSearch,
     onChangeFormState,
     formState,
     onCloseForm,
@@ -81,6 +83,8 @@ const Widget = ({
       list={list}
       onChangeFormState={onChangeFormState}
       t={derivedT}
+      searchText={searchText}
+      changeSearch={changeSearch}
       loader={loader}
       onWidgetFormSubmit={onWidgetFormSubmit}
       data={itemData}

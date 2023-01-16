@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PaginationProps } from '../../../types';
 import { TRANSLATION_PAIRS_COMMON } from '../../../constants/common';
 import ChevronLeft from '../../../icons/chevronLeft';
@@ -18,26 +18,21 @@ const Pagination = ({
   previousContent,
   nextContent,
 }: PaginationProps) => {
-  const [localCurrentPage, setLocalCurrentPage] = useState(currentPage);
-  const updatePagination = () => {
-    let newValue: number | string | undefined = localCurrentPage;
-    if (newValue) {
+  const updatePagination = (newValue: number | string | undefined) => {
+    if (newValue && typeof newValue === 'number') {
       if (newValue <= 0) {
         newValue = 1;
       } else if (newValue > totalPages) {
         newValue = totalPages;
       }
       setCurrentPage(newValue);
-      setLocalCurrentPage(newValue);
     }
   };
   const onPaginationButtonClick = (dir: 'next' | 'previous') => {
     if (dir === 'next') {
-      setCurrentPage(currentPage + 1);
-      setLocalCurrentPage(localCurrentPage + 1);
+      updatePagination(currentPage + 1);
     } else {
-      setCurrentPage(currentPage - 1);
-      setLocalCurrentPage(localCurrentPage - 1);
+      updatePagination(currentPage - 1);
     }
   };
   return (
@@ -58,7 +53,7 @@ const Pagination = ({
           size="xs"
           type="secondary"
           className="khb_pagination-previous"
-          disabled={currentPage - 1 === 0}
+          disabled={currentPage - 1 <= 0}
           onClick={() => onPaginationButtonClick('previous')}
         >
           {previousContent || <ChevronLeft srText="Previous" />}
@@ -70,9 +65,8 @@ const Pagination = ({
             size="xs"
             type="number"
             id="page"
-            value={localCurrentPage}
-            onChange={(e) => setLocalCurrentPage(Number(e.target.value))}
-            onBlur={updatePagination}
+            value={currentPage}
+            onChange={(e) => updatePagination(Number(e.target.value))}
             disabled={!totalRecords}
           />{' '}
           / {totalPages}
@@ -81,7 +75,7 @@ const Pagination = ({
           size="xs"
           type="secondary"
           className="khb_pagination-next"
-          disabled={currentPage === totalPages || !totalRecords}
+          disabled={currentPage >= totalPages}
           onClick={() => onPaginationButtonClick('next')}
         >
           {nextContent || <ChevronRight srText="Next" />}

@@ -1,6 +1,6 @@
 {
   "name": "@knovator/pagecreator-node",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "type": "commonjs",
   "author": "knovator (https://knovator.com/)",
   "description": "PageCreator Node.js module",

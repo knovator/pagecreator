@@ -414,6 +414,10 @@ const WidgetForm = ({ formRef }: FormProps) => {
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-right-1',
       validations: {
         required: t('widget.webPerRowRequired'),
+        min: {
+          value: 1,
+          message: t('widget.minPerRow'),
+        },
       },
     },
     {
@@ -425,6 +429,10 @@ const WidgetForm = ({ formRef }: FormProps) => {
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-left-1',
       validations: {
         required: t('widget.tabletPerRowRequired'),
+        min: {
+          value: 1,
+          message: t('widget.minPerRow'),
+        },
       },
     },
     {
@@ -437,6 +445,10 @@ const WidgetForm = ({ formRef }: FormProps) => {
         'khb_grid-item-1of3 khb_padding-right-1 khb_padding-left-1',
       validations: {
         required: t('widget.mobilePerRowRequired'),
+        min: {
+          value: 1,
+          message: t('widget.minPerRow'),
+        },
       },
     },
     {

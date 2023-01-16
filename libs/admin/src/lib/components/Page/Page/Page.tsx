@@ -44,6 +44,8 @@ const Page = ({
     currentPage,
     pageSize,
     itemData,
+    searchText,
+    changeSearch,
     setCurrentPage,
     formState,
     getWidgets,
@@ -66,6 +68,8 @@ const Page = ({
       t={derivedT}
       loader={loader}
       list={list}
+      searchText={searchText}
+      changeSearch={changeSearch}
       widgets={widgets}
       data={itemData}
       loading={loading}

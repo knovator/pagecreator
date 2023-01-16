@@ -119,7 +119,11 @@ export const list = joi.object({
   search: joi.string().allow('').optional().default(''),
   options: joi
     .object({
-      // sort: joi.alternatives().try(joi.object(), joi.string()).optional(),
+      sort: joi
+        .alternatives()
+        .try(joi.object(), joi.string())
+        .optional()
+        .default({ _id: -1 }),
       // populate: joi.array().items().optional(),
       offset: joi.number().optional(),
       page: joi.number().optional(),

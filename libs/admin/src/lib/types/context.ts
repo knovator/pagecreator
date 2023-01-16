@@ -52,6 +52,8 @@ export interface WidgetContextType {
   t: (key: string) => string;
   // Form
   list: any[];
+  searchText?: string;
+  changeSearch: (str: string) => void;
   formState: FormActionTypes | undefined;
   closeForm: () => void;
   onWidgetFormSubmit: (data: any) => void;
@@ -61,7 +63,7 @@ export interface WidgetContextType {
   canAdd: boolean;
   canUpdate: boolean;
   onDeleteItem: (id: string) => void;
-  getWidgets: (searchText: string) => void;
+  getWidgets: (searchText?: string) => void;
   onImageUpload: (
     file: File
   ) => Promise<{ fileUrl: string; fileId: string; fileUri: string } | void>;
@@ -106,6 +108,8 @@ export interface PageContextType {
   t: (key: string) => string;
   // Form
   list: any[];
+  searchText: string;
+  changeSearch: (val: string) => void;
   getWidgets: (callback?: (data: any) => void) => void;
   formState: FormActionTypes | undefined;
   closeForm: () => void;

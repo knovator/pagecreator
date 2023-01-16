@@ -37,9 +37,10 @@ export const deletePage = catchAsync(async (req: IRequest, res: IResponse) => {
 
 export const getPages = catchAsync(async (req: IRequest, res: IResponse) => {
   const search = req.body.search || '';
-  const { page, limit, populate } = req.body.options;
+  const { page, limit, populate, sort } = req.body.options;
   const customOptions = {
     populate,
+    sort,
     ...(page && limit ? { page, limit } : {}),
   };
   const query = {

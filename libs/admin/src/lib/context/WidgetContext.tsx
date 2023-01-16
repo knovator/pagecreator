@@ -13,6 +13,8 @@ const WidgetContextProvider = ({
   t = () => '',
   // Form
   list = [],
+  searchText = '',
+  changeSearch = () => {},
   formState = '',
   closeForm = () => {},
   loading = false,
@@ -66,6 +68,8 @@ const WidgetContextProvider = ({
         closeForm,
         formState,
         loading,
+        searchText,
+        changeSearch,
         onChangeFormState,
         onWidgetFormSubmit,
         updateData,

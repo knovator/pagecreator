@@ -40,8 +40,16 @@ const usePage = ({
     pageRoutesPrefix,
     widgetRoutesPrefix,
   } = useProviderState();
-  const { setPageSize, pageSize, currentPage, setCurrentPage, filter } =
-    usePagination({ defaultLimit });
+  const {
+    setPageSize,
+    pageSize,
+    currentPageRef,
+    setCurrentPage,
+    offsetRef,
+    limitRef,
+    searchRef,
+    changeSearch,
+  } = usePagination({ defaultLimit });
 
   const handleError = useCallback(
     (code: CALLBACK_CODES) => (error: any) => {
@@ -109,9 +117,9 @@ const usePage = ({
           data: {
             search,
             options: {
-              offset: filter.offset,
-              limit: filter.limit,
-              page: currentPage,
+              offset: offsetRef.current,
+              limit: limitRef.current,
+              page: currentPageRef.current,
             },
           },
         });
@@ -128,9 +136,9 @@ const usePage = ({
     },
     [
       baseUrl,
-      currentPage,
-      filter.limit,
-      filter.offset,
+      currentPageRef,
+      limitRef,
+      offsetRef,
       handleError,
       pageRoutesPrefix,
       routes,
@@ -225,13 +233,6 @@ const usePage = ({
     setItemData(data || null);
     setFormState(state);
     if (state === 'UPDATE' && data?.widgets) {
-      // setSelectedWidgets(
-      //   data.widgets
-      //     .map((widgetId: string) =>
-      //       widgets.find((widget) => widget['value'] === widgetId)
-      //     )
-      //     .filter((widget: any) => widget)
-      // );
       // setSelectedWidgets(widgets.filter((widget) => data.widgets.includes(widget.value)));
     } else {
       setSelectedWidgets([]);
@@ -248,11 +249,14 @@ const usePage = ({
       return temporaryData;
     });
   };
-
+  const changeCurrentPage = (page: number) => {
+    setCurrentPage(page);
+    getPages(searchRef.current);
+  };
   useEffect(() => {
     if (canList) getPages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, currentPage, canList]);
+  }, [pageSize, canList]);
 
   return {
     list,
@@ -261,11 +265,13 @@ const usePage = ({
     setLoading,
 
     // Pagination
+    searchText: searchRef.current,
+    changeSearch,
     pageSize,
     totalPages,
-    currentPage,
+    currentPage: currentPageRef.current,
     totalRecords,
-    setCurrentPage,
+    setCurrentPage: changeCurrentPage,
     setPageSize,
 
     // Form

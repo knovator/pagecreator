@@ -52,6 +52,8 @@ export interface WidgetContextType {
   t: (key: string) => string;
   // Form
   list: any[];
+  searchText?: string;
+  changeSearch: (str: string) => void;
   formState: FormActionTypes | undefined;
   closeForm: () => void;
   onWidgetFormSubmit: (data: any) => void;
@@ -61,14 +63,19 @@ export interface WidgetContextType {
   canAdd: boolean;
   canUpdate: boolean;
   onDeleteItem: (id: string) => void;
-  getWidgets: (searchText: string) => void;
+  getWidgets: (searchText?: string) => void;
   onImageUpload: (
     file: File
   ) => Promise<{ fileUrl: string; fileId: string; fileUri: string } | void>;
   onImageRemove: (id: string) => Promise<void>;
   itemsTypes: ItemsType[];
   widgetTypes: WidgetType[];
-  getCollectionData: (collectionName: string, search?: string) => Promise<void>;
+  getCollectionData: (
+    collectionName: string,
+    search?: string,
+    callback?: (options: OptionType[]) => void,
+    collectionItems?: string[]
+  ) => Promise<void>;
   collectionDataLoading: boolean;
   collectionData: any[];
   formatListItem?: (code: string, data: any) => JSX.Element;
@@ -94,12 +101,16 @@ export interface WidgetContextType {
   mobileItems: any[];
   itemsLoading: boolean;
   onItemFormSubmit: (state: FormActionTypes, data: any) => void;
+  reactSelectStyles?: any;
 }
 
 export interface PageContextType {
   t: (key: string) => string;
   // Form
   list: any[];
+  searchText: string;
+  changeSearch: (val: string) => void;
+  getWidgets: (callback?: (data: any) => void) => void;
   formState: FormActionTypes | undefined;
   closeForm: () => void;
   onPageFormSubmit: (data: any) => void;

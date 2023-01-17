@@ -1,12 +1,58 @@
-import { AggregateOptions, models } from 'mongoose';
+import { AggregateOptions } from 'mongoose';
 import { Widget, Page } from './../models';
-import { AddSrcSetsToItems, appendCollectionData } from '../utils/helper';
+import {
+  AddSrcSetsToItems,
+  appendCollectionData,
+  getCollectionModal,
+} from '../utils/helper';
 import { successResponse } from './../utils/responseHandlers';
 import { defaults, commonExcludedFields } from '../utils/defaults';
 import { IPageSchema, IRequest, IResponse, IWidgetSchema } from '../types';
 
 const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'User');
+};
+
+const getAggregationQuery = ({
+  collectionName,
+  ids,
+}: {
+  collectionName: string;
+  ids: string[];
+}) => {
+  const collectionConfig = defaults.collections.find(
+    (c) => c.collectionName === collectionName
+  );
+  const aggregateQuery: AggregateOptions = {
+    $match: {
+      _id: {
+        $in: ids,
+      },
+      ...(collectionConfig?.match || {}),
+    },
+  };
+  if (collectionConfig?.project)
+    aggregateQuery['$project'] = collectionConfig?.project;
+  if (collectionConfig?.lookup)
+    aggregateQuery['$lookup'] = collectionConfig?.lookup;
+  if (collectionConfig?.addFields)
+    aggregateQuery['$addFields'] = collectionConfig?.addFields;
+  if (collectionConfig?.unwind)
+    aggregateQuery['$unwind'] = collectionConfig?.unwind;
+
+  const aggregateQueryItem: AggregateOptions[] = [];
+  if (aggregateQuery['$match'])
+    aggregateQueryItem.push({ $match: aggregateQuery['$match'] });
+  if (aggregateQuery['$lookup'])
+    aggregateQueryItem.push({ $lookup: aggregateQuery['$lookup'] });
+  if (aggregateQuery['$project'])
+    aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
+  if (aggregateQuery['$addFields'])
+    aggregateQueryItem.push({ $addFields: aggregateQuery['$addFields'] });
+  if (aggregateQuery['$unwind'])
+    aggregateQueryItem.push({ $unwind: aggregateQuery['$unwind'] });
+
+  return aggregateQueryItem;
 };
 
 // TO Do: Optimize the following
@@ -108,33 +154,14 @@ export const getWidgetData = catchAsync(
       widgetData.collectionItems &&
       widgetData.collectionItems.length > 0
     ) {
-      const collectionConfig = defaults.collections.find(
-        (c) => c.collectionName === widgetData.collectionName
+      const aggregateQueryItem = getAggregationQuery({
+        collectionName: widgetData.collectionName,
+        ids: widgetData.collectionItems,
+      });
+      const collectionModal: any = getCollectionModal(
+        widgetData.collectionName
       );
-      const aggregateQuery: AggregateOptions = {
-        $match: {
-          _id: {
-            $in: widgetData.collectionItems,
-          },
-          ...(collectionConfig?.match || {}),
-        },
-      };
-      if (collectionConfig?.project)
-        aggregateQuery['$project'] = collectionConfig?.project;
-      if (collectionConfig?.lookup)
-        aggregateQuery['$lookup'] = collectionConfig?.lookup;
-
-      const aggregateQueryItem: AggregateOptions[] = [];
-      if (aggregateQuery['$match'])
-        aggregateQueryItem.push({ $match: aggregateQuery['$match'] });
-      if (aggregateQuery['$lookup'])
-        aggregateQueryItem.push({ $lookup: aggregateQuery['$lookup'] });
-      if (aggregateQuery['$project'])
-        aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
-
-      const collectionItems = await models[widgetData.collectionName].aggregate(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+      const collectionItems = await collectionModal.aggregate(
         aggregateQueryItem
       );
       widgetData.collectionItems = collectionItems;
@@ -144,9 +171,6 @@ export const getWidgetData = catchAsync(
       widgetData.tabs &&
       widgetData.tabs.length > 0
     ) {
-      const collectionConfig = defaults.collections.find(
-        (c) => c.collectionName === widgetData.collectionName
-      );
       const tabCollectionItemIds = widgetData.tabs.reduce(
         (acc: string[], tabItem: any) => {
           acc.push(...tabItem.collectionItems);
@@ -154,37 +178,25 @@ export const getWidgetData = catchAsync(
         },
         []
       );
-      const aggregateQuery: AggregateOptions = {
-        $match: {
-          _id: {
-            $in: tabCollectionItemIds,
-          },
-          ...(collectionConfig?.match || {}),
-        },
-      };
-      if (collectionConfig?.project)
-        aggregateQuery['$project'] = collectionConfig?.project;
-      if (collectionConfig?.lookup)
-        aggregateQuery['$lookup'] = collectionConfig?.lookup;
+      const aggregateQueryItem = getAggregationQuery({
+        collectionName: widgetData.collectionName,
+        ids: tabCollectionItemIds,
+      });
 
-      const aggregateQueryItem: AggregateOptions[] = [];
-      if (aggregateQuery['$match'])
-        aggregateQueryItem.push({ $match: aggregateQuery['$match'] });
-      if (aggregateQuery['$lookup'])
-        aggregateQueryItem.push({ $lookup: aggregateQuery['$lookup'] });
-      if (aggregateQuery['$project'])
-        aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
-
-      const collectionItems = await models[widgetData.collectionName].aggregate(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+      const collectionModal: any = getCollectionModal(
+        widgetData.collectionName
+      );
+      const collectionItems: any = await collectionModal.aggregate(
         aggregateQueryItem
       );
       // converting colleciton items to obj to better access them
-      const collectionItemsObj = collectionItems.reduce((acc, item) => {
-        acc[item._id] = item;
-        return acc;
-      }, {});
+      const collectionItemsObj = collectionItems.reduce(
+        (acc: any, item: any) => {
+          acc[item._id] = item;
+          return acc;
+        },
+        {}
+      );
       widgetData.tabs = widgetData.tabs.map((tabItem) => {
         return {
           name: tabItem.name,
@@ -227,6 +239,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
                 $in: ['$_id', '$$widgets'],
               },
               isDeleted: false,
+              isActive: true,
             },
           },
           {
@@ -329,9 +342,9 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
     },
     []
   );
-  pageData[0].widgets = pageData[0].widgets.map(
-    (widgetId: string) => pageData[0].widgetsData[widgetId]
-  );
+  pageData[0].widgets = pageData[0].widgets
+    .map((widgetId: string) => pageData[0].widgetsData[widgetId])
+    .filter(Boolean);
   delete pageData[0].widgetsData;
   res.message = req?.i18n?.t('user.pageData');
   return successResponse(pageData[0], res);

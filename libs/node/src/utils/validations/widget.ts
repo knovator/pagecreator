@@ -119,7 +119,11 @@ export const list = joi.object({
   search: joi.string().allow('').optional().default(''),
   options: joi
     .object({
-      // sort: joi.alternatives().try(joi.object(), joi.string()).optional(),
+      sort: joi
+        .alternatives()
+        .try(joi.object(), joi.string())
+        .optional()
+        .default({ _id: -1 }),
       // populate: joi.array().items().optional(),
       offset: joi.number().optional(),
       page: joi.number().optional(),
@@ -128,6 +132,10 @@ export const list = joi.object({
     .default({}),
   isActive: joi.boolean().optional(),
   all: joi.boolean().default(false),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
 export const partialUpdate = joi.object({
@@ -141,4 +149,9 @@ export const partialUpdate = joi.object({
 export const getCollectionData = joi.object({
   collectionName: joi.string().required(),
   search: joi.string().allow('').optional().default(''),
+  collectionItems: joi.array().optional().default([]),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });

@@ -44,8 +44,11 @@ const Page = ({
     currentPage,
     pageSize,
     itemData,
+    searchText,
+    changeSearch,
     setCurrentPage,
     formState,
+    getWidgets,
     onChangeFormState,
     onPageFormSubmit,
     onCloseForm,
@@ -65,6 +68,8 @@ const Page = ({
       t={derivedT}
       loader={loader}
       list={list}
+      searchText={searchText}
+      changeSearch={changeSearch}
       widgets={widgets}
       data={itemData}
       loading={loading}
@@ -73,6 +78,7 @@ const Page = ({
       currentPage={currentPage}
       onChangeFormState={onChangeFormState}
       pageSize={pageSize}
+      getWidgets={getWidgets}
       setCurrentPage={setCurrentPage}
       onPageFormSubmit={onPageFormSubmit}
       selectedWidgets={selectedWidgets}

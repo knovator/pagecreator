@@ -1,4 +1,4 @@
-import { Types, model, Schema, models } from 'mongoose';
+import { Types } from 'mongoose';
 import { Widget } from './../models';
 import { create, remove, update, list, getAll } from '../services/dbService';
 import {
@@ -7,9 +7,9 @@ import {
 } from './../utils/responseHandlers';
 
 import { defaults } from '../utils/defaults';
+import { getCollectionModal } from '../utils/helper';
 import {
   CollectionItem,
-  IModel,
   IRequest,
   IResponse,
   WidgetTypes,
@@ -51,7 +51,7 @@ export const deleteWidget = catchAsync(
 
 export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
   const search = req.body.search || '';
-  const { page, limit } = req.body.options;
+  const { page, limit, sort } = req.body.options;
   const all =
     (typeof req.body.all !== 'undefined' && req.body.all === true) || false;
   const isActive =
@@ -60,6 +60,7 @@ export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
       : null;
   const customOptions = {
     pagination: !all,
+    sort,
     ...(page && limit ? { page, limit } : {}),
   };
   const query = {
@@ -127,8 +128,9 @@ export const getWidgetTypes = catchAsync(
 
 export const getCollectionData = catchAsync(
   async (req: IRequest, res: IResponse) => {
-    const limit = 10;
-    const { search, collectionName } = req.body;
+    let limit = 10;
+    const { search, collectionName, collectionItems } = req.body;
+    if (Array.isArray(collectionItems)) limit += collectionItems.length;
     const collectionItem: CollectionItem | undefined =
       defaults.collections.find(
         (collection) => collection.collectionName === collectionName
@@ -137,24 +139,31 @@ export const getCollectionData = catchAsync(
       throw new Error(`No collection is specified with ${collectionName}`);
     }
     // setting up mongoose model
-    let TempModel = models[collectionName] as unknown as IModel<any>;
-    if (!TempModel) {
-      const tempSchema = new Schema({}, { strict: false });
-      TempModel = model(collectionName, tempSchema) as unknown as IModel<any>;
-    }
+    const TempModel = getCollectionModal(collectionName);
     // fetching data
     let query: any = collectionItem.filters || {};
-    if (search) {
+    const orOptions: any = [];
+    if (
+      search &&
+      Array.isArray(collectionItem.searchColumns) &&
+      collectionItem.searchColumns.length
+    ) {
+      collectionItem.searchColumns.forEach((column) =>
+        orOptions.push({
+          [column]: {
+            $regex: search,
+            $options: 'i',
+          },
+        })
+      );
+    }
+    if (Array.isArray(collectionItems) && collectionItems.length) {
+      orOptions.push({ _id: { $in: collectionItems } });
+    }
+    if (orOptions.length > 0) {
       query = {
         ...query,
-        $or: collectionItem.searchColumns
-          ? collectionItem.searchColumns.map((column) => ({
-              [column]: {
-                $regex: search,
-                $options: 'i',
-              },
-            }))
-          : [],
+        $or: orOptions,
       };
     }
     const collectionData = await getAll(TempModel, query, { limit });

@@ -1,6 +1,6 @@
 {
   "name": "@knovator/pagecreator",
-  "version": "0.5.1",
+  "version": "0.5.3",
   "repository": {
     "type": "git",
     "url": "git@github.com:knovator/pagecreator.git"
@@ -13,7 +13,7 @@
   ],
   "author": "knovator (https://knovator.com/)",
   "dependencies": {
-    "react-slick": "^0.29.0",
+    "swiper": "^8.4.5",
     "react-tabs": "^6.0.0"
   },
   "files": [
@@ -21,8 +21,6 @@
     "package.json",
     "README.md",
     "style.css",
-    "index.d.ts",
-    "index.js",
-    "index.cjs"
+    "index.js"
   ]
 }

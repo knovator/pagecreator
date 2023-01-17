@@ -1,89 +1,66 @@
-import React from 'react';
-import Slider, { Settings, CustomArrowProps } from 'react-slick';
+import React, { Fragment } from 'react';
+import { Swiper, SwiperSlide, SwiperProps } from 'swiper/react';
+import { Pagination, Autoplay, Virtual } from 'swiper';
 import { ItemsTypeProps } from '../../../types';
-import Next from '../../../icons/Next';
-import Previous from '../../../icons/Previous';
 import { filterItemData } from '../../../utils/helper';
-
-const SlickArrowLeft = ({
-  currentSlide,
-  slideCount,
-  ...props
-}: CustomArrowProps) => (
-  <button
-    {...props}
-    className={
-      'slick-prev slick-arrow' + (currentSlide === 0 ? ' slick-disabled' : '')
-    }
-    aria-hidden="true"
-    aria-disabled={currentSlide === 0 ? true : false}
-    type="button"
-  >
-    <Previous />
-  </button>
-);
-const SlickArrowRight = ({
-  currentSlide,
-  slideCount,
-  ...props
-}: CustomArrowProps) => (
-  <button
-    {...props}
-    className={
-      'slick-next slick-arrow' +
-      (slideCount && currentSlide === slideCount - 1 ? ' slick-disabled' : '')
-    }
-    aria-hidden="true"
-    aria-disabled={slideCount && currentSlide === slideCount - 1 ? true : false}
-    type="button"
-  >
-    <Next />
-  </button>
-);
 
 export function CarouselWidget({
   widgetData,
   formatItem,
   settings,
   className,
+  itemsContainer,
 }: ItemsTypeProps) {
-  const defaultSettings: Settings = {
-    dots: false,
-    infinite: true,
-    slidesToShow: widgetData.mobilePerRow,
-    slidesToScroll: 1,
-    autoplay: widgetData.autoPlay,
-    autoplaySpeed: 1500,
-    pauseOnHover: true,
-    nextArrow: <SlickArrowRight />,
-    prevArrow: <SlickArrowLeft />,
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: widgetData.tabletPerRow,
-        },
+  const defaultSetting: SwiperProps = {
+    slidesPerView: widgetData.mobilePerRow,
+    loop: true,
+    loopAdditionalSlides: 2,
+    speed: 5000,
+    breakpoints: {
+      640: {
+        slidesPerView: widgetData.mobilePerRow,
+        spaceBetween: 20,
       },
-      {
-        breakpoint: 1024,
-        settings: {
-          arrows: false,
-          slidesToShow: widgetData.webPerRow,
-        },
+      768: {
+        slidesPerView: widgetData.tabletPerRow,
+        spaceBetween: 40,
       },
-    ],
+      1024: {
+        slidesPerView: widgetData.webPerRow,
+        spaceBetween: 50,
+      },
+    },
   };
   if (!widgetData) return null;
+  if (typeof itemsContainer === 'function')
+    return itemsContainer(
+      widgetData.itemsType === 'Image'
+        ? widgetData.items
+            .filter(filterItemData)
+            .map((item, index) => (
+              <Fragment key={index}>{formatItem(item)}</Fragment>
+            ))
+        : widgetData.collectionItems.map((item, index) => (
+            <Fragment key={index}>{formatItem(item)}</Fragment>
+          ))
+    );
   return (
-    <Slider {...(settings ? settings : defaultSettings)} className={className}>
+    <Swiper
+      {...{ ...defaultSetting, ...(settings || {}) }}
+      className={className}
+      modules={[Pagination, Autoplay, Virtual]}
+      virtual={typeof window === 'undefined'}
+    >
       {widgetData.itemsType === 'Image'
         ? widgetData.items
             .filter(filterItemData)
-            .map((item, index) => <div key={index}>{formatItem(item)}</div>)
+            .map((item, index) => (
+              <SwiperSlide key={index}>{formatItem(item)}</SwiperSlide>
+            ))
         : widgetData.collectionItems.map((item, index) => (
-            <div key={index}>{formatItem(item)}</div>
+            <SwiperSlide key={index}>{formatItem(item)}</SwiperSlide>
           ))}
-    </Slider>
+    </Swiper>
   );
 }
 

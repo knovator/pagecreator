@@ -1,54 +1,41 @@
-import { useState } from "react";
-import * as constants from "../constants/common";
+import { useRef } from 'react';
+import * as constants from '../constants/common';
 
 interface UsePaginationProps {
-	defaultLimit?: number;
+  defaultLimit?: number;
 }
 
 const usePagination = ({ defaultLimit }: UsePaginationProps) => {
-	const defaultApiPayload = {
-		search: "",
-		offset: constants.DEFAULT_OFFSET_PAYLOAD,
-		limit: defaultLimit || constants.DEFAULT_LIMIT,
-	};
+  const offsetRef = useRef<number>(constants.DEFAULT_OFFSET_PAYLOAD);
+  const limitRef = useRef<number>(defaultLimit || constants.DEFAULT_LIMIT);
+  const currentPageRef = useRef<number>(constants.DEFAULT_CURRENT_PAGE);
+  const searchRef = useRef<string>('');
 
-	const [filter, setFilter] = useState(defaultApiPayload);
-	const [currentPage, setCurrentPage] = useState(constants.DEFAULT_CURRENT_PAGE);
+  const setPageSize = (value: number) => {
+    limitRef.current = Number.parseInt(String(value), constants.DECIMAL_REDIX);
+    offsetRef.current = constants.DEFAULT_OFFSET_PAYLOAD;
+    currentPageRef.current = constants.DEFAULT_CURRENT_PAGE;
+  };
 
-	const setPageSize = (value: number) => {
-		setFilter({
-			...filter,
-			limit: Number.parseInt(String(value), constants.DECIMAL_REDIX),
-			offset: constants.DEFAULT_OFFSET_PAYLOAD,
-		});
-		setCurrentPage(constants.DEFAULT_CURRENT_PAGE);
-	};
+  const changeSearch = (value: string) => {
+    searchRef.current = value;
+  };
 
-	const changeSearch = (value: string) => {
-		setFilter((draft) => {
-			draft.search = value;
-			return draft;
-		});
-	};
+  const changeCurrentPage = (value: number) => {
+    currentPageRef.current = value;
+    offsetRef.current = value * limitRef.current;
+  };
 
-	const changeCurrentPage = (value: number) => {
-		setFilter({
-			...filter,
-			offset: Math.max(value - 1, 1) * filter.limit,
-		});
-		setCurrentPage(value);
-	};
-
-	return {
-		pageSize: filter.limit,
-		setPageSize,
-		currentPage,
-		changeSearch,
-		filter,
-		setCurrentPage: changeCurrentPage,
-		defaultApiPayload,
-		setFilter,
-	};
+  return {
+    pageSize: limitRef.current,
+    currentPageRef,
+    limitRef,
+    offsetRef,
+    searchRef,
+    setPageSize,
+    changeSearch,
+    setCurrentPage: changeCurrentPage,
+  };
 };
 
 export default usePagination;

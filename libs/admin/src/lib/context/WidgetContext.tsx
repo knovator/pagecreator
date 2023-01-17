@@ -13,6 +13,8 @@ const WidgetContextProvider = ({
   t = () => '',
   // Form
   list = [],
+  searchText = '',
+  changeSearch = () => {},
   formState = '',
   closeForm = () => {},
   loading = false,
@@ -53,6 +55,7 @@ const WidgetContextProvider = ({
   mobileItems = [],
   itemsLoading = false,
   onItemFormSubmit = () => {},
+  reactSelectStyles = {},
   // other
   children,
 }: WidgetContextProviderProps) => {
@@ -65,6 +68,8 @@ const WidgetContextProvider = ({
         closeForm,
         formState,
         loading,
+        searchText,
+        changeSearch,
         onChangeFormState,
         onWidgetFormSubmit,
         updateData,
@@ -82,6 +87,7 @@ const WidgetContextProvider = ({
         collectionData,
         formatListItem,
         formatOptionLabel,
+        reactSelectStyles,
         // Pagination
         currentPage,
         limits,

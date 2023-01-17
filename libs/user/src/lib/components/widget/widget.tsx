@@ -18,6 +18,7 @@ export function Widget({
   formatFooter,
   formatHeader,
   formatTabTitle,
+  itemsContainer,
 }: WidgetProps) {
   const formatItems = (item: ItemData | CollectionItemType): JSX.Element => {
     if (typeof formatItem === 'function' && formatItem) return formatItem(item);
@@ -68,7 +69,10 @@ export function Widget({
       {hideTitle === true ? null : typeof formatHeader === 'function' ? (
         formatHeader(widgetData.widgetTitle, widgetData)
       ) : (
-        <h2 className="kpc_widget-title">{widgetData.widgetTitle}</h2>
+        <h2
+          className="kpc_widget-title"
+          dangerouslySetInnerHTML={{ __html: widgetData.widgetTitle }}
+        ></h2>
       )}
       <div className="kpc_widget-body">
         {widgetData.widgetType === 'Carousel' ? (
@@ -78,6 +82,7 @@ export function Widget({
             formatItem={formatItems}
             className={className}
             formatTabTitle={formatTabTitles}
+            itemsContainer={itemsContainer}
           />
         ) : widgetData.widgetType === 'Tabs' ? (
           <TabWidget
@@ -85,6 +90,7 @@ export function Widget({
             formatTabTitle={formatTabTitles}
             widgetData={widgetData}
             className={className}
+            itemsContainer={itemsContainer}
           />
         ) : (
           <FixedWidget
@@ -92,6 +98,7 @@ export function Widget({
             formatItem={formatItems}
             className={className}
             formatTabTitle={formatTabTitles}
+            itemsContainer={itemsContainer}
           />
         )}
       </div>

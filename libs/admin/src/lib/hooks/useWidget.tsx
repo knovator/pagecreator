@@ -50,8 +50,16 @@ const useWidget = ({
     widgetRoutesPrefix,
     itemsRoutesPrefix,
   } = useProviderState();
-  const { setPageSize, pageSize, currentPage, setCurrentPage, filter } =
-    usePagination({ defaultLimit });
+  const {
+    changeSearch,
+    setPageSize,
+    pageSize,
+    limitRef,
+    currentPageRef,
+    setCurrentPage,
+    offsetRef,
+    searchRef,
+  } = usePagination({ defaultLimit });
 
   const handleError = useCallback(
     (code: CALLBACK_CODES) => (error: any) => {
@@ -82,9 +90,9 @@ const useWidget = ({
           data: {
             search,
             options: {
-              offset: filter.offset,
-              limit: filter.limit,
-              page: currentPage,
+              offset: offsetRef.current,
+              limit: limitRef.current,
+              page: currentPageRef.current,
             },
           },
         });
@@ -101,9 +109,9 @@ const useWidget = ({
     },
     [
       baseUrl,
-      currentPage,
-      filter.limit,
-      filter.offset,
+      currentPageRef,
+      limitRef,
+      offsetRef,
       handleError,
       routes,
       token,
@@ -306,7 +314,8 @@ const useWidget = ({
   const getCollectionData = async (
     collectionName: string,
     search?: string,
-    callback?: (data: any) => void
+    callback?: (data: any) => void,
+    collectionItems?: string[]
   ) => {
     setCollectionDataLoading(true);
     const api = getApiType({
@@ -324,6 +333,7 @@ const useWidget = ({
       data: {
         search: search || '',
         collectionName,
+        collectionItems: collectionItems || [],
       },
     });
     if (response?.code === 'SUCCESS') {
@@ -373,58 +383,6 @@ const useWidget = ({
     setFormState(undefined);
     setItemData(null);
   };
-  const updateCollectionDataReferences =
-    (itemData: any) => (collectionData: any[]) => {
-      const itemDataUpdated: any = { ...itemData };
-      if (
-        itemDataUpdated['tabs'] &&
-        itemDataUpdated['tabs'].length > 0 &&
-        collectionData &&
-        collectionData.length > 0
-      ) {
-        itemDataUpdated['tabs'] = itemDataUpdated['tabs'].map((item: any) => {
-          return {
-            name: item.name,
-            collectionItems:
-              item?.collectionItems?.map((itemId: string) => {
-                item = collectionData.find(
-                  (item) => item._id === itemId || item.id === itemId
-                );
-                return item
-                  ? {
-                      label: item.name,
-                      value: item._id || item.id,
-                      ...item,
-                    }
-                  : {};
-              }) || [],
-          };
-        });
-      }
-      if (
-        itemDataUpdated['collectionItems'] &&
-        itemDataUpdated['collectionItems'].length > 0 &&
-        collectionData &&
-        collectionData.length > 0
-      ) {
-        let item;
-        itemDataUpdated['collectionItems'] = itemDataUpdated[
-          'collectionItems'
-        ].map((itemId: string) => {
-          item = collectionData.find(
-            (item) => item._id === itemId || item.id === itemId
-          );
-          return item
-            ? {
-                label: item.name,
-                value: item._id || item.id,
-                ...item,
-              }
-            : {};
-        });
-      }
-      setItemData(itemDataUpdated);
-    };
   const onChangeFormState = (state: FormActionTypes, data?: ObjectType) => {
     setFormState(state);
     // fetch ItemsTypes & WidgetTypes if needed
@@ -434,21 +392,15 @@ const useWidget = ({
     }
     // get Item data if widget is updating
     if (state === 'UPDATE' && data) {
-      if (data['itemsType'] !== 'Image' && data['collectionName'])
-        getCollectionData(
-          data['collectionName'],
-          '',
-          updateCollectionDataReferences(data)
-        );
-      else {
+      if (data['itemsType'] === 'Image') {
         getItems(data['_id']);
-        setItemData(data);
       }
+      setItemData(data);
     } else if (state === 'ADD') {
       // reset Item data if widget is adding
       setItemsList({ web: [], mobile: [] });
       setItemData(null);
-    } else if(state === 'DELETE' && data) {
+    } else if (state === 'DELETE' && data) {
       setItemData(data);
       setFormState(state);
     }
@@ -558,11 +510,15 @@ const useWidget = ({
       );
     }
   };
+  const changeCurrentPage = (page: number) => {
+    setCurrentPage(page);
+    getWidgets(searchRef.current);
+  };
 
   useEffect(() => {
     if (canList) getWidgets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, currentPage, canList]);
+  }, [canList]);
 
   return {
     list,
@@ -571,11 +527,12 @@ const useWidget = ({
     setLoading,
 
     // Pagination
+    searchText: searchRef.current,
     pageSize,
     totalPages,
-    currentPage,
+    currentPage: currentPageRef.current,
     totalRecords,
-    setCurrentPage,
+    setCurrentPage: changeCurrentPage,
     setPageSize,
 
     // Form
@@ -591,6 +548,7 @@ const useWidget = ({
     onImageRemove,
     itemsTypes,
     widgetTypes,
+    changeSearch,
     collectionDataLoading,
     getCollectionData,
     collectionData,

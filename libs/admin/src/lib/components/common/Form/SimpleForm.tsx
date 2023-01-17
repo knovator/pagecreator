@@ -116,6 +116,25 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
               ></Controller>
             );
             break;
+          case 'html':
+            input = (
+              <Controller
+                control={control}
+                name={schema.accessor}
+                rules={schema.validations}
+                render={({ field }) => (
+                  <Input.HTML
+                    label={schema.label}
+                    error={errors[schema.accessor]?.message?.toString()}
+                    onInput={schema.onInput}
+                    required={schema.required}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            );
+            break;
           case 'text':
           case 'number':
           case 'url':

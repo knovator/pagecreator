@@ -9,7 +9,9 @@
     "react-dropzone": "^14.2.2",
     "react-select": "^5.4.0",
     "react-tabs": "^6.0.0",
-    "react-tiny-popover": "^7.2.0"
+    "react-tiny-popover": "^7.2.0",
+    "suneditor": "^2.44.3",
+    "suneditor-react": "^3.4.1"
   },
   "peerDependencies": {
     "react": "^18 | ^17",

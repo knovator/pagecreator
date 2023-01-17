@@ -43,6 +43,8 @@
     "react-tiny-popover": "^7.2.0",
     "react-transition-group": "^4.4.5",
     "regenerator-runtime": "0.13.11",
+    "suneditor": "^2.44.3",
+    "suneditor-react": "^3.4.1",
     "swiper": "^8.4.5",
     "tslib": "^2.3.0"
   },

@@ -59,6 +59,17 @@ export interface InputProps {
   register?: any;
   info?: string;
 }
+export interface HTMLEditorProps {
+  id?: string;
+  label?: string;
+  placeholder?: string;
+  value?: string;
+  wrapperClassName?: string;
+  onChange: (value: string) => void;
+  onInput?: (e: any) => void;
+  required?: boolean;
+  error?: string;
+}
 export interface CheckboxProps {
   rest?: any;
   label?: string;
@@ -156,7 +167,8 @@ export interface SchemaType extends ReactSelectProps {
     | 'url'
     | 'ReactSelect'
     | 'srcset'
-    | 'color';
+    | 'color'
+    | 'html';
   options?: { value: string; label: string }[];
   selectedOptions?: { value: string; label: string }[];
   isMulti?: boolean;

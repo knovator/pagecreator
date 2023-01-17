@@ -56,7 +56,7 @@ const TRANSLATION_PAIRS_WIDGET = {
   'widget.nameRequired': 'Name is required',
   'widget.widgetTitle': 'Widget Title',
   'widget.widgetTitlePlaceholder': 'Enter Widget Title',
-  'widget.widgetTitleRequired': 'Section Widget is required',
+  'widget.widgetTitleRequired': 'Widget Title is required',
   'widget.itemsType': 'Items Type',
   'widget.itemsTypePlaceholder': 'Select Items Type',
   'widget.widgetType': 'Widget Type',

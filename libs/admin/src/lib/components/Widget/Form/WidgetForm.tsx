@@ -359,7 +359,7 @@ const WidgetForm = ({ formRef }: FormProps) => {
       label: `${t('widget.widgetTitle')}`,
       accessor: 'widgetTitle',
       required: true,
-      type: 'text',
+      type: 'html',
       onInput: handleCapitalize,
       placeholder: t('widget.widgetTitlePlaceholder'),
       validations: {

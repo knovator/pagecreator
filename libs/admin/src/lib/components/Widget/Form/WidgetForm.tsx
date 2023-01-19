@@ -36,7 +36,7 @@ const constants = {
   tabCollectionItemsAccessor: 'collectionItems',
 };
 
-const WidgetForm = ({ formRef }: FormProps) => {
+const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   const {
     register,
     formState: { errors },
@@ -359,13 +359,17 @@ const WidgetForm = ({ formRef }: FormProps) => {
       label: `${t('widget.widgetTitle')}`,
       accessor: 'widgetTitle',
       required: true,
-      type: 'html',
+      type: customInputs && customInputs['widgetTitle'] ? undefined : 'text',
       onInput: handleCapitalize,
       placeholder: t('widget.widgetTitlePlaceholder'),
       validations: {
         required: t('widget.widgetTitleRequired'),
       },
       info: t('widget.widgetTitleInfo'),
+      Input:
+        customInputs && customInputs['widgetTitle']
+          ? customInputs['widgetTitle']
+          : undefined,
     },
     {
       label: `${t('widget.widgetType')}`,

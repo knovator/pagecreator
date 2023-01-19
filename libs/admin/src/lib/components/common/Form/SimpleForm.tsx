@@ -117,25 +117,6 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
               ></Controller>
             );
             break;
-          case 'html':
-            input = (
-              <Controller
-                control={control}
-                name={schema.accessor}
-                rules={schema.validations}
-                render={({ field }) => (
-                  <Input.HTML
-                    label={schema.label}
-                    error={errors[schema.accessor]?.message?.toString()}
-                    onInput={schema.onInput}
-                    required={schema.required}
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
-            );
-            break;
           case 'text':
           case 'number':
           case 'url':
@@ -165,8 +146,17 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
         }
       } else if (schema.Input) {
         input = (
-          <div className="kms_input-wrapper">
-            <label className="kms_input-label">{schema.label}</label>
+          <div
+            className={classNames('khb_input-wrapper', schema.wrapperClassName)}
+          >
+            {schema.label && (
+              <label className="khb_input-label">
+                {schema.label}
+                {schema.required ? (
+                  <span className="khb_input-label-required">*</span>
+                ) : null}
+              </label>
+            )}
             <Controller
               control={control}
               name={schema.accessor}
@@ -195,7 +185,6 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
         throw new Error(
           `Please provide Input or type prop to render input Labeled ${schema.label}`
         );
-
       return input;
     };
 

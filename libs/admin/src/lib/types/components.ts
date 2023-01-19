@@ -117,8 +117,14 @@ export interface ReactSelectProps {
   ) => Promise<OptionType[]>;
   selectKey?: string;
 }
+export interface CustomInputType {
+  field: import('react-hook-form').ControllerRenderProps;
+  error?: string;
+  setError: (msg: string) => void;
+}
 export interface FormProps {
   formRef: MutableRefObject<HTMLFormElement | null>;
+  customInputs?: Record<string, (props: InputRendererProps) => JSX.Element>;
 }
 export interface InputRendererProps {
   field: import('react-hook-form').ControllerRenderProps;

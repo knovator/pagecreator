@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import React from 'react';
 import classNames from 'classnames';
-import SunEditor from 'suneditor-react';
+import JoditEditor from 'jodit-react';
 import { HTMLEditorProps } from '../../../types';
 
 const App = ({
@@ -21,26 +22,12 @@ const App = ({
           ) : null}
         </label>
       )}
-      <SunEditor
-        setContents={value}
-        onChange={onChange}
-        setOptions={{
-          defaultStyle:
-            'font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial; font-size: 0.875rem;',
-          buttonList: [
-            ['undo', 'redo', 'align'],
-            [
-              'bold',
-              'underline',
-              'italic',
-              'strike',
-              'subscript',
-              'superscript',
-            ],
-            ['fontColor', 'hiliteColor'],
-            ['removeFormat'],
-          ],
+      <JoditEditor
+        value={value || ''}
+        config={{
+          buttons: ['bold', 'italic', 'align', 'brush', 'undo', 'redo'],
         }}
+        onBlur={(newContent: string) => onChange(newContent)}
       />
       {error && <p className="khb_input-error ">{error}</p>}
     </div>

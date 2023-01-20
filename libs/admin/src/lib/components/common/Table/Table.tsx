@@ -81,9 +81,12 @@ const Table = ({
                           </td>
                         ))
                       : null}
-                    {actions && (
+                    {(actions && (actions?.edit || actions?.delete)) ||
+                    typeof extraActions === 'function' ? (
                       <td className="khb_table-row-actions">
-                        {actions.edit && typeof actions.edit === 'function' ? (
+                        {actions &&
+                        actions.edit &&
+                        typeof actions.edit === 'function' ? (
                           <button
                             className="khb_actions-update"
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -93,7 +96,8 @@ const Table = ({
                             <Pencil />
                           </button>
                         ) : null}
-                        {actions.delete &&
+                        {actions &&
+                          actions.delete &&
                           typeof actions.delete === 'function' && (
                             <button
                               className="khb_actions-delete"
@@ -108,7 +112,7 @@ const Table = ({
                           ? extraActions(item)
                           : null}
                       </td>
-                    )}
+                    ) : null}
                   </tr>
                 ))
               ) : (

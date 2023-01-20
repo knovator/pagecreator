@@ -3,7 +3,16 @@ import Pencil from '../../../icons/pencil';
 import Trash from '../../../icons/trash';
 import { ObjectType, TableDataItemFormat, TableProps } from '../../../types';
 
-const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
+const Table = ({
+  data,
+  dataKeys,
+  actions,
+  loader,
+  loading,
+  extraActions,
+  actionsLabel,
+  extraColumns,
+}: TableProps) => {
   const cellItemRenderer = (
     item: ObjectType,
     dataKey: TableDataItemFormat,
@@ -42,11 +51,19 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
                     {key.label}
                   </th>
                 ))}
-                {actions && (actions?.edit || actions?.delete) && (
+                {Array.isArray(extraColumns)
+                  ? extraColumns.map((action) => (
+                      <th scope="col" className="khb_table-heading">
+                        {action.label}
+                      </th>
+                    ))
+                  : null}
+                {(actions && (actions?.edit || actions?.delete)) ||
+                typeof extraActions === 'function' ? (
                   <th scope="col" className="khb_table-heading">
-                    Actions
+                    {actionsLabel}
                   </th>
-                )}
+                ) : null}
               </tr>
             </thead>
             <tbody className="khb_tbody">
@@ -57,9 +74,19 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
                     key={item['id'] || item['_id'] || i}
                   >
                     {dataKeys.map((key, j) => cellItemRenderer(item, key, j))}
-                    {actions && (
+                    {Array.isArray(extraColumns)
+                      ? extraColumns.map((column) => (
+                          <td className="khb_table-row-data" key={i}>
+                            {column.Cell(item)}
+                          </td>
+                        ))
+                      : null}
+                    {(actions && (actions?.edit || actions?.delete)) ||
+                    typeof extraActions === 'function' ? (
                       <td className="khb_table-row-actions">
-                        {actions.edit && typeof actions.edit === 'function' ? (
+                        {actions &&
+                        actions.edit &&
+                        typeof actions.edit === 'function' ? (
                           <button
                             className="khb_actions-update"
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -69,7 +96,8 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
                             <Pencil />
                           </button>
                         ) : null}
-                        {actions.delete &&
+                        {actions &&
+                          actions.delete &&
                           typeof actions.delete === 'function' && (
                             <button
                               className="khb_actions-delete"
@@ -80,8 +108,11 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
                               <Trash />
                             </button>
                           )}
+                        {typeof extraActions === 'function'
+                          ? extraActions(item)
+                          : null}
                       </td>
-                    )}
+                    ) : null}
                   </tr>
                 ))
               ) : (

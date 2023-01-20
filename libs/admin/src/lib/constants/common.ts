@@ -86,6 +86,7 @@ const TRANSLATION_PAIRS_WIDGET = {
   'widget.tabDeleteTitle': 'Are you sure you want to delete this tab?',
   'widget.widgetTitleInfo': 'HTML is supported',
   'widget.minPerRow': 'Value must be greater than zero',
+  'widget.actionsLabel': 'Actions',
 };
 const TRANSLATION_PAIRS_ITEM = {
   'item.title': 'Title',
@@ -115,6 +116,7 @@ const TRANSLATION_PAIRS_PAGE = {
   'page.tableName': 'Name',
   'page.tableCode': 'Code',
   'page.widgets': 'Widgets',
+  'page.actionsLabel': 'Actions',
 };
 export {
   CALLBACK_CODES,

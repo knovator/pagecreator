@@ -144,6 +144,13 @@ export interface WidgetProps {
   children?: JSX.Element;
   reactSelectStyles?: any;
 }
+export interface DerivedTableProps {
+  extraActions?: (item: any) => JSX.Element;
+  extraColumns?: [{
+    label: string
+    Cell: (item: any) => JSX.Element;
+  }]
+}
 
 export interface FormWrapperProps {
   children: (data: {
@@ -320,5 +327,11 @@ export interface TableProps {
     edit?: ((data: { [key: string]: any }) => void) | boolean;
     delete?: ((data: { [key: string]: any }) => void) | boolean;
   };
+  actionsLabel: string;
+  extraActions?: (item: any) => JSX.Element;
+  extraColumns?: [{
+    label: string
+    Cell: (item: any) => JSX.Element;
+  }]
 }
 // \ End Table

@@ -2,10 +2,15 @@ import React, { useCallback } from 'react';
 import Table from '../../common/Table';
 import ToggleWidget from '../../common/Toggle';
 import { useWidgetState } from '../../../context/WidgetContext';
-import { CombineObjectType, ObjectType, ValuesType } from '../../../types';
+import {
+  CombineObjectType,
+  DerivedTableProps,
+  ObjectType,
+  ValuesType,
+} from '../../../types';
 import { useProviderState } from '../../../context/ProviderContext';
 
-const WidgetTable = () => {
+const WidgetTable = ({ extraActions, extraColumns }: DerivedTableProps) => {
   const { switchClass } = useProviderState();
   const {
     list,
@@ -53,6 +58,9 @@ const WidgetTable = () => {
       loader={loader}
       loading={loading}
       dataKeys={dataKeys}
+      actionsLabel={t('widget.actionsLabel')}
+      extraColumns={extraColumns}
+      extraActions={extraActions}
       actions={{
         edit: canUpdate ? onUpdateClick : false,
         delete: canDelete ? onDeleteClick : false,

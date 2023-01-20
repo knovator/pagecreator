@@ -1,9 +1,9 @@
 import React from 'react';
 import Table from '../../common/Table';
 import { usePageState } from '../../../context/PageContext';
-import { CombineObjectType } from '../../../types';
+import { CombineObjectType, DerivedTableProps } from '../../../types';
 
-const PageTable = () => {
+const PageTable = ({ extraActions, extraColumns }: DerivedTableProps) => {
   const { list, onChangeFormState, t, loading, loader, canUpdate, canDelete } =
     usePageState();
   const onUpdateClick = (item: CombineObjectType) =>
@@ -20,10 +20,13 @@ const PageTable = () => {
         { label: t('page.tableName'), dataKey: 'name', highlight: true },
         { label: t('page.tableCode'), dataKey: 'code' },
       ]}
+      actionsLabel={t('page.actionsLabel')}
       actions={{
         edit: canUpdate ? onUpdateClick : undefined,
         delete: canDelete ? onDeleteClick : undefined,
       }}
+      extraColumns={extraColumns}
+      extraActions={extraActions}
     />
   );
 };

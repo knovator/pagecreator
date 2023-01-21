@@ -13,6 +13,7 @@ const WidgetContextProvider = ({
   t = () => '',
   // Form
   list = [],
+  imageBaseUrl = '',
   searchText = '',
   changeSearch = () => {},
   formState = '',
@@ -65,6 +66,7 @@ const WidgetContextProvider = ({
         t,
         // Form
         list,
+        imageBaseUrl,
         closeForm,
         formState,
         loading,

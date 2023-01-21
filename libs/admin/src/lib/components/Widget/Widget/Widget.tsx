@@ -77,6 +77,7 @@ const Widget = ({
     routes,
     defaultLimit: 10,
     preConfirmDelete,
+    imageBaseUrl
   });
   return (
     <WidgetContextProvider

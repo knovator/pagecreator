@@ -143,6 +143,7 @@ export interface WidgetProps {
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
   children?: JSX.Element;
   reactSelectStyles?: any;
+  imageBaseUrl?: string;
 }
 export interface DerivedTableProps {
   extraActions?: (item: any) => JSX.Element;

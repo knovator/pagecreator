@@ -102,6 +102,7 @@ export interface WidgetContextType {
   itemsLoading: boolean;
   onItemFormSubmit: (state: FormActionTypes, data: any) => void;
   reactSelectStyles?: any;
+  imageBaseUrl?: string;
 }
 
 export interface PageContextType {

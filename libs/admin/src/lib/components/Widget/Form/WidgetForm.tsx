@@ -72,6 +72,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     formatListItem,
     formatOptionLabel,
     reactSelectStyles,
+    imageBaseUrl,
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -519,7 +520,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
           setImgId={(value) => {
             field.onChange(value);
           }}
-          baseUrl={baseUrl}
+          baseUrl={imageBaseUrl ? imageBaseUrl : baseUrl}
           disabled={disabled}
           text={
             <>

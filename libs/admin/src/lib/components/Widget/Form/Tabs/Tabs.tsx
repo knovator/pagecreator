@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import {
   TabList,
@@ -98,7 +98,11 @@ const Tabs = ({
                         else onChange([value]);
                       }
                     }}
-                    selectKey={`tabs.${index}.collectionItems.${listCode}`}
+                    selectKey={`tabs.${index}.collectionItems-${JSON.stringify(
+                      Array.isArray(value) && value.length > 0
+                        ? value[0] || ''
+                        : listCode
+                    )}`}
                     selectedOptions={value}
                     isMulti={true}
                     isSearchable={true}

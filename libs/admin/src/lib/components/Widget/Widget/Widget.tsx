@@ -25,6 +25,7 @@ const Widget = ({
   routes,
   loader,
   explicitForm = false,
+  imageBaseUrl,
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   permissions = {},
@@ -76,11 +77,13 @@ const Widget = ({
     routes,
     defaultLimit: 10,
     preConfirmDelete,
+    imageBaseUrl
   });
   return (
     <WidgetContextProvider
       loading={loading}
       list={list}
+      imageBaseUrl={imageBaseUrl}
       onChangeFormState={onChangeFormState}
       t={derivedT}
       searchText={searchText}

@@ -12,6 +12,7 @@ interface UseWidgetProps {
   defaultLimit: number;
   routes?: Routes_Input;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
+  imageBaseUrl?: string;
 }
 interface ItemsList {
   web: ObjectType[];
@@ -23,6 +24,7 @@ const useWidget = ({
   defaultLimit,
   routes,
   preConfirmDelete,
+  imageBaseUrl
 }: UseWidgetProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
   const [itemsList, setItemsList] = useState<ItemsList>({
@@ -469,7 +471,7 @@ const useWidget = ({
         const responseData = response?.data[0] || response?.data;
         return {
           fileId: responseData?._id || responseData?.id,
-          fileUrl: build_path(baseUrl, responseData?.uri),
+          fileUrl: build_path(imageBaseUrl ? imageBaseUrl : baseUrl, responseData?.uri),
           fileUri: responseData?.uri,
         };
       } else

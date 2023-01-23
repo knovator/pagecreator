@@ -164,7 +164,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
                 }))
               );
             if (formState === 'UPDATE') {
-              const selectedOptions =
+              let selectedOptions =
                 collectionItems?.map((itemId: string) => {
                   item = (options as any[]).find(
                     (item) => item._id === itemId || item.id === itemId
@@ -177,6 +177,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
                       }
                     : {};
                 }) || [];
+              selectedOptions = selectedOptions.filter((obj) => !!obj.value);
               if (valueToSet) {
                 setValue(valueToSet, selectedOptions);
               } else {

@@ -6,17 +6,21 @@ import { IPageSchema, IDefaultValidations } from '../../types';
 
 type PageValidation = IPageSchema & IDefaultValidations;
 
-const checkUnique = async (value: string): Promise<void> => {
+const checkUnique = async (
+  key: string,
+  value: string,
+  error: string
+): Promise<void> => {
   let result;
   try {
     // throws error if document not found
     result = await getOne(Page, {
-      code: value,
+      [key]: value,
     });
     // eslint-disable-next-line no-empty
   } catch (e) {}
   if (result) {
-    throw new Error(VALIDATION.WIDGET_EXISTS);
+    throw new Error(error);
   }
 };
 
@@ -26,7 +30,11 @@ export const create = joi.object<PageValidation>({
     .string()
     .uppercase()
     .replace(/\s+/g, '_')
-    .external(checkUnique)
+    .external((value) => checkUnique('code', value, VALIDATION.WIDGET_EXISTS))
+    .required(),
+  slug: joi
+    .string()
+    .external((value) => checkUnique('slug', value, VALIDATION.SLUG_EXISTS))
     .required(),
   widgets: joi.array().items(joi.string()).optional(),
   createdBy: joi.any().optional(),

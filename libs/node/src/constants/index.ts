@@ -1,5 +1,6 @@
 export const VALIDATION = {
-	WIDGET_EXISTS: 'Widget with same code is available',
+  WIDGET_EXISTS: 'Widget with same code is available!',
+  SLUG_EXISTS: 'Widget with same slug is available!',
 };
 export const RESPONSE_CODES = {
 	DEFAULT: 'SUCCESS',

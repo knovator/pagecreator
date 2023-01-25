@@ -27,6 +27,7 @@ export interface iConfig {
 export interface IPageSchema extends Document {
   name: string;
   code: string;
+  slug: string;
   widgets: string[];
 }
 export interface ITabSchema extends Document {

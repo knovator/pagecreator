@@ -1,3 +1,4 @@
+import { CONSTANTS } from '../constants/common';
 import { TFunc } from '../types';
 
 /* eslint-disable no-useless-escape */
@@ -15,7 +16,10 @@ export const changeToCode = (string = '') =>
   string
     .replace(/[^\s\w]/gi, '')
     ?.toUpperCase()
-    ?.replace(/ /g, '_');
+    ?.replace(CONSTANTS.EMPTY_REGEX, '_');
+
+export const changeToSlug = (string = '') =>
+  string?.toLowerCase()?.replace(CONSTANTS.EMPTY_REGEX, '-');
 
 export const isObject = (data: any) => data?.constructor?.name === 'Object';
 export const isString = (data: any) => data?.constructor?.name === 'String';

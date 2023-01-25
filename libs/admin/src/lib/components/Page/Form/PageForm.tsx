@@ -6,7 +6,12 @@ import Form from '../../common/Form';
 import DNDItemsList from '../../common/DNDItemsList';
 
 import { usePageState } from '../../../context/PageContext';
-import { capitalizeFirstLetter, changeToCode } from '../../../helper/utils';
+import {
+  capitalizeFirstLetter,
+  changeToCode,
+  changeToSlug,
+} from '../../../helper/utils';
+import { CONSTANTS } from '../../../constants/common';
 
 const PageForm = ({ formRef }: FormProps) => {
   const {
@@ -30,6 +35,16 @@ const PageForm = ({ formRef }: FormProps) => {
   }
   function handleCode(event: React.ChangeEvent<HTMLInputElement>) {
     event.target.value = changeToCode(event.target.value);
+    return event;
+  }
+  function handleSlug(event: React.ChangeEvent<HTMLInputElement>) {
+    let slugValue = changeToSlug(event.target.value);
+    if (!slugValue || !CONSTANTS.SLUG_REGEX.test(slugValue)) {
+      slugValue = '';
+    } else {
+      slugValue = slugValue.replace(CONSTANTS.SLUG_REPLACE_REGEX, '');
+    }
+    event.target.value = slugValue;
     return event;
   }
   function loadOptions(value?: string, callback?: (data: any) => void): any {
@@ -74,6 +89,18 @@ const PageForm = ({ formRef }: FormProps) => {
       placeholder: t('page.codePlaceholder'),
       validations: {
         required: t('page.codeRequired'),
+      },
+    },
+    {
+      label: `${t('page.slug')}`,
+      accessor: 'slug',
+      required: true,
+      type: 'text',
+      onInput: handleSlug,
+      editable: false,
+      placeholder: t('page.slugPlaceholder'),
+      validations: {
+        required: t('page.slugRequired'),
       },
     },
     {

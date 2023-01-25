@@ -17,6 +17,12 @@ enum CALLBACK_CODES {
   'INTERNAL' = 'INTERNAL',
 }
 
+const CONSTANTS = {
+  EMPTY_REGEX: / /g,
+  SLUG_REGEX: /^[\da-z-]*$/,
+  SLUG_REPLACE_REGEX: /[^\da-z-]/gi,
+};
+
 const DEFAULT_PERMISSIONS = {
   list: true,
   add: true,
@@ -110,6 +116,9 @@ const TRANSLATION_PAIRS_PAGE = {
   'page.code': 'Code',
   'page.codePlaceholder': 'Enter code',
   'page.codeRequired': 'Code is required',
+  'page.slug': 'Slug',
+  'page.slugPlaceholder': 'Enter Slug',
+  'page.slugRequired': 'Slug is required',
   'page.addPageTitle': 'Add Page',
   'page.updatePageTitle': 'Update Page',
   'page.searchPages': 'Search Pages...',
@@ -119,6 +128,7 @@ const TRANSLATION_PAIRS_PAGE = {
   'page.actionsLabel': 'Actions',
 };
 export {
+  CONSTANTS,
   CALLBACK_CODES,
   DECIMAL_REDIX,
   DEFAULT_CURRENT_PAGE,

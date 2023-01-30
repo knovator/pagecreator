@@ -484,6 +484,9 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       accessor: 'title',
       type: 'text',
       placeholder: t('item.titlePlaceholder'),
+      validations: {
+        required: t('item.titleRequired'),
+      },
     },
     {
       label: `${t('item.subtitle')}`,
@@ -499,7 +502,6 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     },
     {
       label: `${t('item.link')}`,
-      required: true,
       accessor: 'link',
       type: 'url',
       placeholder: t('item.linkPlaceholder'),

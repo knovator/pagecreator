@@ -108,6 +108,7 @@ const TRANSLATION_PAIRS_ITEM = {
   'item.dragDrop': 'or drag and drop',
   'item.allowedFormat': 'PNG, JPG, SVG up to 2 MB',
   'item.srcset': 'Srcset',
+  'item.titleRequired': 'Title is required',
 };
 const TRANSLATION_PAIRS_PAGE = {
   'page.name': 'Name',

@@ -43,6 +43,10 @@
 .khb_btn-lg {
     @apply text-lg px-5 py-3;
 }
+
+.khb_btn-loader {
+    @apply inline-block mr-2;
+}
 /* \ End of Buttons */
 
 /* Table */

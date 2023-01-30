@@ -20,6 +20,7 @@ const ItemsAccordian = ({
   itemType,
   widgetId,
   onDelete,
+  loading,
   addText = 'Add',
   saveText = 'Save',
   cancelText = 'Cancel',
@@ -122,30 +123,32 @@ const ItemsAccordian = ({
               editingItemIndex === index || !data[index] ? (
                 <>
                   <Button
-                    size="sm"
-                    onClick={() => onItemFormSubmitClick(index)}
-                  >
-                    {saveText}
-                  </Button>
-                  <Button
                     type="secondary"
                     size="sm"
+                    disabled={loading}
                     onClick={() => onItemCancelClick(index)}
                   >
                     {cancelText}
                   </Button>
+                  <Button
+                    size="sm"
+                    loading={loading}
+                    onClick={() => onItemFormSubmitClick(index)}
+                  >
+                    {saveText}
+                  </Button>
                 </>
               ) : (
                 <>
-                  <Button size="sm" onClick={() => onItemEditClick(index)}>
-                    {editText}
-                  </Button>
                   <Button
                     type="danger"
                     size="sm"
                     onClick={() => onDeleteClick(index)}
                   >
                     {deleteText}
+                  </Button>
+                  <Button size="sm" onClick={() => onItemEditClick(index)}>
+                    {editText}
                   </Button>
                 </>
               )

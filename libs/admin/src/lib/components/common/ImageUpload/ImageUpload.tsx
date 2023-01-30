@@ -86,27 +86,23 @@ const ImageUpload = ({
     );
   };
 
-  return (
-    <>
+  if (!isEmpty(img) && isString(img) && img) {
+    return (
       <div className="khb_img-upload-wrapper-1">
         <div className="khb_img-upload-wrapper-2">
-          {!isEmpty(img) && isString(img) && img ? (
-            showImage(img)
-          ) : (
-            <div
-              {...getRootProps({
-                className,
-              })}
-            >
-              <input
-                disabled={disabled}
-                {...getInputProps()}
-                id="file-upload"
-              />
-              {text}
-            </div>
-          )}
+          <div>{showImage(img)}</div>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div {...getRootProps()} className="khb_img-upload-wrapper-1">
+        <input disabled={disabled} {...getInputProps()} id="file-upload" />
+        <label htmlFor="file-upload" className="khb_img-upload-wrapper-2">
+          <div className={className}>{text}</div>
+        </label>
       </div>
       {error && <p className="khb_input-error">{error}</p>}
     </>

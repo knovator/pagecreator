@@ -314,10 +314,10 @@
 
 /* Image Upload */
 .khb_img-upload-wrapper-1 {
-    @apply flex justify-center px-6 pt-5 pb-6 mt-1 border-2 border-dashed rounded-md border-slate-400;
+    @apply mt-1 border-2 border-dashed rounded-md border-slate-400;
 }
 .khb_img-upload-wrapper-2 {
-    @apply space-y-1 text-center;
+    @apply flex justify-center px-6 pt-5 pb-6 cursor-pointer space-y-1 text-center;
 }
 .khb_img-wrapper {
     @apply relative inline-flex;
@@ -332,7 +332,7 @@
     @apply flex text-sm text-gray-600;
 }
 .khb_img-text-label {
-    @apply relative font-medium rounded-md cursor-pointer focus-within:outline-none;
+    @apply relative font-medium rounded-md focus-within:outline-none;
 }
 .khb_img-text-1 {
     @apply pl-1 text-gray-500;

@@ -526,9 +526,9 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
           text={
             <>
               <div className="khb_img-text-wrapper">
-                <label htmlFor="file-upload" className="khb_img-text-label">
+                <div className="khb_img-text-label">
                   <span>{t('item.uploadFile')}</span>
-                </label>
+                </div>
                 <p className="khb_img-text-1">{t('item.dragDrop')}</p>
               </div>
               <p className="khb_img-text-2">{t('item.allowedFormat')}</p>

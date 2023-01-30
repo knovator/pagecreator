@@ -256,6 +256,12 @@ const useWidget = ({
         setList((oldListData) =>
           oldListData.map((item) => (item['_id'] === id ? response.data : item))
         );
+        if (response.message)
+          onSuccess(
+            CALLBACK_CODES.PARTIAL_UPDATE,
+            response?.code,
+            response?.message
+          );
       } else {
         onError(
           CALLBACK_CODES.PARTIAL_UPDATE,

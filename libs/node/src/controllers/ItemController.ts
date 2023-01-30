@@ -120,7 +120,10 @@ export const getItems = catchAsync(async (req: IRequest, res: IResponse) => {
       },
     },
     {
-      $unwind: '$img',
+      $unwind: {
+        path: '$img',
+        preserveNullAndEmptyArrays: true,
+      },
     },
   ]);
   res.message = req?.i18n?.t('item.getAll');

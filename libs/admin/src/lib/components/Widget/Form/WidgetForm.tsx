@@ -73,6 +73,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     formatOptionLabel,
     reactSelectStyles,
     imageBaseUrl,
+    itemsLoading,
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -604,6 +605,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             toggleShow={setWebItemsVisible}
             onDataSubmit={onItemFormSubmit}
             itemType="Web"
+            loading={itemsLoading}
             widgetId={data?._id}
             onDelete={onDeleteItem}
             addText={t('addButtonText')}
@@ -618,6 +620,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             collapseId="mobileItems"
             title={t('widget.mobileItems')}
             id="mobileItems"
+            loading={itemsLoading}
             schema={itemFormSchema}
             show={mobileItemsVisible}
             itemsData={mobileItems}

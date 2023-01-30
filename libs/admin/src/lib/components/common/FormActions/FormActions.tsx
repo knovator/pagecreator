@@ -27,7 +27,7 @@ const FormActions = ({
       >
         {secondaryLabel}
       </Button>
-      <Button onClick={onPrimaryButtonClick} disabled={loading}>
+      <Button onClick={onPrimaryButtonClick} loading={loading}>
         {primaryLabel}
       </Button>
     </>

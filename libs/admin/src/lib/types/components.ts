@@ -32,6 +32,7 @@ export interface ButtonProps {
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  loading?: boolean;
 }
 export interface IconProps {
   srText?: string;
@@ -147,10 +148,12 @@ export interface WidgetProps {
 }
 export interface DerivedTableProps {
   extraActions?: (item: any) => JSX.Element;
-  extraColumns?: [{
-    label: string
-    Cell: (item: any) => JSX.Element;
-  }]
+  extraColumns?: [
+    {
+      label: string;
+      Cell: (item: any) => JSX.Element;
+    }
+  ];
 }
 
 export interface FormWrapperProps {
@@ -232,6 +235,7 @@ export interface ItemsAccordianProps {
   cancelText?: string;
   deleteText?: string;
   saveText?: string;
+  loading?: boolean;
 }
 export interface TabItemProps {
   showDelete?: boolean;

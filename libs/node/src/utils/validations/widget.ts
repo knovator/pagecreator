@@ -129,7 +129,9 @@ export const list = joi.object({
       page: joi.number().optional(),
       limit: joi.number().optional(),
     })
-    .default({}),
+    .default({
+      sort: { _id: -1 },
+    }),
   isActive: joi.boolean().optional(),
   all: joi.boolean().default(false),
   createdBy: joi.any().optional(),

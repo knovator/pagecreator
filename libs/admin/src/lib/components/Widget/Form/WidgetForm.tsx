@@ -135,8 +135,9 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       if (
         data[constants.widgetTypeAccessor] === constants.tabsWidgetTypeValue
       ) {
-        collectionItems =
-          data[constants.tabsAccessor][activeTab]['collectionItems'];
+        collectionItems = data[constants.tabsAccessor][activeTab]
+          ? data[constants.tabsAccessor][activeTab]['collectionItems']
+          : [];
         valueToSet = `${constants.tabsAccessor}.${activeTab}.${constants.tabCollectionItemsAccessor}`;
       } else if (
         Array.isArray(data[constants.collectionItemsAccessor]) &&

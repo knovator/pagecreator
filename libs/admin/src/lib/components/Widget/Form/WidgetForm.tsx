@@ -46,6 +46,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     setValue,
     control,
     watch,
+    clearErrors,
     setError,
     getValues,
   } = useForm({
@@ -60,6 +61,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     formState,
     itemsTypes,
     widgetTypes,
+    loading,
     onWidgetFormSubmit,
     getCollectionData,
     collectionData,
@@ -67,7 +69,6 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     formatListItem,
     formatOptionLabel,
     reactSelectStyles,
-    itemsLoading,
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -301,6 +302,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     items = items.map(({ _id, __v, widgetId, ...item }) => {
       if (item['img'] && item['img']['_id']) {
         item['img'] = item['img']['_id'];
+      } else if (typeof item['img'] !== 'string' || !item['img']) {
+        delete item['img'];
       }
       return item;
     });
@@ -537,6 +540,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         <>
           {/* Web Items */}
           <ItemsAccordian
+            clearError={clearErrors}
             collapseId={constants.webItems}
             title={t('widget.webItems')}
             id={constants.webItems}
@@ -548,19 +552,20 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             errors={errors}
             control={control}
             register={register}
-            loading={itemsLoading}
+            loading={loading}
             addText={t('addButtonText')}
             deleteText={t('deleteButtonText')}
           />
 
           {/* Mobile Items */}
           <ItemsAccordian
+            clearError={clearErrors}
             collapseId={constants.mobileItems}
             title={t('widget.mobileItems')}
             id={constants.mobileItems}
             name={constants.mobileItems}
             setError={setError}
-            loading={itemsLoading}
+            loading={loading}
             show={
               mobileItemsVisible ||
               !!(errors && errors?.[constants.mobileItems])

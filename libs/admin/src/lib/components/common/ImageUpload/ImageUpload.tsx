@@ -14,6 +14,7 @@ const ImageUpload = ({
   imgId = '',
   onImageUpload,
   onImageRemove,
+  clearError,
   baseUrl,
   disabled = false,
 }: ImageUploadProps) => {
@@ -28,7 +29,7 @@ const ImageUpload = ({
     maxSize,
     onDrop: async (acceptedFiles, rejectedFiles) => {
       try {
-        onError('');
+        if (typeof clearError === 'function') clearError();
         if (acceptedFiles?.length > 0) {
           const regex = /\.(png|jpeg|jpg|webp|svg)$/gi;
           const files = acceptedFiles.filter((file) => regex.test(file.name));

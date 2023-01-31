@@ -236,6 +236,7 @@ export interface ItemsAccordianProps {
   control: any;
   register: any;
   setError: any;
+  clearError: (key: string) => void;
 }
 export interface TabItemProps {
   showDelete?: boolean;

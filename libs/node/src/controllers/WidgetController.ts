@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { Widget, Item } from './../models';
+import { Widget, Item, SrcSet } from './../models';
 import {
   create,
   remove,
@@ -7,6 +7,7 @@ import {
   list,
   getAll,
   bulkInsert,
+  deleteAll,
   getOne,
 } from '../services/dbService';
 import {
@@ -14,7 +15,7 @@ import {
   createdDocumentResponse,
 } from './../utils/responseHandlers';
 
-import { defaults } from '../utils/defaults';
+import { commonExcludedFields, defaults } from '../utils/defaults';
 import { getCollectionModal } from '../utils/helper';
 import {
   CollectionItem,
@@ -30,10 +31,28 @@ const catchAsync = (fn: any) => {
 };
 
 const deleteItems = async (widgetId: string) => {
-  await remove(Item, { widgetId });
+  await deleteAll(Item, { widgetId: new Types.ObjectId(widgetId) });
 };
-const createItems = async (itemsData: any[]) => {
+const createItems = async (itemsData: any[], widgetId: string) => {
+  itemsData = itemsData.map((item: any) => ({
+    ...item,
+    _id: new Types.ObjectId(),
+    widgetId,
+  }));
+  const srcSetItems = itemsData.reduce((acc: any[], item: any) => {
+    if (Array.isArray(item.srcset)) {
+      acc.push(
+        ...item.srcset.map((srcSetItem: any) => ({
+          ...srcSetItem,
+          itemId: item._id,
+        }))
+      );
+      delete item.srcset;
+    }
+    return acc;
+  }, []);
   await bulkInsert(Item, itemsData);
+  await bulkInsert(SrcSet, srcSetItems);
 };
 
 export const createWidget = catchAsync(
@@ -46,11 +65,7 @@ export const createWidget = catchAsync(
     }
     const widget = await create(Widget, data);
     if (items.length > 0) {
-      items = items.map((item: any) => ({
-        ...item,
-        widgetId: widget._id,
-      }));
-      await createItems(items);
+      await createItems(items, widget._id);
     }
     res.message = req?.i18n?.t('widget.create');
     return createdDocumentResponse(widget, res);
@@ -66,14 +81,10 @@ export const updateWidget = catchAsync(
       items = JSON.parse(JSON.stringify(data.items));
       delete data.items;
     }
-    await deleteItems(_id);
     const updatedWidget = await update(Widget, { _id }, data);
     if (items.length > 0 && updatedWidget) {
-      items = items.map((item: any) => ({
-        ...item,
-        widgetId: updatedWidget._id,
-      }));
-      await createItems(items);
+      await deleteItems(_id);
+      await createItems(items, updatedWidget._id);
     }
     res.message = req?.i18n?.t('widget.update');
     return successResponse(updatedWidget, res);
@@ -134,7 +145,72 @@ export const getSingleWidget = catchAsync(
     const widget = await (
       await getOne(Widget, { _id, isDeleted: true })
     ).toJSON();
-    widget['items'] = await getAll(Item, { widgetId: _id }).populate('img');
+    widget['items'] = await Item.aggregate([
+      {
+        $match: {
+          widgetId: new Types.ObjectId(_id),
+          isDeleted: false,
+        },
+      },
+      {
+        $project: {
+          ...commonExcludedFields,
+        },
+      },
+      {
+        $lookup: {
+          from: 'file',
+          let: { imgId: '$img' },
+          as: 'img',
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$_id', '$$imgId'],
+                },
+              },
+            },
+            {
+              $project: {
+                ...commonExcludedFields,
+                width: 0,
+                module: 0,
+                height: 0,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'srcsets',
+          let: { item: '$_id' },
+          as: 'srcset',
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ['$itemId', '$$item'],
+                },
+              },
+            },
+            {
+              $project: {
+                ...commonExcludedFields,
+                _id: 0,
+                itemId: 0,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: '$img',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
     res.message = req?.i18n?.t('widget.getOne');
     return successResponse(widget, res);
   }

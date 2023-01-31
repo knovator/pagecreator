@@ -53,7 +53,6 @@ const Widget = ({
     itemData,
     getWidgets,
     onCofirmDeleteWidget,
-    onDeleteItem,
     onImageRemove,
     onImageUpload,
     onPartialUpdateWidget,
@@ -68,16 +67,12 @@ const Widget = ({
     currentPage,
     pageSize,
     setCurrentPage,
-    // Item
-    itemsList,
-    itemsLoading,
-    onItemFormSubmit,
   } = useWidget({
     canList: derivedPermissions.list,
     routes,
     defaultLimit: 10,
     preConfirmDelete,
-    imageBaseUrl
+    imageBaseUrl,
   });
   return (
     <WidgetContextProvider
@@ -91,7 +86,6 @@ const Widget = ({
       loader={loader}
       onWidgetFormSubmit={onWidgetFormSubmit}
       data={itemData}
-      onDeleteItem={onDeleteItem}
       getWidgets={getWidgets}
       onImageRemove={onImageRemove}
       onImageUpload={onImageUpload}
@@ -109,11 +103,6 @@ const Widget = ({
       currentPage={currentPage}
       pageSize={pageSize}
       setCurrentPage={setCurrentPage}
-      // Item
-      webItems={itemsList.web}
-      mobileItems={itemsList.mobile}
-      itemsLoading={itemsLoading}
-      onItemFormSubmit={onItemFormSubmit}
       // Permissions
       canAdd={derivedPermissions.add}
       canDelete={derivedPermissions.delete}

@@ -22,6 +22,7 @@ const ItemsAccordian = ({
   register,
   setError,
   itemType,
+  clearError,
   addText = 'Add',
   deleteText = 'Delete',
 }: ItemsAccordianProps) => {
@@ -34,19 +35,16 @@ const ItemsAccordian = ({
     remove: removeItem,
   } = useFieldArray({ name, control });
 
-  const onItemsToggleClick = useCallback(
-    (index: number, status?: boolean) => {
-      const newItemsShow: boolean[] = [...itemsShow];
-      const newStatus = errors?.[name]?.[index]
-        ? true
-        : typeof status === 'undefined'
-        ? !newItemsShow[index]
-        : status;
-      newItemsShow[index] = newStatus;
-      setItemsShow(newItemsShow);
-    },
-    [errors, itemsShow, name]
-  );
+  const onItemsToggleClick = (index: number, status?: boolean) => {
+    const newItemsShow: boolean[] = [...itemsShow];
+    const newStatus = errors?.[name]?.[index]
+      ? true
+      : typeof status === 'undefined'
+      ? !newItemsShow[index]
+      : status;
+    newItemsShow[index] = newStatus;
+    setItemsShow(newItemsShow);
+  };
 
   useEffect(() => {
     if (errors && errors?.[name]?.length > 0) {
@@ -158,6 +156,7 @@ const ItemsAccordian = ({
                   render={({ field }) => (
                     <ImageUpload
                       imgId={field.value}
+                      clearError={() => clearError(`${name}.${index}.img`)}
                       maxSize={10_485_760}
                       onError={(msg) =>
                         setError(`${name}.${index}.img`, {

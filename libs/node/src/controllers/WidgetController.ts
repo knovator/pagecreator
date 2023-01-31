@@ -1,6 +1,14 @@
 import { Types } from 'mongoose';
-import { Widget } from './../models';
-import { create, remove, update, list, getAll } from '../services/dbService';
+import { Widget, Item } from './../models';
+import {
+  create,
+  remove,
+  update,
+  list,
+  getAll,
+  bulkInsert,
+  getOne,
+} from '../services/dbService';
 import {
   successResponse,
   createdDocumentResponse,
@@ -21,12 +29,31 @@ const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Widget');
 };
 
+const deleteItems = async (widgetId: string) => {
+  await remove(Item, { widgetId });
+};
+const createItems = async (itemsData: any[]) => {
+  await bulkInsert(Item, itemsData);
+};
+
 export const createWidget = catchAsync(
   async (req: IRequest, res: IResponse) => {
     const data = req.body;
-    const notification = await create(Widget, data);
+    let items = [];
+    if ('items' in data) {
+      items = JSON.parse(JSON.stringify(data.items));
+      delete data.items;
+    }
+    const widget = await create(Widget, data);
+    if (items.length > 0) {
+      items = items.map((item: any) => ({
+        ...item,
+        widgetId: widget._id,
+      }));
+      await createItems(items);
+    }
     res.message = req?.i18n?.t('widget.create');
-    return createdDocumentResponse(notification, res);
+    return createdDocumentResponse(widget, res);
   }
 );
 
@@ -34,14 +61,28 @@ export const updateWidget = catchAsync(
   async (req: IRequest, res: IResponse) => {
     const data = req.body;
     const _id = req.params['id'];
-    const updatedNotification = await update(Widget, { _id }, data);
+    let items = [];
+    if ('items' in data) {
+      items = JSON.parse(JSON.stringify(data.items));
+      delete data.items;
+    }
+    await deleteItems(_id);
+    const updatedWidget = await update(Widget, { _id }, data);
+    if (items.length > 0 && updatedWidget) {
+      items = items.map((item: any) => ({
+        ...item,
+        widgetId: updatedWidget._id,
+      }));
+      await createItems(items);
+    }
     res.message = req?.i18n?.t('widget.update');
-    return successResponse(updatedNotification, res);
+    return successResponse(updatedWidget, res);
   }
 );
 
 export const deleteWidget = catchAsync(
   async (req: IRequest, res: IResponse) => {
+    await deleteItems(req.params['id']);
     const _id = new Types.ObjectId(req.params['id']);
     const deletedNotification = await remove(Widget, { _id });
     res.message = req?.i18n?.t('widget.delete');
@@ -61,6 +102,7 @@ export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
   const customOptions = {
     pagination: !all,
     sort,
+    select: 'name code isActive',
     ...(page && limit ? { page, limit } : {}),
   };
   const query = {
@@ -85,6 +127,18 @@ export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
   res.message = req?.i18n?.t('widget.getAll');
   return successResponse(notifications, res);
 });
+
+export const getSingleWidget = catchAsync(
+  async (req: IRequest, res: IResponse) => {
+    const _id = req.params['id'];
+    const widget = await (
+      await getOne(Widget, { _id, isDeleted: true })
+    ).toJSON();
+    widget['items'] = await getAll(Item, { widgetId: _id }).populate('img');
+    res.message = req?.i18n?.t('widget.getOne');
+    return successResponse(widget, res);
+  }
+);
 
 export const partialUpdateWidget = catchAsync(
   async (req: IRequest, res: IResponse) => {

@@ -4,6 +4,7 @@ import { defaults } from '../defaults';
 import { VALIDATION } from '../../constants';
 import { getOne } from '../../services/dbService';
 import {
+  ItemTypes,
   ItemsType,
   WidgetTypes,
   IWidgetSchema,
@@ -26,6 +27,26 @@ const checkUnique = async (value: string) => {
     throw new Error(VALIDATION.WIDGET_EXISTS);
   }
 };
+
+const srcset = joi.object().keys({
+  screenSize: joi.number().required(),
+  width: joi.number().required(),
+  height: joi.number().required(),
+});
+
+const item = joi.object({
+  title: joi.string().required(),
+  subtitle: joi.string().optional().allow(''),
+  altText: joi.string().optional().allow(''),
+  link: joi.string().optional().allow(''),
+  sequence: joi.number().optional(),
+  srcset: joi.array().items(srcset),
+  img: joi.string().allow(null).optional(),
+  itemType: joi
+    .string()
+    .valid(...Object.values(ItemTypes))
+    .default(ItemTypes.Web),
+});
 
 export const create = joi.object<ItemValidation>({
   name: joi.string().required(),
@@ -52,6 +73,7 @@ export const create = joi.object<ItemValidation>({
       })
     )
     .optional(),
+  items: joi.array().items(item).optional(),
   backgroundColor: joi
     .string()
     .regex(/^#[A-Fa-f0-9]{6}/)
@@ -101,6 +123,7 @@ export const update = joi.object<ItemValidation>({
       })
     )
     .optional(),
+  items: joi.array().items(item).optional(),
   backgroundColor: joi
     .string()
     .regex(/^#[A-Fa-f0-9]{6}/)

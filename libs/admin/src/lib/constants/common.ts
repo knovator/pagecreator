@@ -115,6 +115,7 @@ const TRANSLATION_PAIRS_ITEM = {
   'item.minWidth': 'Width should be greater than 0',
   'item.minHeight': 'Height should be greater than 0',
   'item.titleRequired': 'Title is required',
+  'item.deleteTitle': 'Are you sure you want to delete this item?',
 };
 const TRANSLATION_PAIRS_PAGE = {
   'page.name': 'Name',

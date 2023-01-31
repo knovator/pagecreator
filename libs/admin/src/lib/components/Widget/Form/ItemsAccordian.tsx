@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Accordian from '../../common/Accordian';
 import Button from '../../common/Button';
 import Input from '../../common/Input';
@@ -7,6 +7,7 @@ import { Controller, useFieldArray } from 'react-hook-form';
 import ImageUpload from '../../common/ImageUpload';
 import { useWidgetState } from '../../../context/WidgetContext';
 import { useProviderState } from '../../../context/ProviderContext';
+import ConfirmPopover from '../../common/ConfirmPopover';
 
 const ItemsAccordian = ({
   show,
@@ -33,28 +34,28 @@ const ItemsAccordian = ({
     remove: removeItem,
   } = useFieldArray({ name, control });
 
-  // const onItemFormSubmit = (index: number, formData: CombineObjectType) => {
-  //   const state: FormActionTypes =
-  //     index === editingItemIndex && data[index] ? 'UPDATE' : 'ADD';
-  //   const finalData: any = { ...formData, widgetId, itemType, sequence: index };
-  //   if (finalData['img'] && finalData['img']['_id']) {
-  //     const id = finalData['img']['_id'];
-  //     finalData['img'] = id;
-  //   }
-  //   onDataSubmit(
-  //     state,
-  //     finalData,
-  //     state === 'UPDATE' ? (data[index]?.['_id'] as string) : undefined
-  //   );
-  //   setEditingItemIndex(undefined);
-  // };
-  const onItemsToggleClick = (index: number, status?: boolean) => {
-    const newItemsShow: boolean[] = [...itemsShow];
-    const newStatus =
-      typeof status === 'undefined' ? !newItemsShow[index] : status;
-    newItemsShow[index] = newStatus;
-    setItemsShow(newItemsShow);
-  };
+  const onItemsToggleClick = useCallback(
+    (index: number, status?: boolean) => {
+      const newItemsShow: boolean[] = [...itemsShow];
+      const newStatus = errors?.[name]?.[index]
+        ? true
+        : typeof status === 'undefined'
+        ? !newItemsShow[index]
+        : status;
+      newItemsShow[index] = newStatus;
+      setItemsShow(newItemsShow);
+    },
+    [errors, itemsShow, name]
+  );
+
+  useEffect(() => {
+    if (errors && errors?.[name]?.length > 0) {
+      errors?.[name]?.forEach((errorItem: any, index: number) => {
+        if (errorItem) onItemsToggleClick(index, true);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [errors, name, errors?.[name]]);
 
   const addTab = (index: number) => {
     appendItem({
@@ -77,7 +78,11 @@ const ItemsAccordian = ({
       collapseId={collapseId}
       id={id}
       footerContent={
-        <Button size="sm" onClick={() => addTab(items.length)}>
+        <Button
+          size="sm"
+          disabled={loading}
+          onClick={() => addTab(items.length)}
+        >
           {addText}
         </Button>
       }
@@ -92,9 +97,16 @@ const ItemsAccordian = ({
             collapseId={`${id}-item-content-${index}`}
             id={`${id}-item-${index}`}
             footerContent={
-              <Button type="danger" size="sm" onClick={() => removeItem(index)}>
-                {deleteText}
-              </Button>
+              <ConfirmPopover
+                onConfirm={() => removeItem(index)}
+                title={t('item.deleteTitle')}
+                confirmText={t('yesButtonText')}
+                cancelText={t('cancelButtonText')}
+              >
+                <Button type="danger" size="sm" disabled={loading}>
+                  {deleteText}
+                </Button>
+              </ConfirmPopover>
             }
           >
             <div className="khb-form-items">

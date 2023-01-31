@@ -1,6 +1,10 @@
 import { API_INPUT_TYPE } from '../types';
 
 const apiList = {
+  GET_ONE: ({ prefix, id }: API_INPUT_TYPE) => ({
+    url: `${prefix}/${id}`,
+    method: 'GET',
+  }),
   LIST: ({ prefix }: API_INPUT_TYPE) => ({
     url: `${prefix}/list`,
     method: 'POST',

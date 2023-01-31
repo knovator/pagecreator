@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { DropResult } from 'react-beautiful-dnd';
 
 import { SimpleForm } from '../../common/Form';
-import ImageUpload from '../../common/ImageUpload';
 import DNDItemsList from '../../common/DNDItemsList';
 import ItemsAccordian from './ItemsAccordian';
 
@@ -295,8 +294,16 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         (item) => item.value
       );
     }
-    const items = getValues(constants.webItems) || [];
-    items.concat(getValues(constants.mobileItems) || []);
+    let items = [
+      ...(getValues(constants.webItems) || []),
+      ...(getValues(constants.mobileItems) || []),
+    ];
+    items = items.map(({ _id, __v, widgetId, ...item }) => {
+      if (item['img'] && item['img']['_id']) {
+        item['img'] = item['img']['_id'];
+      }
+      return item;
+    });
     onWidgetFormSubmit({
       ...formData,
       items,
@@ -534,7 +541,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             title={t('widget.webItems')}
             id={constants.webItems}
             setError={setError}
-            show={webItemsVisible}
+            show={webItemsVisible || !!(errors && errors?.[constants.webItems])}
             toggleShow={setWebItemsVisible}
             itemType="Web"
             name={constants.webItems}
@@ -554,7 +561,10 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             name={constants.mobileItems}
             setError={setError}
             loading={itemsLoading}
-            show={mobileItemsVisible}
+            show={
+              mobileItemsVisible ||
+              !!(errors && errors?.[constants.mobileItems])
+            }
             toggleShow={setMobileItemsVisible}
             itemType="Mobile"
             errors={errors}

@@ -9,7 +9,8 @@ export type ACTION_TYPES =
   | 'PARTIAL_UPDATE'
   | 'WIDGET_TYPES'
   | 'SELECTION_TYPES'
-  | 'COLLECTION_DATA';
+  | 'COLLECTION_DATA'
+  | 'GET_ONE';
 
 export type API_TYPE = {
   url: string;

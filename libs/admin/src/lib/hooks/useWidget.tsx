@@ -391,7 +391,44 @@ const useWidget = ({
     setFormState(undefined);
     setItemData(null);
   };
-  const onChangeFormState = (state: FormActionTypes, data?: ObjectType) => {
+  const getAndSetWidget = async (id: string) => {
+    try {
+      setLoading(true);
+      const api = getApiType({
+        routes,
+        action: 'GET_ONE',
+        prefix: widgetRoutesPrefix,
+        id,
+      });
+      const response = await request({
+        baseUrl,
+        token,
+        url: api.url,
+        method: api.method,
+        onError: handleError(CALLBACK_CODES.GET_SINGLE),
+      });
+      if (response?.code === 'SUCCESS') {
+        setLoading(false);
+        const data = response?.data;
+        if (Array.isArray(data.items)) {
+          const items = JSON.parse(JSON.stringify(data.items));
+          data.webItems = items.filter((item: any) => item.itemType === 'Web');
+          data.mobileItems = items.filter(
+            (item: any) => item.itemType === 'Mobile'
+          );
+          delete data.items;
+        }
+        setItemData(data);
+      }
+    } catch (error) {
+      setLoading(false);
+      onError(CALLBACK_CODES.UPDATE, '', (error as Error).message);
+    }
+  };
+  const onChangeFormState = async (
+    state: FormActionTypes,
+    data?: ObjectType
+  ) => {
     setFormState(state);
     // fetch ItemsTypes & WidgetTypes if needed
     if (state === 'ADD' || state === 'UPDATE') {
@@ -400,10 +437,7 @@ const useWidget = ({
     }
     // get Item data if widget is updating
     if (state === 'UPDATE' && data) {
-      if (data['itemsType'] === 'Image') {
-        getItems(data['_id']);
-      }
-      setItemData(data);
+      getAndSetWidget(data['_id']);
     } else if (state === 'ADD') {
       // reset Item data if widget is adding
       setItemsList({ web: [], mobile: [] });

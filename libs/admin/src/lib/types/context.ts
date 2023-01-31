@@ -17,7 +17,6 @@ export interface ProviderContextType {
   switchClass: string;
   onLogout: () => void;
   widgetRoutesPrefix: string;
-  itemsRoutesPrefix: string;
   pageRoutesPrefix: string;
 }
 export interface ProviderContextProviderProps
@@ -96,11 +95,6 @@ export interface WidgetContextType {
   loader?: JSX.Element;
   canDelete?: boolean;
   onPartialUpdateWidget: (data: any, id: string) => Promise<void>;
-  // Item
-  webItems: any[];
-  mobileItems: any[];
-  itemsLoading: boolean;
-  onItemFormSubmit: (state: FormActionTypes, data: any) => void;
   reactSelectStyles?: any;
   imageBaseUrl?: string;
 }

@@ -27,11 +27,6 @@ const useWidget = ({
   imageBaseUrl
 }: UseWidgetProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
-  const [itemsList, setItemsList] = useState<ItemsList>({
-    web: [],
-    mobile: [],
-  });
-  const [itemsLoading, setItemsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -43,15 +38,8 @@ const useWidget = ({
     useState<boolean>(false);
   const [collectionData, setCollectionData] = useState<any[]>([]);
 
-  const {
-    baseUrl,
-    token,
-    onError,
-    onSuccess,
-    onLogout,
-    widgetRoutesPrefix,
-    itemsRoutesPrefix,
-  } = useProviderState();
+  const { baseUrl, token, onError, onSuccess, onLogout, widgetRoutesPrefix } =
+    useProviderState();
   const {
     changeSearch,
     setPageSize,
@@ -120,75 +108,6 @@ const useWidget = ({
       widgetRoutesPrefix,
     ]
   );
-  const getItems = useCallback(
-    async (id: string) => {
-      try {
-        setItemsLoading(true);
-        const api = getApiType({
-          routes,
-          action: 'ITEM',
-          prefix: itemsRoutesPrefix,
-          id,
-        });
-        const response = await request({
-          baseUrl,
-          token,
-          method: api.method,
-          url: api.url,
-          onError: handleError(CALLBACK_CODES.GET_ALL),
-        });
-        if (response?.code === 'SUCCESS') {
-          setItemsLoading(false);
-          const itemsResponse: ItemsList = dataGatter(response).reduce(
-            (acc: ItemsList, itemItem: ObjectType) => {
-              if (itemItem['itemType'] === 'Web') acc.web.push(itemItem);
-              else acc.mobile.push(itemItem);
-              return acc;
-            },
-            { web: [], mobile: [] }
-          );
-          return setItemsList(itemsResponse);
-        }
-        setItemsLoading(false);
-      } catch (error) {
-        setItemsLoading(false);
-      }
-    },
-    [baseUrl, handleError, routes, itemsRoutesPrefix, token]
-  );
-  const onDeleteItem = async (id: string) => {
-    try {
-      setItemsLoading(true);
-      const api = getApiType({
-        routes,
-        action: 'DELETE',
-        prefix: itemsRoutesPrefix,
-        id,
-      });
-      const response = await request({
-        baseUrl,
-        token,
-        method: api.method,
-        url: api.url,
-        onError: handleError(CALLBACK_CODES.DELETE),
-      });
-      if (response?.code === 'SUCCESS') {
-        setItemsLoading(false);
-        onSuccess(CALLBACK_CODES.DELETE, response?.code, response?.message);
-        if (itemData) getItems(itemData['_id']);
-        return;
-      }
-      setItemsLoading(false);
-      onError(CALLBACK_CODES.DELETE, response?.code, response?.message);
-    } catch (error) {
-      setItemsLoading(false);
-      onError(
-        CALLBACK_CODES.DELETE,
-        INTERNAL_ERROR_CODE,
-        (error as Error).message
-      );
-    }
-  };
   const onCofirmDeleteWidget = async () => {
     try {
       let proceed = true;
@@ -391,7 +310,44 @@ const useWidget = ({
     setFormState(undefined);
     setItemData(null);
   };
-  const onChangeFormState = (state: FormActionTypes, data?: ObjectType) => {
+  const getAndSetWidget = async (id: string) => {
+    try {
+      setLoading(true);
+      const api = getApiType({
+        routes,
+        action: 'GET_ONE',
+        prefix: widgetRoutesPrefix,
+        id,
+      });
+      const response = await request({
+        baseUrl,
+        token,
+        url: api.url,
+        method: api.method,
+        onError: handleError(CALLBACK_CODES.GET_SINGLE),
+      });
+      if (response?.code === 'SUCCESS') {
+        setLoading(false);
+        const data = response?.data;
+        if (Array.isArray(data.items)) {
+          const items = JSON.parse(JSON.stringify(data.items));
+          data.webItems = items.filter((item: any) => item.itemType === 'Web');
+          data.mobileItems = items.filter(
+            (item: any) => item.itemType === 'Mobile'
+          );
+          delete data.items;
+        }
+        setItemData(data);
+      }
+    } catch (error) {
+      setLoading(false);
+      onError(CALLBACK_CODES.UPDATE, '', (error as Error).message);
+    }
+  };
+  const onChangeFormState = async (
+    state: FormActionTypes,
+    data?: ObjectType
+  ) => {
     setFormState(state);
     // fetch ItemsTypes & WidgetTypes if needed
     if (state === 'ADD' || state === 'UPDATE') {
@@ -400,53 +356,13 @@ const useWidget = ({
     }
     // get Item data if widget is updating
     if (state === 'UPDATE' && data) {
-      if (data['itemsType'] === 'Image') {
-        getItems(data['_id']);
-      }
-      setItemData(data);
+      getAndSetWidget(data['_id']);
     } else if (state === 'ADD') {
       // reset Item data if widget is adding
-      setItemsList({ web: [], mobile: [] });
       setItemData(null);
     } else if (state === 'DELETE' && data) {
       setItemData(data);
       setFormState(state);
-    }
-  };
-  const onItemFormSubmit = async (
-    state: FormActionTypes,
-    data: ObjectType,
-    updateId?: string
-  ) => {
-    setItemsLoading(true);
-    const code =
-      state === 'ADD' ? CALLBACK_CODES.CREATE : CALLBACK_CODES.UPDATE;
-    try {
-      const api = getApiType({
-        routes,
-        action: state === 'ADD' ? 'CREATE' : 'UPDATE',
-        prefix: itemsRoutesPrefix,
-        id: updateId,
-      });
-      const response = await request({
-        baseUrl,
-        token,
-        data,
-        url: api.url,
-        method: api.method,
-        onError: handleError(code),
-      });
-      if (response?.code === 'SUCCESS') {
-        setItemsLoading(false);
-        onSuccess(code, response?.code, response?.message);
-        if (itemData) getItems(itemData['_id']);
-      } else {
-        setItemsLoading(false);
-        onError(code, response?.code, response?.message);
-      }
-    } catch (error) {
-      setItemsLoading(false);
-      onError(code, INTERNAL_ERROR_CODE, (error as Error).message);
     }
   };
   // Image Upload operations
@@ -477,7 +393,10 @@ const useWidget = ({
         const responseData = response?.data[0] || response?.data;
         return {
           fileId: responseData?._id || responseData?.id,
-          fileUrl: build_path(imageBaseUrl ? imageBaseUrl : baseUrl, responseData?.uri),
+          fileUrl: build_path(
+            imageBaseUrl ? imageBaseUrl : baseUrl,
+            responseData?.uri
+          ),
           fileUri: responseData?.uri,
         };
       } else
@@ -548,7 +467,6 @@ const useWidget = ({
     itemData,
     onChangeFormState,
     onCloseForm,
-    onDeleteItem,
     onWidgetFormSubmit,
     onCofirmDeleteWidget,
     onPartialUpdateWidget,
@@ -560,11 +478,6 @@ const useWidget = ({
     collectionDataLoading,
     getCollectionData,
     collectionData,
-
-    // Items
-    itemsList,
-    itemsLoading,
-    onItemFormSubmit,
   };
 };
 

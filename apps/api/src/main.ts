@@ -8,7 +8,6 @@ import FileUploadRoute from './routes/fileuploadRoute';
 import { resize } from '@knovator/image-resizer';
 import {
   setConfig,
-  ItemRoutes,
   PageRoutes,
   WidgetRoutes,
   UserRoutes,
@@ -39,7 +38,6 @@ app.get('/status', (_req, res) => {
   res.send('All Okay');
 });
 app.use('/widgets', WidgetRoutes);
-app.use('/items', ItemRoutes);
 app.use('/media', FileUploadRoute);
 app.use('/pages', PageRoutes);
 app.use('/users', UserRoutes);

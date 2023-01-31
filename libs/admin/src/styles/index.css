@@ -464,3 +464,8 @@ input:checked + .slider:before {
 .khb_confirm-popover-footer {
     @apply flex justify-center;
 }
+/* SrcSet */
+.khb_srcset-remove {
+    @apply w-7 h-7;
+}
+/* End of SrcSet */

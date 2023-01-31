@@ -1,6 +1,5 @@
 import { defaults } from './utils/defaults';
 import WidgetRoutes from './routes/WidgetRoute';
-import ItemRoutes from './routes/ItemRoute';
 import PageRoutes from './routes/PageRoute';
 import UserRoutes from './routes/UserRoute';
 import { Widget, Item, Page } from './models';
@@ -17,13 +16,4 @@ function setConfig(config: Partial<IConfig>) {
   }
 }
 
-export {
-  WidgetRoutes,
-  ItemRoutes,
-  PageRoutes,
-  UserRoutes,
-  Widget,
-  Item,
-  Page,
-  setConfig,
-};
+export { WidgetRoutes, PageRoutes, UserRoutes, Widget, Item, Page, setConfig };

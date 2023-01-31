@@ -68,4 +68,9 @@ routes
   .get('/tabs/:widgetId', tabController.getTabs)
   .descriptor(`${descriptorPrefix}tab.getAll`);
 
+// Get single widget
+routes
+  .get(`/:id`, widgetController.getSingleWidget)
+  .descriptor(`${descriptorPrefix}widget.getOne`);
+
 export default routes;

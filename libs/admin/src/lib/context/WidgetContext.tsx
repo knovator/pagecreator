@@ -51,11 +51,6 @@ const WidgetContextProvider = ({
   canDelete = false,
   loader = <span />,
   onPartialUpdateWidget = () => Promise.resolve(),
-  // Item
-  webItems = [],
-  mobileItems = [],
-  itemsLoading = false,
-  onItemFormSubmit = () => {},
   reactSelectStyles = {},
   // other
   children,
@@ -105,11 +100,6 @@ const WidgetContextProvider = ({
         data,
         canDelete,
         loader,
-        // Item
-        webItems,
-        mobileItems,
-        itemsLoading,
-        onItemFormSubmit,
       }}
     >
       {children}

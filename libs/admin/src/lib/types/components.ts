@@ -59,6 +59,8 @@ export interface InputProps {
   control?: any;
   register?: any;
   info?: string;
+  name?: string;
+  t?: any;
 }
 export interface HTMLEditorProps {
   id?: string;
@@ -222,20 +224,18 @@ export interface ItemsAccordianProps {
   id: string;
   show: boolean;
   title: string;
-  itemsData: any[];
-  widgetId: string;
   collapseId: string;
-  schema: SchemaType[];
-  itemType: 'Web' | 'Mobile';
   toggleShow: (status: boolean) => void;
-  onDataSubmit: (state: FormActionTypes, data: any, updateId?: string) => void;
-  onDelete: (id: string) => void;
   addText?: string;
-  editText?: string;
-  cancelText?: string;
   deleteText?: string;
-  saveText?: string;
   loading?: boolean;
+
+  name: string;
+  itemType: 'Web' | 'Mobile';
+  errors: any;
+  control: any;
+  register: any;
+  setError: any;
 }
 export interface TabItemProps {
   showDelete?: boolean;

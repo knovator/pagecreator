@@ -108,6 +108,12 @@ const TRANSLATION_PAIRS_ITEM = {
   'item.dragDrop': 'or drag and drop',
   'item.allowedFormat': 'PNG, JPG, SVG up to 2 MB',
   'item.srcset': 'Srcset',
+  'item.screenSizeRequired': 'ScreenSize is required',
+  'item.widthRequired': 'Width is required',
+  'item.heightRequired': 'Height is required',
+  'item.minScreenSize': 'ScreenSize should be greater than 0',
+  'item.minWidth': 'Width should be greater than 0',
+  'item.minHeight': 'Height should be greater than 0',
   'item.titleRequired': 'Title is required',
 };
 const TRANSLATION_PAIRS_PAGE = {

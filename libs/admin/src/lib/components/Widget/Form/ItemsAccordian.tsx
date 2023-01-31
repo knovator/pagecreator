@@ -1,100 +1,72 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Accordian from '../../common/Accordian';
 import Button from '../../common/Button';
-import Form from '../../common/Form';
-import {
-  CombineObjectType,
-  FormActionTypes,
-  ItemsAccordianProps,
-} from '../../../types';
+import Input from '../../common/Input';
+import { ItemsAccordianProps } from '../../../types';
+import { Controller, useFieldArray } from 'react-hook-form';
+import ImageUpload from '../../common/ImageUpload';
+import { useWidgetState } from '../../../context/WidgetContext';
+import { useProviderState } from '../../../context/ProviderContext';
 
 const ItemsAccordian = ({
-  schema,
-  onDataSubmit,
   show,
   title,
   id,
-  itemsData,
   collapseId,
   toggleShow,
-  itemType,
-  widgetId,
-  onDelete,
   loading,
+  name,
+  errors,
+  control,
+  register,
+  setError,
+  itemType,
   addText = 'Add',
-  saveText = 'Save',
-  cancelText = 'Cancel',
   deleteText = 'Delete',
-  editText = 'Edit',
 }: ItemsAccordianProps) => {
-  const [data, setData] = useState<CombineObjectType[]>([]);
-  const formRefs = useRef<(HTMLFormElement | null)[]>([]);
+  const { baseUrl } = useProviderState();
+  const { onImageUpload, onImageRemove, t, imageBaseUrl } = useWidgetState();
   const [itemsShow, setItemsShow] = useState<boolean[]>([]);
-  const [editingItemIndex, setEditingItemIndex] = useState<number>();
+  const {
+    fields: items,
+    append: appendItem,
+    remove: removeItem,
+  } = useFieldArray({ name, control });
 
-  useEffect(() => {
-    if (Array.isArray(itemsData)) {
-      setData(itemsData);
-      formRefs.current = itemsData.map(() => null);
-      setItemsShow(itemsData.map(() => false));
-    }
-  }, [itemsData]);
-
-  const onItemFormSubmitClick = (index: number) => {
-    formRefs.current[index]?.dispatchEvent(
-      new Event('submit', { cancelable: true, bubbles: true })
-    );
-  };
-  const onItemFormSubmit = (index: number, formData: CombineObjectType) => {
-    const state: FormActionTypes =
-      index === editingItemIndex && data[index] ? 'UPDATE' : 'ADD';
-    const finalData: any = { ...formData, widgetId, itemType, sequence: index };
-    if (finalData['img'] && finalData['img']['_id']) {
-      const id = finalData['img']['_id'];
-      finalData['img'] = id;
-    }
-    onDataSubmit(
-      state,
-      finalData,
-      state === 'UPDATE' ? (data[index]?.['_id'] as string) : undefined
-    );
-    setEditingItemIndex(undefined);
-  };
+  // const onItemFormSubmit = (index: number, formData: CombineObjectType) => {
+  //   const state: FormActionTypes =
+  //     index === editingItemIndex && data[index] ? 'UPDATE' : 'ADD';
+  //   const finalData: any = { ...formData, widgetId, itemType, sequence: index };
+  //   if (finalData['img'] && finalData['img']['_id']) {
+  //     const id = finalData['img']['_id'];
+  //     finalData['img'] = id;
+  //   }
+  //   onDataSubmit(
+  //     state,
+  //     finalData,
+  //     state === 'UPDATE' ? (data[index]?.['_id'] as string) : undefined
+  //   );
+  //   setEditingItemIndex(undefined);
+  // };
   const onItemsToggleClick = (index: number, status?: boolean) => {
     const newItemsShow: boolean[] = [...itemsShow];
     const newStatus =
       typeof status === 'undefined' ? !newItemsShow[index] : status;
-    newItemsShow.fill(false);
     newItemsShow[index] = newStatus;
     setItemsShow(newItemsShow);
   };
-  const onItemRemoveClick = (index: number) => {
-    const newItemsShow: boolean[] = [...itemsShow];
-    newItemsShow.splice(index, 1);
-    setItemsShow(newItemsShow);
-    formRefs.current.splice(index, 1);
-  };
-  const onItemAddClick = () => {
-    const newItemsShow: boolean[] = [...itemsShow];
-    newItemsShow.push(false);
-    setItemsShow(newItemsShow);
-    formRefs.current.push(null);
-    onItemsToggleClick(newItemsShow.length - 1);
-  };
-  const onItemEditClick = (index: number) => {
-    setEditingItemIndex(index);
-  };
-  const onItemCancelClick = (index: number) => {
-    if (!data[index]) {
-      onItemRemoveClick(index);
-    } else {
-      setEditingItemIndex(undefined);
-    }
-    onItemsToggleClick(index, false);
-  };
-  const onDeleteClick = (index: number) => {
-    onDelete(data[index]?.['_id'] as string);
-    onItemRemoveClick(index);
+
+  const addTab = (index: number) => {
+    appendItem({
+      title: '',
+      subtitle: '',
+      altText: '',
+      link: '',
+      img: '',
+      srcset: [],
+      itemType,
+      sequence: index,
+    });
   };
 
   return (
@@ -105,63 +77,112 @@ const ItemsAccordian = ({
       collapseId={collapseId}
       id={id}
       footerContent={
-        <Button size="sm" onClick={onItemAddClick} disabled={!widgetId}>
+        <Button size="sm" onClick={() => addTab(items.length)}>
           {addText}
         </Button>
       }
     >
       <div className="khb_item-items">
-        {itemsShow.map((status, index) => (
+        {items?.map((field, index) => (
           <Accordian
             key={index}
-            open={status}
+            open={itemsShow[index]}
             onToggle={() => onItemsToggleClick(index)}
             title={`Item ${index + 1}`}
             collapseId={`${id}-item-content-${index}`}
             id={`${id}-item-${index}`}
             footerContent={
-              editingItemIndex === index || !data[index] ? (
-                <>
-                  <Button
-                    type="secondary"
-                    size="sm"
-                    disabled={loading}
-                    onClick={() => onItemCancelClick(index)}
-                  >
-                    {cancelText}
-                  </Button>
-                  <Button
-                    size="sm"
-                    loading={loading}
-                    onClick={() => onItemFormSubmitClick(index)}
-                  >
-                    {saveText}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    type="danger"
-                    size="sm"
-                    onClick={() => onDeleteClick(index)}
-                  >
-                    {deleteText}
-                  </Button>
-                  <Button size="sm" onClick={() => onItemEditClick(index)}>
-                    {editText}
-                  </Button>
-                </>
-              )
+              <Button type="danger" size="sm" onClick={() => removeItem(index)}>
+                {deleteText}
+              </Button>
             }
           >
-            <Form
-              schema={schema}
-              data={data[index]}
-              onSubmit={(data) => onItemFormSubmit(index, data)}
-              ref={(el) => (formRefs.current[index] = el)}
-              enable={editingItemIndex === index || !data[index]}
-              isUpdating={editingItemIndex === index}
-            />
+            <div className="khb-form-items">
+              <Input
+                rest={register(`${name}.${index}.title`, {
+                  required: t('item.titleRequired'),
+                })}
+                label={t('item.title')}
+                error={errors[name]?.[index]?.['title']?.message?.toString()}
+                type={'text'}
+                className="w-full p-2"
+                placeholder={t('item.titlePlaceholder')}
+                required
+              />
+              <Input
+                rest={register(`${name}.${index}.subtitle`)}
+                label={t('item.subtitle')}
+                type={'text'}
+                className="w-full p-2"
+                placeholder={t('item.subTitlePlaceholder')}
+              />
+              <Input
+                rest={register(`${name}.${index}.altText`)}
+                label={t('item.altText')}
+                type={'text'}
+                className="w-full p-2"
+                placeholder={t('item.altTextPlaceholder')}
+              />
+              <Input
+                rest={register(`${name}.${index}.link`)}
+                label={t('item.link')}
+                type={'url'}
+                className="w-full p-2"
+                placeholder={t('item.linkPlaceholder')}
+              />
+              <Input.SrcSet
+                control={control}
+                register={register}
+                label={t(`item.srcset`)}
+                name={`${name}.${index}.srcset`}
+                errors={errors[name]?.[index]?.['srcset']}
+                t={t}
+              />
+              <div className="kms_input-wrapper">
+                <label className="kms_input-label">{t('item.image')}</label>
+                <Controller
+                  control={control}
+                  name={`${name}.${index}.img`}
+                  render={({ field }) => (
+                    <ImageUpload
+                      imgId={field.value}
+                      maxSize={10_485_760}
+                      onError={(msg) =>
+                        setError(`${name}.${index}.img`, {
+                          type: 'custom',
+                          message: msg,
+                        })
+                      }
+                      error={errors[name]?.[index]?.[
+                        'img'
+                      ]?.message?.toString()}
+                      setImgId={(value) => {
+                        field.onChange(value);
+                      }}
+                      baseUrl={imageBaseUrl ? imageBaseUrl : baseUrl}
+                      text={
+                        <>
+                          <div className="khb_img-text-wrapper">
+                            <div className="khb_img-text-label">
+                              <span>{t('item.uploadFile')}</span>
+                            </div>
+                            <p className="khb_img-text-1">
+                              {t('item.dragDrop')}
+                            </p>
+                          </div>
+                          <p className="khb_img-text-2">
+                            {t('item.allowedFormat')}
+                          </p>
+                        </>
+                      }
+                      onImageUpload={onImageUpload}
+                      onImageRemove={onImageRemove}
+                      className="khb_img-upload-wrapper-3"
+                    />
+                  )}
+                />
+              </div>
+            </div>
           </Accordian>
         ))}
       </div>

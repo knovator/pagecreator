@@ -33,6 +33,8 @@ const constants = {
   carouselWidgetTypeValue: 'Carousel',
   imageItemsTypeValue: 'Image',
   tabsAccessor: 'tabs',
+  webItems: 'webItems',
+  mobileItems: 'mobileItems',
   tabCollectionItemsAccessor: 'collectionItems',
 };
 
@@ -50,29 +52,22 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   } = useForm({
     shouldUnregister: false,
   });
-  const { baseUrl, switchClass } = useProviderState();
+  const { switchClass } = useProviderState();
   const {
     t,
     data,
     canAdd,
     canUpdate,
-    webItems,
-    mobileItems,
     formState,
     itemsTypes,
     widgetTypes,
-    onItemFormSubmit,
     onWidgetFormSubmit,
-    onDeleteItem,
-    onImageRemove,
-    onImageUpload,
     getCollectionData,
     collectionData,
     collectionDataLoading,
     formatListItem,
     formatOptionLabel,
     reactSelectStyles,
-    imageBaseUrl,
     itemsLoading,
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
@@ -300,7 +295,12 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         (item) => item.value
       );
     }
-    onWidgetFormSubmit(formData);
+    const items = getValues(constants.webItems) || [];
+    items.concat(getValues(constants.mobileItems) || []);
+    onWidgetFormSubmit({
+      ...formData,
+      items,
+    });
   };
   const onCollectionIndexChange = (result: DropResult) => {
     const { destination, source } = result;
@@ -479,72 +479,6 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       selectKey: selectedCollectionType?.value,
     },
   ];
-  const itemFormSchema: SchemaType[] = [
-    {
-      label: `${t('item.title')}`,
-      required: true,
-      accessor: 'title',
-      type: 'text',
-      placeholder: t('item.titlePlaceholder'),
-      validations: {
-        required: t('item.titleRequired'),
-      },
-    },
-    {
-      label: `${t('item.subtitle')}`,
-      accessor: 'subtitle',
-      type: 'text',
-      placeholder: t('item.subTitlePlaceholder'),
-    },
-    {
-      label: `${t('item.altText')}`,
-      accessor: 'altText',
-      type: 'text',
-      placeholder: t('item.altTextPlaceholder'),
-    },
-    {
-      label: `${t('item.link')}`,
-      accessor: 'link',
-      type: 'url',
-      placeholder: t('item.linkPlaceholder'),
-    },
-    {
-      label: `${t('item.srcset')}`,
-      accessor: 'srcset',
-      type: 'srcset',
-    },
-    {
-      label: t('item.image'),
-      accessor: 'img',
-      Input: ({ field, error, setError, disabled }) => (
-        <ImageUpload
-          imgId={field.value}
-          maxSize={10_485_760}
-          onError={setError}
-          error={error}
-          setImgId={(value) => {
-            field.onChange(value);
-          }}
-          baseUrl={imageBaseUrl ? imageBaseUrl : baseUrl}
-          disabled={disabled}
-          text={
-            <>
-              <div className="khb_img-text-wrapper">
-                <div className="khb_img-text-label">
-                  <span>{t('item.uploadFile')}</span>
-                </div>
-                <p className="khb_img-text-1">{t('item.dragDrop')}</p>
-              </div>
-              <p className="khb_img-text-2">{t('item.allowedFormat')}</p>
-            </>
-          }
-          onImageUpload={onImageUpload}
-          onImageRemove={onImageRemove}
-          className="khb_img-upload-wrapper-3"
-        />
-      ),
-    },
-  ];
 
   if (!canAdd || !canUpdate) return null;
   return (
@@ -596,43 +530,37 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         <>
           {/* Web Items */}
           <ItemsAccordian
-            collapseId="webItems"
+            collapseId={constants.webItems}
             title={t('widget.webItems')}
-            id="webItems"
-            schema={itemFormSchema}
+            id={constants.webItems}
+            setError={setError}
             show={webItemsVisible}
-            itemsData={webItems}
             toggleShow={setWebItemsVisible}
-            onDataSubmit={onItemFormSubmit}
             itemType="Web"
+            name={constants.webItems}
+            errors={errors}
+            control={control}
+            register={register}
             loading={itemsLoading}
-            widgetId={data?._id}
-            onDelete={onDeleteItem}
             addText={t('addButtonText')}
-            cancelText={t('cancelButtonText')}
-            saveText={t('saveButtonText')}
-            editText={t('editButtonText')}
             deleteText={t('deleteButtonText')}
           />
 
           {/* Mobile Items */}
           <ItemsAccordian
-            collapseId="mobileItems"
+            collapseId={constants.mobileItems}
             title={t('widget.mobileItems')}
-            id="mobileItems"
+            id={constants.mobileItems}
+            name={constants.mobileItems}
+            setError={setError}
             loading={itemsLoading}
-            schema={itemFormSchema}
             show={mobileItemsVisible}
-            itemsData={mobileItems}
             toggleShow={setMobileItemsVisible}
-            onDataSubmit={onItemFormSubmit}
             itemType="Mobile"
-            widgetId={data?._id}
-            onDelete={onDeleteItem}
+            errors={errors}
+            control={control}
+            register={register}
             addText={t('addButtonText')}
-            cancelText={t('cancelButtonText')}
-            saveText={t('saveButtonText')}
-            editText={t('editButtonText')}
             deleteText={t('deleteButtonText')}
           />
         </>

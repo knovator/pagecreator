@@ -1,10 +1,10 @@
 {
   "name": "pagecreator",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "license": "MIT",
   "scripts": {
     "start": "nx serve",
-    "build": "nx build",
+    "build": "nx run-many --target=build --projects=admin,node,user",
     "test": "nx test",
     "start:admin": "nx run pagecreator:serve",
     "start:api": "nx run api:serve",

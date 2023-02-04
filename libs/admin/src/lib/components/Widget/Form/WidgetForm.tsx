@@ -86,6 +86,10 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   const [selectedCollectionType, setSelectedCollectionType] = useState<
     OptionType | undefined
   >();
+  const [collectionItemsUpdated, setCollectionItemsUpdated] = useState(false);
+  const [tabCollectionItemsUpdated, setTabCollectionItemsUpdated] = useState<
+    boolean[]
+  >([]);
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
@@ -105,7 +109,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         );
       }
     }
-  }, [data, formState, collectionData, itemsTypes, setValue]);
+  }, [data, formState, itemsTypes]);
 
   useEffect(() => {
     if (formState === 'ADD') {
@@ -139,7 +143,13 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         Array.isArray(data[constants.collectionItemsAccessor]) &&
         data[constants.collectionItemsAccessor].length > 0
       ) {
-        collectionItems = data[constants.collectionItemsAccessor];
+        if (collectionItemsUpdated)
+          collectionItems = selectedCollectionItems.map(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            (collectionItem) => collectionItem._id
+          );
+        else collectionItems = data[constants.collectionItemsAccessor];
         // valueToSet = constants.collectionItemsAccessor;
       }
     }
@@ -176,9 +186,16 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
                 }) || [];
               selectedOptions = selectedOptions.filter((obj) => !!obj.value);
               if (valueToSet) {
-                setValue(valueToSet, selectedOptions);
+                // only set tabcollection items, when they are not set
+                if (!tabCollectionItemsUpdated[activeTab]) {
+                  const updatedArr = tabCollectionItemsUpdated;
+                  updatedArr[activeTab] = true;
+                  setTabCollectionItemsUpdated(updatedArr);
+                  setValue(valueToSet, selectedOptions);
+                }
               } else {
                 setSelectedCollectionItems(selectedOptions);
+                setCollectionItemsUpdated(true);
               }
             }
           },

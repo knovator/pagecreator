@@ -289,6 +289,7 @@ export const getCollectionData = catchAsync(
     }
     if (Array.isArray(collectionItems) && collectionItems.length) {
       orOptions.push({ _id: { $in: collectionItems } });
+      orOptions.push({});
     }
     if (orOptions.length > 0) {
       query = {

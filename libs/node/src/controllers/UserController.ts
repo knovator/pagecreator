@@ -23,35 +23,21 @@ const getAggregationQuery = ({
   const collectionConfig = defaults.collections.find(
     (c) => c.collectionName === collectionName
   );
-  const aggregateQuery: AggregateOptions = {
+  const aggregateQueryItem: AggregateOptions[] = [];
+  if (
+    Array.isArray(collectionConfig?.aggregations) &&
+    collectionConfig?.aggregations.length
+  ) {
+    aggregateQueryItem.push(...collectionConfig.aggregations);
+  }
+  aggregateQueryItem.push({
     $match: {
       _id: {
         $in: ids,
       },
       ...(collectionConfig?.match || {}),
     },
-  };
-  if (collectionConfig?.project)
-    aggregateQuery['$project'] = collectionConfig?.project;
-  if (collectionConfig?.lookup)
-    aggregateQuery['$lookup'] = collectionConfig?.lookup;
-  if (collectionConfig?.addFields)
-    aggregateQuery['$addFields'] = collectionConfig?.addFields;
-  if (collectionConfig?.unwind)
-    aggregateQuery['$unwind'] = collectionConfig?.unwind;
-
-  const aggregateQueryItem: AggregateOptions[] = [];
-  if (aggregateQuery['$match'])
-    aggregateQueryItem.push({ $match: aggregateQuery['$match'] });
-  if (aggregateQuery['$lookup'])
-    aggregateQueryItem.push({ $lookup: aggregateQuery['$lookup'] });
-  if (aggregateQuery['$project'])
-    aggregateQueryItem.push({ $project: aggregateQuery['$project'] });
-  if (aggregateQuery['$addFields'])
-    aggregateQueryItem.push({ $addFields: aggregateQuery['$addFields'] });
-  if (aggregateQuery['$unwind'])
-    aggregateQueryItem.push({ $unwind: aggregateQuery['$unwind'] });
-
+  });
   return aggregateQueryItem;
 };
 

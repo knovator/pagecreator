@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { DropResult } from 'react-beautiful-dnd';
 import { FormProps, SchemaType } from '../../../types';
 
@@ -27,7 +27,7 @@ const PageForm = ({ formRef }: FormProps) => {
     canAdd,
     canUpdate,
   } = usePageState();
-
+  const callerRef = useRef<NodeJS.Timeout | null>(null);
   // Form Utility Functions
   function handleCapitalize(event: React.ChangeEvent<HTMLInputElement>) {
     event.target.value = capitalizeFirstLetter(event.target.value);
@@ -48,17 +48,21 @@ const PageForm = ({ formRef }: FormProps) => {
     return event;
   }
   function loadOptions(value?: string, callback?: (data: any) => void): any {
-    getWidgets((widgetsData: any) => {
-      if (callback) callback(widgetsData);
-      if (formState === 'UPDATE' && data)
-        setSelectedWidgets(
-          data.widgets
-            .map((widgetId: string) =>
-              widgetsData.find((widget: any) => widget['value'] === widgetId)
-            )
-            .filter((widget: any) => widget)
-        );
-    });
+    if (callerRef.current) clearTimeout(callerRef.current);
+
+    callerRef.current = setTimeout(() => {
+      getWidgets(value, (widgetsData: any) => {
+        if (callback) callback(widgetsData);
+        if (formState === 'UPDATE' && data)
+          setSelectedWidgets(
+            data.widgets
+              .map((widgetId: string) =>
+                widgetsData.find((widget: any) => widget['value'] === widgetId)
+              )
+              .filter((widget: any) => widget)
+          );
+      });
+    }, 300);
   }
   // Widget Form Functions
   const onDragEnd = (result: DropResult) => {

@@ -62,7 +62,11 @@ const usePage = ({
     [onError, onLogout]
   );
   const getWidgets = useCallback(
-    async (search?: string, callback?: (data: any) => void) => {
+    async (
+      search?: string,
+      collectionItems?: string[],
+      callback?: (data: any) => void
+    ) => {
       try {
         setWidgetsLoading(true);
         const api = getApiType({
@@ -77,6 +81,7 @@ const usePage = ({
           url: api.url,
           onError: handleError(CALLBACK_CODES.GET_ALL),
           data: {
+            collectionItems: collectionItems || [],
             search: search || '',
             all: true,
             isActive: true,

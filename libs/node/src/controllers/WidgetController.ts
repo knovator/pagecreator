@@ -103,6 +103,7 @@ export const deleteWidget = catchAsync(
 
 export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
   const search = req.body.search || '';
+  const { collectionItems } = req.body;
   const { page, limit, sort } = req.body.options;
   const all =
     (typeof req.body.all !== 'undefined' && req.body.all === true) || false;
@@ -116,23 +117,20 @@ export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
     select: 'name code isActive',
     ...(page && limit ? { page, limit } : {}),
   };
+  const orOptions: any = [];
+  if (search) {
+    orOptions.push({ name: { $regex: search, $options: 'i' } });
+    orOptions.push({ code: { $regex: search, $options: 'i' } });
+  } else {
+    orOptions.push({});
+  }
+  if (Array.isArray(collectionItems) && collectionItems.length) {
+    orOptions.push({ _id: { $in: collectionItems } });
+  }
   const query = {
     isDeleted: false,
     isActive: { $in: isActive === null ? [true, false] : [isActive] },
-    $or: [
-      {
-        name: {
-          $regex: search,
-          $options: 'i',
-        },
-      },
-      {
-        code: {
-          $regex: search,
-          $options: 'i',
-        },
-      },
-    ],
+    $or: orOptions,
   };
   const notifications = await list(Widget, query, customOptions);
   res.message = req?.i18n?.t('widget.getAll');
@@ -286,10 +284,11 @@ export const getCollectionData = catchAsync(
           },
         })
       );
+    } else {
+      orOptions.push({});
     }
     if (Array.isArray(collectionItems) && collectionItems.length) {
       orOptions.push({ _id: { $in: collectionItems } });
-      orOptions.push({});
     }
     if (orOptions.length > 0) {
       query = {

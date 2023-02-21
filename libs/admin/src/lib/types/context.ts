@@ -105,7 +105,11 @@ export interface PageContextType {
   list: any[];
   searchText: string;
   changeSearch: (val: string) => void;
-  getWidgets: (search?: string, callback?: (data: any) => void) => void;
+  getWidgets: (
+    search: string,
+    collectionItems: string[],
+    callback?: (data: any) => void
+  ) => void;
   formState: FormActionTypes | undefined;
   closeForm: () => void;
   onPageFormSubmit: (data: any) => void;

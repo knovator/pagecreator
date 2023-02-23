@@ -10,7 +10,7 @@
     @apply cursor-not-allowed;
 }
 .khb_btn-primary {
-    @apply text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
+    @apply text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300;
 }
 .khb_btn-primary:disabled {
     @apply bg-blue-800;
@@ -22,10 +22,10 @@
     @apply text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-gray-200;
 }
 .khb_btn-success {
-    @apply text-white bg-green-700 hover:bg-green-800 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800
+    @apply text-white bg-green-700 hover:bg-green-800 focus:ring-green-300;
 }
 .khb_btn-danger {
-    @apply text-white bg-red-700 hover:bg-red-800 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900
+    @apply text-white bg-red-700 hover:bg-red-800 focus:ring-red-300;
 }
 .khb_btn-danger:disabled {
     @apply bg-red-800;
@@ -61,19 +61,19 @@
     @apply overflow-x-auto relative shadow-md sm:rounded-lg;
 }
 .khb_table {
-    @apply w-full text-sm text-left text-gray-500 dark:text-gray-400;
+    @apply w-full text-sm text-left text-gray-500;
 }
 .khb_thead {
-    @apply text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400;
+    @apply text-xs text-gray-700 uppercase bg-gray-50;
 }
 .khb_table-heading {
     @apply py-3 px-6;
 }
 .khb_table-row {
-    @apply bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600;
+    @apply bg-white border-b hover:bg-gray-50;
 }
 .khb_table-row-heading {
-    @apply py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white;
+    @apply py-4 px-6 font-medium text-gray-900 whitespace-nowrap;
 }
 .khb_table-row-data {
     @apply py-3 px-5;
@@ -94,13 +94,13 @@
     @apply flex justify-between items-center py-2 px-5;
 }
 .khb_pagination-total {
-    @apply text-sm font-normal text-gray-500 dark:text-gray-400;
+    @apply text-sm font-normal text-gray-500;
 }
 .khb_pagination-total-showing {
-    @apply font-semibold text-gray-900 dark:text-white;
+    @apply font-semibold text-gray-900;
 }
 .khb_pagination-total-items {
-    @apply font-semibold text-gray-900 dark:text-white;
+    @apply font-semibold text-gray-900;
 }
 .khb_pagination-actions {
     @apply inline-flex items-center -space-x-px;
@@ -124,7 +124,7 @@
     @apply text-sm text-gray-400 mt-1;
 }
 .khb_input-error {
-    @apply text-sm text-red-600 dark:text-red-500;
+    @apply text-sm text-red-600;
 }
 .khb_input-xs {
     @apply text-sm p-1.5;
@@ -136,7 +136,7 @@
     @apply text-base p-2.5;
 }
 .khb_input-label {
-    @apply block mb-1 text-sm font-medium text-gray-900 dark:text-gray-300;
+    @apply block mb-1 text-sm font-medium text-gray-900;
 }
 .khb_input-label-required {
     @apply text-red-600;

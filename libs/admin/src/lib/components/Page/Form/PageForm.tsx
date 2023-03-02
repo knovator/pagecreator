@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
 import { DropResult } from 'react-beautiful-dnd';
 import { FormProps, SchemaType } from '../../../types';
 
-import Form from '../../common/Form';
+import { SimpleForm } from '../../common/Form';
 import DNDItemsList from '../../common/DNDItemsList';
 
 import { usePageState } from '../../../context/PageContext';
@@ -10,6 +11,7 @@ import {
   capitalizeFirstLetter,
   changeToCode,
   changeToSlug,
+  isEmpty,
 } from '../../../helper/utils';
 import { CONSTANTS } from '../../../constants/common';
 
@@ -27,6 +29,30 @@ const PageForm = ({ formRef }: FormProps) => {
     canAdd,
     canUpdate,
   } = usePageState();
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+    reset,
+    setValue,
+    control,
+    setError,
+    getValues,
+  } = useForm();
+  const callerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!isEmpty(data)) {
+      reset(data);
+    }
+  }, [data, reset]);
+
+  useEffect(() => {
+    if (formState === 'ADD') {
+      setSelectedWidgets([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formState]);
 
   // Form Utility Functions
   function handleCapitalize(event: React.ChangeEvent<HTMLInputElement>) {
@@ -48,17 +74,32 @@ const PageForm = ({ formRef }: FormProps) => {
     return event;
   }
   function loadOptions(value?: string, callback?: (data: any) => void): any {
-    getWidgets((widgetsData: any) => {
-      if (callback) callback(widgetsData);
-      if (formState === 'UPDATE' && data)
-        setSelectedWidgets(
-          data.widgets
-            .map((widgetId: string) =>
-              widgetsData.find((widget: any) => widget['value'] === widgetId)
-            )
-            .filter((widget: any) => widget)
-        );
-    });
+    let widgetItems: any[] = [];
+    if (formState === 'UPDATE') {
+      widgetItems = getValues('widgets');
+    }
+    widgetItems = Array.isArray(widgetItems)
+      ? widgetItems
+      : data?.widgets
+      ? data?.widgets
+      : [];
+    if (callerRef.current) clearTimeout(callerRef.current);
+
+    callerRef.current = setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      getWidgets(value || '', widgetItems, (widgetsData: any) => {
+        if (callback) callback(widgetsData);
+        if (formState === 'UPDATE' && data)
+          setSelectedWidgets(
+            widgetItems
+              .map((widgetId: string) =>
+                widgetsData.find((widget: any) => widget['value'] === widgetId)
+              )
+              .filter((widget: any) => widget)
+          );
+      });
+    }, 300);
   }
   // Widget Form Functions
   const onDragEnd = (result: DropResult) => {
@@ -118,7 +159,19 @@ const PageForm = ({ formRef }: FormProps) => {
   if (!canAdd && !canUpdate) return null;
   return (
     <div className="khb_form">
-      <Form
+      <SimpleForm
+        schema={pageFormSchema}
+        onSubmit={onPageFormSubmit}
+        ref={formRef}
+        isUpdating={formState === 'UPDATE'}
+        register={register}
+        errors={errors}
+        handleSubmit={handleSubmit}
+        setValue={setValue}
+        control={control}
+        setError={setError}
+      />
+      {/* <Form
         schema={pageFormSchema}
         onSubmit={onPageFormSubmit}
         ref={formRef}
@@ -129,7 +182,7 @@ const PageForm = ({ formRef }: FormProps) => {
             (widget: { value: string }) => widget.value
           ),
         }}
-      />
+      /> */}
 
       <DNDItemsList onDragEnd={onDragEnd} items={selectedWidgets} />
     </div>

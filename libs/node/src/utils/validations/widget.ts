@@ -155,6 +155,7 @@ export const list = joi.object({
     .default({
       sort: { _id: -1 },
     }),
+  collectionItems: joi.array().optional().default([]),
   isActive: joi.boolean().optional(),
   all: joi.boolean().default(false),
   createdBy: joi.any().optional(),

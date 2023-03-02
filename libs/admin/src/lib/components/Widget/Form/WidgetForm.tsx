@@ -489,7 +489,6 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     {
       label: selectedCollectionType?.label,
       placeholder: `Select ${selectedCollectionType?.label}...`,
-      required: true,
       accessor: 'collectionItems',
       type: 'ReactSelect',
       options: collectionData,

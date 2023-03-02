@@ -120,42 +120,30 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
       );
+      if (
+        Array.isArray(collectionConfig?.aggregations) &&
+        collectionConfig?.aggregations.length
+      ) {
+        aggregationQueryPiplelines.push(...collectionConfig.aggregations);
+      }
       // Build piplelines with config
-      aggregationQueryPiplelines = [
-        {
-          $match: {
-            _id: {
-              $in: formattedWidgetData[key].collectionItems,
+      aggregationQueryPiplelines.push(
+        ...[
+          {
+            $match: {
+              _id: {
+                $in: formattedWidgetData[key].collectionItems,
+              },
+              ...(collectionConfig?.match || {}),
             },
-            ...(collectionConfig?.match || {}),
           },
-        },
-        {
-          $project: {
-            ...commonExcludedFields,
+          {
+            $project: {
+              ...commonExcludedFields,
+            },
           },
-        },
-      ];
-      // add project config if it exists
-      if (collectionConfig?.project)
-        aggregationQueryPiplelines.push({
-          $project: collectionConfig?.project,
-        });
-      // add lookup config if it exists
-      if (collectionConfig?.lookup)
-        aggregationQueryPiplelines.push({
-          $lookup: collectionConfig?.lookup,
-        });
-      // add addFields if it exists
-      if (collectionConfig?.addFields)
-        aggregationQueryPiplelines.push({
-          $addFields: collectionConfig?.addFields,
-        });
-      // add unwind if it exists
-      if (collectionConfig?.unwind)
-        aggregationQueryPiplelines.push({
-          $unwind: collectionConfig?.unwind,
-        });
+        ]
+      );
       // Build Aggregation Query
       aggregationQuery.push({
         $lookup: {
@@ -188,7 +176,8 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       },
     },
   ];
-  let collectionConfig, aggregationQueryPiplelines: any[];
+  let collectionConfig;
+  const aggregationQueryPiplelines: any[] = [];
   Object.keys(formattedWidgetData).forEach((key: string) => {
     if (
       formattedWidgetData[key].tabs &&
@@ -197,48 +186,36 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
       );
+      if (
+        Array.isArray(collectionConfig?.aggregations) &&
+        collectionConfig?.aggregations.length
+      ) {
+        aggregationQueryPiplelines.push(...collectionConfig.aggregations);
+      }
       // Build piplelines with config
-      aggregationQueryPiplelines = [
-        {
-          $match: {
-            _id: {
-              $in: formattedWidgetData[key].tabs.reduce(
-                (arr: string[], tabItem) => {
-                  arr.push(...tabItem.collectionItems);
-                  return arr;
-                },
-                []
-              ),
+      aggregationQueryPiplelines.push(
+        ...[
+          {
+            $match: {
+              _id: {
+                $in: formattedWidgetData[key].tabs.reduce(
+                  (arr: string[], tabItem) => {
+                    arr.push(...tabItem.collectionItems);
+                    return arr;
+                  },
+                  []
+                ),
+              },
+              ...(collectionConfig?.match || {}),
             },
-            ...(collectionConfig?.match || {}),
           },
-        },
-        {
-          $project: {
-            ...commonExcludedFields,
+          {
+            $project: {
+              ...commonExcludedFields,
+            },
           },
-        },
-      ];
-      // add project config if it exists
-      if (collectionConfig?.project)
-        aggregationQueryPiplelines.push({
-          $project: collectionConfig?.project,
-        });
-      // add lookup config if it exists
-      if (collectionConfig?.lookup)
-        aggregationQueryPiplelines.push({
-          $lookup: collectionConfig?.lookup,
-        });
-      // add addFields if it exists
-      if (collectionConfig?.addFields)
-        aggregationQueryPiplelines.push({
-          $addFields: collectionConfig?.addFields,
-        });
-      // add unwind if it exists
-      if (collectionConfig?.unwind)
-        aggregationQueryPiplelines.push({
-          $unwind: collectionConfig?.unwind,
-        });
+        ]
+      );
       // Build Aggregation Query
       aggregationQuery.push({
         $lookup: {

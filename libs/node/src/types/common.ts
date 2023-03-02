@@ -82,10 +82,7 @@ export type CollectionItem = {
   filters?: { [key: string]: string | number | boolean };
   searchColumns?: string[];
   match?: ObjectType;
-  project?: ObjectType;
-  lookup?: ObjectType;
-  addFields?: ObjectType;
-  unwind?: ObjectType;
+  aggregations?: any[];
 };
 
 export interface IConfig {

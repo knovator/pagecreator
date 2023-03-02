@@ -5,7 +5,6 @@ import {
   remove,
   update,
   list,
-  getAll,
   bulkInsert,
   deleteAll,
   getOne,
@@ -296,7 +295,17 @@ export const getCollectionData = catchAsync(
         $or: orOptions,
       };
     }
-    const collectionData = await getAll(TempModel, query, { limit });
+    const collectionData = await TempModel.aggregate([
+      {
+        $match: query,
+      },
+      {
+        $limit: limit,
+      },
+      ...(Array.isArray(collectionItem.aggregations)
+        ? collectionItem.aggregations
+        : []),
+    ]);
     res.message = req?.i18n?.t('widget.getCollectionData');
     return successResponse({ docs: collectionData }, res);
   }

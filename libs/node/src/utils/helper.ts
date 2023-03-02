@@ -176,7 +176,8 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       },
     },
   ];
-  let collectionConfig, aggregationQueryPiplelines: any[];
+  let collectionConfig;
+  const aggregationQueryPiplelines: any[] = [];
   Object.keys(formattedWidgetData).forEach((key: string) => {
     if (
       formattedWidgetData[key].tabs &&
@@ -192,27 +193,29 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
         aggregationQueryPiplelines.push(...collectionConfig.aggregations);
       }
       // Build piplelines with config
-      aggregationQueryPiplelines = [
-        {
-          $match: {
-            _id: {
-              $in: formattedWidgetData[key].tabs.reduce(
-                (arr: string[], tabItem) => {
-                  arr.push(...tabItem.collectionItems);
-                  return arr;
-                },
-                []
-              ),
+      aggregationQueryPiplelines.push(
+        ...[
+          {
+            $match: {
+              _id: {
+                $in: formattedWidgetData[key].tabs.reduce(
+                  (arr: string[], tabItem) => {
+                    arr.push(...tabItem.collectionItems);
+                    return arr;
+                  },
+                  []
+                ),
+              },
+              ...(collectionConfig?.match || {}),
             },
-            ...(collectionConfig?.match || {}),
           },
-        },
-        {
-          $project: {
-            ...commonExcludedFields,
+          {
+            $project: {
+              ...commonExcludedFields,
+            },
           },
-        },
-      ];
+        ]
+      );
       // Build Aggregation Query
       aggregationQuery.push({
         $lookup: {

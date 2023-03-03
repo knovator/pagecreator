@@ -296,15 +296,15 @@ export const getCollectionData = catchAsync(
       };
     }
     const collectionData = await TempModel.aggregate([
+      ...(Array.isArray(collectionItem.aggregations)
+        ? collectionItem.aggregations
+        : []),
       {
         $match: query,
       },
       {
         $limit: limit,
       },
-      ...(Array.isArray(collectionItem.aggregations)
-        ? collectionItem.aggregations
-        : []),
     ]);
     res.message = req?.i18n?.t('widget.getCollectionData');
     return successResponse({ docs: collectionData }, res);

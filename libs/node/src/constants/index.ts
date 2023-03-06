@@ -24,4 +24,5 @@ export const success = 200;
 export const create = 201;
 export const internalServerError = 500;
 export const validationError = 422;
+export const notFoundError = 404;
 export const messageRoutePrefix = 'msg';

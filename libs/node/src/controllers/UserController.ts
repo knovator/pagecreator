@@ -5,7 +5,7 @@ import {
   appendCollectionData,
   getCollectionModal,
 } from '../utils/helper';
-import { successResponse } from './../utils/responseHandlers';
+import { successResponse, recordNotFound } from './../utils/responseHandlers';
 import { defaults, commonExcludedFields } from '../utils/defaults';
 import { IPageSchema, IRequest, IResponse, IWidgetSchema } from '../types';
 
@@ -311,7 +311,10 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
     },
   ])) as Array<IPageSchema>;
 
-  if (!pageData.length) throw new Error('Page not found');
+  if (!pageData.length) {
+    res.message = req?.i18n?.t('user.pageNotFound');
+    return recordNotFound(res);
+  }
   pageData[0].widgetsData = await appendCollectionData(pageData[0].widgetsData);
   if (
     Array.isArray(pageData[0].widgetsData) &&

@@ -112,12 +112,12 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
     },
   ];
   let collectionConfig;
-  const aggregationQueryPiplelines: any[] = [];
   Object.keys(formattedWidgetData).forEach((key: string) => {
     if (
       formattedWidgetData[key].collectionItems &&
       formattedWidgetData[key].collectionItems.length > 0
     ) {
+      const aggregationQueryPiplelines: any[] = [];
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
       );
@@ -270,10 +270,11 @@ export const getCollectionModal = (collectionName: string) => {
   return collectionModal;
 };
 
-export const formatCollectionItems = (collectionItems: string[]) => {
+export const formatCollectionItems = (collectionItems: any[]) => {
   if (Array.isArray(collectionItems) && collectionItems.length === 0) return [];
 
   return collectionItems.map((item) => {
+    if (item instanceof Types.ObjectId) return item;
     return new Types.ObjectId(item);
   });
 };

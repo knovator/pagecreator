@@ -1,4 +1,4 @@
-import { models, model, Schema } from 'mongoose';
+import { models, model, Schema, Types } from 'mongoose';
 import { Widget } from '../models';
 import { commonExcludedFields, defaults } from './defaults';
 import {
@@ -112,12 +112,12 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
     },
   ];
   let collectionConfig;
-  const aggregationQueryPiplelines: any[] = [];
   Object.keys(formattedWidgetData).forEach((key: string) => {
     if (
       formattedWidgetData[key].collectionItems &&
       formattedWidgetData[key].collectionItems.length > 0
     ) {
+      const aggregationQueryPiplelines: any[] = [];
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
       );
@@ -133,7 +133,9 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
           {
             $match: {
               _id: {
-                $in: formattedWidgetData[key].collectionItems,
+                $in: formatCollectionItems(
+                  formattedWidgetData[key].collectionItems
+                ),
               },
               ...(collectionConfig?.match || {}),
             },
@@ -200,8 +202,8 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
             $match: {
               _id: {
                 $in: formattedWidgetData[key].tabs.reduce(
-                  (arr: string[], tabItem) => {
-                    arr.push(...tabItem.collectionItems);
+                  (arr: Types.ObjectId[], tabItem) => {
+                    arr.push(...formatCollectionItems(tabItem.collectionItems));
                     return arr;
                   },
                   []
@@ -266,4 +268,13 @@ export const getCollectionModal = (collectionName: string) => {
     collectionModal = model(collectionName, schema, collectionName);
   }
   return collectionModal;
+};
+
+export const formatCollectionItems = (collectionItems: any[]) => {
+  if (Array.isArray(collectionItems) && collectionItems.length === 0) return [];
+
+  return collectionItems.map((item) => {
+    if (item instanceof Types.ObjectId) return item;
+    return new Types.ObjectId(item);
+  });
 };

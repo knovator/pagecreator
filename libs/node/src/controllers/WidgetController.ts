@@ -15,7 +15,7 @@ import {
 } from './../utils/responseHandlers';
 
 import { commonExcludedFields, defaults } from '../utils/defaults';
-import { getCollectionModal } from '../utils/helper';
+import { formatCollectionItems, getCollectionModal } from '../utils/helper';
 import {
   CollectionItem,
   IRequest,
@@ -287,7 +287,7 @@ export const getCollectionData = catchAsync(
       orOptions.push({});
     }
     if (Array.isArray(collectionItems) && collectionItems.length) {
-      orOptions.push({ _id: { $in: collectionItems } });
+      orOptions.push({ _id: { $in: formatCollectionItems(collectionItems) } });
     }
     if (orOptions.length > 0) {
       query = {

@@ -238,9 +238,7 @@ Through `setConfig` function e can set `logger`, `collections` and `catchAsync` 
 | collectionName | Collection name specified in database                                                  |
 | filters        | Filter object to apply while getting data, like `{ isDeleted: false, isActive: true }` |
 | searchColumns  | Array of fields to to perform search                                                   |
-| lookup         | `$lookup` object to apply while getting data through aggregation                       |
-| project        | `$project` object to apply while getting data through aggregation                      |
-| match          | `$match` object to apply while getting data through aggregation                        |
+| aggregations   | Array of aggregation items you want to apply while retriving items                     |
 
 **Example**,
 
@@ -252,38 +250,46 @@ setConfig({
       collectionName: 'notifications',
       filters: { isDeleted: false, isActive: true },
       searchColumns: ['name', 'code'],
-      lookup: {
-        from: 'file',
-        let: {
-          id: '$fileId',
-        },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ['$_id', '$$id'],
+      aggregations: [
+        {
+          $lookup: {
+            from: 'file',
+            let: {
+              id: '$fileId',
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ['$_id', '$$id'],
+                  },
+                },
               },
-            },
-          },
-          {
-            $project: {
-              _id: 1,
-              nm: 1,
-              uri: 1,
-              mimeType: 1,
-            },
-          },
-        ],
-        as: 'fileId',
-      },
-      project: {
-        _id: 1,
-        nm: 1,
-        fileId: 1,
-      },
-      match: {
-        deletedAt: { $exists: false },
-      },
+              {
+                $project: {
+                  _id: 1,
+                  nm: 1,
+                  uri: 1,
+                  mimeType: 1,
+                },
+              },
+            ],
+            as: 'fileId',
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            nm: 1,
+            fileId: 1,
+          }
+        },
+        {
+          $match: {
+            deletedAt: { $exists: false },
+          }
+        }
+      ]
     },
   ],
 });
@@ -322,6 +328,7 @@ Response follows following structure
 | 201  | When document is created             |
 | 500  | When internal server occurred        |
 | 422  | When Validation error occurred       |
+| 404  | When Resource is not found           |
 
 ### Routes
 
@@ -349,15 +356,6 @@ This are the routes that gets integrated by `@knovator/pagecreator-node`,
 | `/:id`  | **PUT**    | Update `page`                       |
 | `/:id`  | **DELETE** | Delete page whose `id` send in body |
 
-#### Item
-
-| Route        | Method     | Description                         |
-| ------------ | ---------- | ----------------------------------- |
-| `/:widgetId` | **GET**    | Get Items data for `widgetId`       |
-| `/`          | **POST**   | Create `item`                       |
-| `/:id`       | **PUT**    | Update `item`                       |
-| `/:id`       | **DELETE** | Delete item whose `id` send in body |
-
 #### User
 
 | Route          | Method   | Description                                              |
@@ -376,8 +374,8 @@ req?.i18n?.(CODE);
 
 | CODE                       | Description                                                  |
 | -------------------------- | ------------------------------------------------------------ |
-| `widget.getItemsTypes`    | While fetching widget types                                  |
-| `widget.getWidgetTypes` | While fetching selection types                               |
+| `widget.getItemsTypes`     | While fetching widget types                                  |
+| `widget.getWidgetTypes`    | While fetching selection types                               |
 | `widget.getAll`            | While fetching widgets                                       |
 | `widget.create`            | While creating widget                                        |
 | `widget.update`            | While updating widget                                        |
@@ -388,9 +386,8 @@ req?.i18n?.(CODE);
 | `page.create`              | While creating page                                          |
 | `page.update`              | While updating page                                          |
 | `page.delete`              | While deleting page                                          |
-| `item.getAll`              | While getting items for widget                               |
-| `item.create`              | While creating item                                          |
-| `item.update`              | While updating item                                          |
+| `user.widgetNotFound`      | While widget is not found                                    |
+| `user.pageNotFound`        | While page is not found                                      |
 | `user.getWidgetData`       | While getting widget data                                    |
 | `user.getPageData`         | While getting page data                                      |
 

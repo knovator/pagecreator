@@ -111,7 +111,8 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       },
     },
   ];
-  let collectionConfig, aggregationQueryPiplelines: any[];
+  let collectionConfig;
+  const aggregationQueryPiplelines: any[] = [];
   Object.keys(formattedWidgetData).forEach((key: string) => {
     if (
       formattedWidgetData[key].collectionItems &&

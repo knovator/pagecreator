@@ -132,7 +132,10 @@ export const getWidgetData = catchAsync(
       },
     ])) as Array<IWidgetSchema>;
 
-    if (!widgetDataArr.length) throw new Error(`Widget not found`);
+    if (!widgetDataArr.length) {
+      res.message = req?.i18n?.t('user.widgetNotFound');
+      return recordNotFound(res);
+    }
     const widgetData = widgetDataArr[0];
 
     if (

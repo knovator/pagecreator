@@ -9,6 +9,7 @@ const TabItem = ({
   deleteTitle,
   onRemoveTab,
   register,
+  error,
   noButtonText,
   yesButtonText,
 }: TabItemProps) => {
@@ -18,9 +19,11 @@ const TabItem = ({
         type="text"
         className="khb_tabs-input"
         autoFocus
+        style={{ display: 'block' }}
         disabled={isDisabled}
         {...(register || {})}
       />
+      {error && <p className="khb_input-error ">{error}</p>}
       {showDelete ? (
         <ConfirmPopover
           onConfirm={onRemoveTab}

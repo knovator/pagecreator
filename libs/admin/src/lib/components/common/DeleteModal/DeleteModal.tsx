@@ -49,13 +49,16 @@ const DeleteModal = ({
           placeholder={
             typeHerePlaceholder || TRANSLATION_PAIRS_COMMON.typeHerePlaceholder
           }
+          wrapperClassName="w-full"
           className="khb_delete-input"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
         />
         <div className="khb_delete-buttons">
           <Button
-            disabled={userInput !== itemData?.['name']}
+            disabled={
+              userInput.toString().trim() !== itemData?.['name']?.trim()
+            }
             onClick={onConfirmDelete}
           >
             {confirm || TRANSLATION_PAIRS_COMMON.confirm}

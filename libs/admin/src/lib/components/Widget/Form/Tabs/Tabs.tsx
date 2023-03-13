@@ -16,6 +16,7 @@ import CustomReactSelect from '../../../common/Input/ReactSelect';
 import DNDItemsList from '../../../common/DNDItemsList';
 
 const Tabs = ({
+  errors,
   activeTab,
   setActiveTab,
   options,
@@ -32,6 +33,7 @@ const Tabs = ({
   itemsPlaceholder,
   formatOptionLabel,
   tabCollectionItems,
+  tabNameRequiredText,
   onCollectionItemsIndexChange,
 }: TabsProps) => {
   const {
@@ -67,11 +69,14 @@ const Tabs = ({
                 <TabItem
                   key={field.id}
                   deleteTitle={deleteTitle}
-                  register={register(`tabs.${index}.name`)}
+                  register={register(`tabs.${index}.name`, {
+                    required: tabNameRequiredText,
+                  })}
                   onRemoveTab={() => {
                     removeField(index);
                     setActiveTab(index === 0 ? 0 : index - 1);
                   }}
+                  error={errors?.['tabs']?.[index]?.name?.message}
                   noButtonText={noButtonText}
                   yesButtonText={yesButtonText}
                   showDelete={tabFields?.length > 1}

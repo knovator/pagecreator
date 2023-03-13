@@ -529,6 +529,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
           deleteTitle={t('widget.tabDeleteTitle')}
           yesButtonText={t('yesButtonText')}
           noButtonText={t('cancelButtonText')}
+          errors={errors}
+          tabNameRequiredText={t('widget.tabNameRequired')}
           itemsPlaceholder={`Select ${selectedCollectionType?.label}...`}
           loadOptions={onChangeSearch}
           isItemsLoading={collectionDataLoading}

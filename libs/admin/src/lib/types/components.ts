@@ -246,6 +246,7 @@ export interface TabItemProps {
   register?: any;
   noButtonText: string;
   yesButtonText: string;
+  error?: string;
 }
 export interface TabsProps {
   activeTab: number;
@@ -256,6 +257,7 @@ export interface TabsProps {
   options?: { value: string; label: string }[];
   deleteTitle: string;
   listCode: string;
+  tabNameRequiredText: string;
   noButtonText: string;
   yesButtonText: string;
   itemsPlaceholder?: string;
@@ -264,6 +266,7 @@ export interface TabsProps {
   formatItem?: (code: string, data: any) => JSX.Element;
   onCollectionItemsIndexChange: (index: number, data: DropResult) => void;
   tabCollectionItems: any[];
+  errors?: { [key: string]: any };
   customStyles?: any;
   loadOptions?: (
     value?: string,

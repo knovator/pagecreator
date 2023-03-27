@@ -171,6 +171,9 @@ const usePage = ({
         onError: handleError(code),
       });
       if (response?.code === 'SUCCESS') {
+        if (formState === 'ADD') {
+          setCurrentPage(1);
+        }
         setLoading(false);
         onSuccess(code, response?.code, response?.message);
         getPages();

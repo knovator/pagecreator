@@ -10,7 +10,7 @@ export const dataGatter = (data: any) => {
 };
 
 export const capitalizeFirstLetter = (string = '') =>
-  `${string?.charAt(0)?.toUpperCase()}${string?.slice(1)}`;
+  `${string?.trim().charAt(0)?.toUpperCase()}${string?.slice(1)}`;
 
 export const changeToCode = (string = '') =>
   string

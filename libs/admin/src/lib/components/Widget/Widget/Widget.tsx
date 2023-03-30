@@ -57,6 +57,7 @@ const Widget = ({
     onImageUpload,
     onPartialUpdateWidget,
     itemsTypes,
+    categories,
     widgetTypes,
     getCollectionData,
     collectionData,
@@ -90,6 +91,7 @@ const Widget = ({
       onImageRemove={onImageRemove}
       onImageUpload={onImageUpload}
       onPartialUpdateWidget={onPartialUpdateWidget}
+      categories={categories}
       itemsTypes={itemsTypes}
       widgetTypes={widgetTypes}
       getCollectionData={getCollectionData}

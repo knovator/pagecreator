@@ -74,6 +74,7 @@ export const create = joi.object<ItemValidation>({
     )
     .optional(),
   items: joi.array().items(item).optional(),
+  category: joi.string().optional(),
   backgroundColor: joi
     .string()
     .regex(/^#[A-Fa-f0-9]{6}/)
@@ -108,6 +109,7 @@ export const create = joi.object<ItemValidation>({
 export const update = joi.object<ItemValidation>({
   name: joi.string().required(),
   widgetTitle: joi.string().required(),
+  category: joi.string().optional(),
   isActive: joi.boolean().optional(),
   webPerRow: joi.number().allow(null).optional(),
   mobilePerRow: joi.number().allow(null).optional(),

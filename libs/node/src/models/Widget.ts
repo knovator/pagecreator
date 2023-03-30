@@ -26,6 +26,7 @@ const WidgetSchema = new Schema<IWidgetSchema>({
     default: ItemsType.Image,
     required: true,
   },
+  category: String,
   widgetType: {
     type: String,
     enum: Object.values(WidgetTypes),

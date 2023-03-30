@@ -310,3 +310,9 @@ export const getCollectionData = catchAsync(
     return successResponse({ docs: collectionData }, res);
   }
 );
+
+export const getCategories = catchAsync(
+  async (req: IRequest, res: IResponse) => {
+    return successResponse(defaults.categories, res);
+  }
+);

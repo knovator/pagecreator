@@ -93,6 +93,8 @@ const TRANSLATION_PAIRS_WIDGET = {
   'widget.widgetTitleInfo': 'HTML is supported',
   'widget.minPerRow': 'Value must be greater than zero',
   'widget.actionsLabel': 'Actions',
+  'widget.category': 'Category',
+  'widget.categoryPlaceholder': 'Select Category',
   'widget.tabNameRequired': 'Tab Name is required',
 };
 const TRANSLATION_PAIRS_ITEM = {

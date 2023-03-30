@@ -54,6 +54,7 @@ export interface IWidgetSchema extends Document {
   itemsType: ItemsType;
   widgetType: WidgetTypes;
   collectionName: string;
+  category: string;
   collectionItems: string[];
   tabs: { name: string; collectionItems: string[] }[];
   backgroundColor: string;
@@ -85,6 +86,11 @@ export type CollectionItem = {
   aggregations?: any[];
 };
 
+export type CategoryItem = {
+  label: string;
+  value: string;
+};
+
 export interface IConfig {
   logger: any;
   catchAsync: (
@@ -92,6 +98,7 @@ export interface IConfig {
     modal?: string
   ) => (req: any, res: any, next: any) => void;
   collections: CollectionItem[];
+  categories: CategoryItem[];
 }
 
 export type EntityType =

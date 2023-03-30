@@ -23,6 +23,7 @@ import {
 import Tabs from './Tabs';
 
 const constants = {
+  categoryTypeAccessor: 'category',
   widgetTypeAccessor: 'widgetType',
   itemTypeAccessor: 'itemsType',
   collectionNameAccessor: 'collectionName',
@@ -60,6 +61,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     canUpdate,
     formState,
     itemsTypes,
+    categories,
     widgetTypes,
     loading,
     onWidgetFormSubmit,
@@ -226,6 +228,9 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   const getFirstWidgetTypeValue = useCallback(() => {
     return widgetTypes[0].value;
   }, [widgetTypes]);
+  const getFirstCategoryValue = useCallback(() => {
+    return categories[0].value;
+  }, [categories]);
 
   // Widget Form Functions
   const onWidgetFormInputChange = useCallback(
@@ -266,6 +271,13 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   );
   const onFormSubmit = (data: CombineObjectType) => {
     const formData = { ...data };
+    if (
+      !formData[constants.categoryTypeAccessor] &&
+      categories &&
+      categories.length > 0
+    ) {
+      formData[constants.categoryTypeAccessor] = getFirstCategoryValue();
+    }
     // setting widget type if undefined
     if (!formData[constants.widgetTypeAccessor] && formState === 'ADD') {
       formData[constants.widgetTypeAccessor] = getFirstWidgetTypeValue();
@@ -412,6 +424,14 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         required: t('widget.widgetTypeRequired'),
       },
       options: widgetTypes,
+    },
+    {
+      label: `${t('widget.category')}`,
+      placeholder: t('widget.categoryPlaceholder'),
+      accessor: 'category',
+      type: 'select',
+      show: categories && categories.length > 0,
+      options: categories,
     },
     {
       label: t('widget.autoPlay'),

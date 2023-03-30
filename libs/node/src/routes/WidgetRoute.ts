@@ -22,6 +22,9 @@ routes
 routes
   .get('/selection-types', widgetController.getWidgetTypes)
   .descriptor(`${descriptorPrefix}widget.getWidgetTypes`);
+routes
+  .get('/categories', widgetController.getCategories)
+  .descriptor(`${descriptorPrefix}widget.getCategories`);
 // Get all widgets
 routes
   .post(`/list`, validate(widgetValidation.list), widgetController.getWidgets)

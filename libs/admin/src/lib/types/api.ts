@@ -10,7 +10,8 @@ export type ACTION_TYPES =
   | 'WIDGET_TYPES'
   | 'SELECTION_TYPES'
   | 'COLLECTION_DATA'
-  | 'GET_ONE';
+  | 'GET_ONE'
+  | 'CATEGORIES';
 
 export type API_TYPE = {
   url: string;
@@ -25,6 +26,7 @@ export type Routes_Input = {
 
 export type ItemsType = { value: string; label: string };
 export type WidgetType = { value: string; label: string };
+export type Category = { value: string; label: string };
 
 export interface BaseAPIProps {
   config?: any;

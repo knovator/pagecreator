@@ -20,6 +20,7 @@ export const defaults: IConfig = {
         });
       });
     },
+  categories: [],
   collections: [] as CollectionItem[],
 };
 

@@ -4,7 +4,7 @@ import { useProviderState } from '../context/ProviderContext';
 import { paginationDataGatter, dataGatter, build_path } from '../helper/utils';
 import usePagination from './usePagination';
 import request, { getApiType } from '../api';
-import { Routes_Input, WidgetType, ItemsType } from '../types';
+import { Routes_Input, WidgetType, ItemsType, Category } from '../types';
 import { FormActionTypes, ObjectType } from '../types/common';
 
 interface UseWidgetProps {
@@ -14,17 +14,13 @@ interface UseWidgetProps {
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
   imageBaseUrl?: string;
 }
-interface ItemsList {
-  web: ObjectType[];
-  mobile: ObjectType[];
-}
 
 const useWidget = ({
   canList = true,
   defaultLimit,
   routes,
   preConfirmDelete,
-  imageBaseUrl
+  imageBaseUrl,
 }: UseWidgetProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,6 +30,7 @@ const useWidget = ({
   const [formState, setFormState] = useState<FormActionTypes>();
   const [itemsTypes, setItemsTypes] = useState<ItemsType[]>([]);
   const [widgetTypes, setWidgetTypes] = useState<WidgetType[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [collectionDataLoading, setCollectionDataLoading] =
     useState<boolean>(false);
   const [collectionData, setCollectionData] = useState<any[]>([]);
@@ -238,6 +235,28 @@ const useWidget = ({
     }
     setLoading(false);
   };
+  const getCategories = async () => {
+    if (categories?.length > 0) return;
+
+    setLoading(true);
+    const api = getApiType({
+      routes,
+      action: 'CATEGORIES',
+      prefix: widgetRoutesPrefix,
+    });
+    const response = await request({
+      baseUrl,
+      token,
+      method: api.method,
+      url: api.url,
+      onError: handleError(CALLBACK_CODES.GET_ALL),
+    });
+    if (response?.code === 'SUCCESS') {
+      setLoading(false);
+      return setCategories(dataGatter(response));
+    }
+    setLoading(false);
+  };
   const getCollectionData = async (
     collectionName: string,
     search?: string,
@@ -356,6 +375,7 @@ const useWidget = ({
     if (state === 'ADD' || state === 'UPDATE') {
       getWidgetsTypes();
       getWidgetTypes();
+      getCategories();
     }
     // get Item data if widget is updating
     if (state === 'UPDATE' && data) {
@@ -468,6 +488,7 @@ const useWidget = ({
     // Form
     formState,
     itemData,
+    categories,
     onChangeFormState,
     onCloseForm,
     onWidgetFormSubmit,

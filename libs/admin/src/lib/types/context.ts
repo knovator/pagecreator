@@ -1,4 +1,4 @@
-import { WidgetType, ItemsType } from './api';
+import { WidgetType, ItemsType, Category } from './api';
 import { FormActionTypes, OptionType } from './common';
 
 export interface ProviderContextType {
@@ -69,6 +69,7 @@ export interface WidgetContextType {
   onImageRemove: (id: string) => Promise<void>;
   itemsTypes: ItemsType[];
   widgetTypes: WidgetType[];
+  categories: Category[];
   getCollectionData: (
     collectionName: string,
     search?: string,

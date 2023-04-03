@@ -78,12 +78,12 @@
 
 ## Getting Started
 
-To integrate `@knovator/pagecreator-node`, you should be having basic nodejs application up and running with express (optionally using mongoose for mongodb database). `@knovator/pagecreator-node` provides routes for `widget`, `page`, `item` and `user` to use in application.
+To integrate `@knovator/pagecreator-node`, you should be having basic nodejs application up and running with express (optionally using mongoose for mongodb database). `@knovator/pagecreator-node` provides routes for `widget`, `page` and `user` to use in application.
 
 ### Prerequisites
 
 - It's good start to have `nodejs` application up and running with `express`. Good to have used [i18next](https://www.npmjs.com/package/i18next) to add message in response codes.
-- `routes` uses `mongoose` connection established by application, so it's required to connect to database before using package. Example,
+- `routes` uses `mongoose` connection established by application, so it's required to connect to database before using package. For example,
 
   ```js
   // db.js
@@ -153,7 +153,7 @@ app.listen(PORT, () => {
 
 ### Installation
 
-1. Install NPM packages
+1. Add pagecreator package,
    ```sh
    npm install @knovator/pagecreator-node
    # or
@@ -239,6 +239,7 @@ Through `setConfig` function e can set `logger`, `collections` and `catchAsync` 
 | filters        | Filter object to apply while getting data, like `{ isDeleted: false, isActive: true }` |
 | searchColumns  | Array of fields to to perform search                                                   |
 | aggregations   | Array of aggregation items you want to apply while retriving items                     |
+| customWidgetTypes | Array of widget types to add, like `{ label: "", value: "", imageOnly: true, collectionsOnly: true; }` |
 
 **Example**,
 

@@ -69,9 +69,9 @@
 ## Usage
 
 Please refer to the documentation in respective packages
-- [@knovator/pagecreator](https://github.com/knovator/pagecreator/tree/main/libs/user)
-- [@knovator/pagecreator-admin](https://github.com/knovator/pagecreator/tree/main/libs/admin)
-- [@knovator/pagecreator-node](https://github.com/knovator/pagecreator/tree/main/libs/node)
+- [@knovator/pagecreator](https://github.com/knovator/pagecreator/tree/main/libs/user) For showing widgets and pages to users
+- [@knovator/pagecreator-admin](https://github.com/knovator/pagecreator/tree/main/libs/admin) For managing and building widgets and pages dynamically from admin
+- [@knovator/pagecreator-node](https://github.com/knovator/pagecreator/tree/main/libs/node) For adding routes in your application to manage data storage
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

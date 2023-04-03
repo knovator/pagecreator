@@ -43,6 +43,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#usecases">Usecases</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -69,9 +70,24 @@
 ## Usage
 
 Please refer to the documentation in respective packages
-- [@knovator/pagecreator](https://github.com/knovator/pagecreator/tree/main/libs/user)
-- [@knovator/pagecreator-admin](https://github.com/knovator/pagecreator/tree/main/libs/admin)
-- [@knovator/pagecreator-node](https://github.com/knovator/pagecreator/tree/main/libs/node)
+- [@knovator/pagecreator](https://github.com/knovator/pagecreator/tree/main/libs/user) For showing widgets and pages to users
+- [@knovator/pagecreator-admin](https://github.com/knovator/pagecreator/tree/main/libs/admin) For managing and building widgets and pages dynamically from admin
+- [@knovator/pagecreator-node](https://github.com/knovator/pagecreator/tree/main/libs/node) For adding routes in your application to manage data storage
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+## Usecases
+
+`Pagecreator` is build with aim to handle every business needs from allowing admin to manage data from admin panel and show it on the page, in the form of **Widget** and **Page**.
+
+- [x] You want to create pages that are depend on dynamic data and you want to manage them from admin panel
+- [x] You want to build widgets that is depend on data from admin panel.
+- [x] You want to have a admin panel to manage what data will be shown on page or widget.
+- [x] You want to let admin to control what they want to show on page.
+- [x] You want to show data from mongodb collections.
+
+If you have any other usecase, please open an issue with tag `usecase`. We will try to add it in our roadmap.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -90,7 +106,6 @@ Don't forget to give the project a star! Thanks again!
 5. Open a Pull Request
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 
 <!-- LICENSE -->

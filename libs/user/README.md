@@ -80,11 +80,11 @@
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To integrate `@knovator/pagecreator` is designed to be used in ReactJS/NextJS project.
+`@knovator/pagecreator` is designed to be used in ReactJS/NextJS project.
 
 ### Prerequisites
 
-We can use `@knovator/pagecreator` in React/Next application, we can create one using following commands
+Create one reactjs/nextjs application if you don't have one,
 * Project
   ```sh
   npx create-react-app my-app
@@ -94,7 +94,7 @@ We can use `@knovator/pagecreator` in React/Next application, we can create one 
 
 ### Installation
 
-1. Install NPM packages
+1. Add pagecreator package
    ```sh
    npm install @knovator/pagecreator
    # or
@@ -119,23 +119,27 @@ import { Widget } from '@knovator/pagecreator';
 ```
 **Props**
 - `widgetData`
-    - [widgetData](data-formats.md#widgetdata)
+  - [widgetData](data-formats.md#widgetdata)
 - `imageBaseUrl`
-    - baseUrl to append before image urls
+  - baseUrl to append before image urls
 - `formatItem` (optional): `(item: ItemData) => JSX.Element`
-    - Customize look of Items
+  - Customize look of Items
 - `onClick` (optional): `(item: ItemData) => void;`
-    - OnItem click handler
+  - OnItem click handler
 - `hideTitle` (optional): boolean;
-    - Do not show the title if true
+  - Do not show the title if true
 - `settings` (optional): [Swiper props](https://swiperjs.com/swiper-api#parameters)
-    - Carousel settings to apply for carousel widget
+  - Carousel settings to apply for carousel widget
 - `className` (optional): string
-    - Class name for widget
+  - Class name for widget
 - `formatHeader` (optional): `(title: string, data: WidgetData) => string | JSX.Element`
-    - Function to format the widget header
+  - Function to format the widget header
 - `formatFooter` (optional): `(data: WidgetData) => string | JSX.Element`
-    - Function to format the widget footer
+  - Function to format the widget footer
+- `formatTabTitle` (optional): `(title: string, collectionData: any[], isActive: boolean) => JSX.Element;`
+  - Function to format tab title
+- `itemsContainer` (optional): `(children: JSX.Element) => JSX.Element;`
+  - Function to wrap items in widget
 
 ### Page
 ```jsx
@@ -149,17 +153,19 @@ import { Page } from '@knovator/pagecreator';
 ```
 **Props**
 - `title` (optional)
-    - Title to show on page
+  - Title to show on page
 - `imageBaseUrl`
-    - baseUrl to start prefix image urls
+  - baseUrl to start prefix image urls
 - `pageData`
-    - [PageData](data-formats.md#pagedata)
+  - [PageData](data-formats.md#pagedata)
 - `formatItem` (optional): `(CODE: string, item: ItemData) => JSX.Element;`
-    - Customize look of Items
+  - Customize look of Items
 - `onClick` (optional): `(CODE: string, item: ItemData) => JSX.Element;`
-    - On Item click handler
+  - On Item click handler
 - `hideWidgetTitles` (optional): boolean
-    - Flag to hide widget titles
+  - Flag to hide widget titles
+- `formatWidget` (optional): `(item: WidgetData, index: number) => JSX.Element;`
+  - Function to format individual widget
 
 ### getData
 It's possible to fetch data by yourself and pass them to `Widget` or `Page` components, but if you need easy solution you can use `getData` function.

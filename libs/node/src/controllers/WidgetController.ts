@@ -244,10 +244,16 @@ export const getItemsTypes = catchAsync(
 
 export const getWidgetTypes = catchAsync(
   async (req: IRequest, res: IResponse) => {
-    const widgetTypes = Object.entries(WidgetTypes).map((e) => ({
+    const widgetTypes: any[] = Object.entries(WidgetTypes).map((e) => ({
       label: e[1],
       value: e[0],
     }));
+    if (
+      Array.isArray(defaults.customWidgetTypes) &&
+      defaults.customWidgetTypes.length > 0
+    ) {
+      widgetTypes.push(...defaults.customWidgetTypes);
+    }
     res.message = req?.i18n?.t('widget.getWidgetTypes');
     return successResponse(widgetTypes, res);
   }

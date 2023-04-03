@@ -14,6 +14,9 @@ function setConfig(config: Partial<IConfig>) {
   if (Array.isArray(config.collections)) {
     defaults.collections = config.collections;
   }
+  if (Array.isArray(config.customWidgetTypes)) {
+    defaults.customWidgetTypes = config.customWidgetTypes;
+  }
 }
 
 export { WidgetRoutes, PageRoutes, UserRoutes, Widget, Item, Page, setConfig };

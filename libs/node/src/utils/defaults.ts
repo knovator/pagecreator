@@ -21,6 +21,7 @@ export const defaults: IConfig = {
       });
     },
   collections: [] as CollectionItem[],
+  customWidgetTypes: [],
 };
 
 export const commonExcludedFields = {

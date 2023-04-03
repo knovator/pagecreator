@@ -92,6 +92,12 @@ export interface IConfig {
     modal?: string
   ) => (req: any, res: any, next: any) => void;
   collections: CollectionItem[];
+  customWidgetTypes: {
+    label: string;
+    value: string;
+    imageOnly?: boolean;
+    collectionsOnly?: boolean;
+  }[];
 }
 
 export type EntityType =

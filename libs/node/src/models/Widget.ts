@@ -28,7 +28,6 @@ const WidgetSchema = new Schema<IWidgetSchema>({
   },
   widgetType: {
     type: String,
-    enum: Object.values(WidgetTypes),
     default: WidgetTypes.FixedCard,
     required: true,
   },

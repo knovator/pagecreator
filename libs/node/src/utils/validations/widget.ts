@@ -94,11 +94,7 @@ export const create = joi.object<ItemValidation>({
     })
     .optional()
     .default(ItemsType.Image),
-  widgetType: joi
-    .string()
-    .valid(...Object.values(WidgetTypes))
-    .optional()
-    .default(WidgetTypes.FixedCard),
+  widgetType: joi.string().optional().default(WidgetTypes.FixedCard),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),
   deletedBy: joi.any().optional(),
@@ -128,10 +124,7 @@ export const update = joi.object<ItemValidation>({
     .string()
     .regex(/^#[A-Fa-f0-9]{6}/)
     .optional(),
-  widgetType: joi
-    .string()
-    .valid(...Object.values(WidgetTypes))
-    .optional(),
+  widgetType: joi.string().optional(),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),
   deletedBy: joi.any().optional(),

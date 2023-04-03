@@ -75,9 +75,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   const [activeTab, setActiveTab] = useState(0);
   const [webItemsVisible, setWebItemsVisible] = useState(false);
   const [mobileItemsVisible, setMobileItemsVisible] = useState(false);
-  const [selectedWidgetType, setSelectedWidgetType] = useState<
-    'FixedCard' | 'Carousel' | 'Tabs'
-  >();
+  const [selectedWidgetType, setSelectedWidgetType] = useState<any>();
   const [itemsEnabled, setItemsEnabled] = useState(true);
   const [selectedCollectionItems, setSelectedCollectionItems] = useState<
     OptionType[]
@@ -93,7 +91,10 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
-      setSelectedWidgetType(data?.widgetType);
+      const widgetType = widgetTypes.find(
+        (type) => type.value === data?.widgetType
+      );
+      setSelectedWidgetType(widgetType);
       if (data?.itemsType === 'Image') {
         setItemsEnabled(true);
       } else {
@@ -109,7 +110,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         );
       }
     }
-  }, [data, formState, itemsTypes]);
+  }, [data, formState, itemsTypes, widgetTypes]);
 
   useEffect(() => {
     if (formState === 'ADD') {
@@ -231,7 +232,10 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   const onWidgetFormInputChange = useCallback(
     (value: ObjectType, name: string | undefined) => {
       if (name === 'widgetType') {
-        setSelectedWidgetType(value[name] as any);
+        const widgetType = widgetTypes.find(
+          (type) => type.value === value[name]
+        );
+        setSelectedWidgetType(widgetType);
         if (value[name] === 'Tabs') {
           const firstItemType = getFirstItemTypeValue(value[name]);
           if (firstItemType) {
@@ -262,7 +266,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         );
       }
     },
-    [getFirstItemTypeValue, itemsTypes]
+    [getFirstItemTypeValue, itemsTypes, widgetTypes]
   );
   const onFormSubmit = (data: CombineObjectType) => {
     const formData = { ...data };
@@ -417,7 +421,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       label: t('widget.autoPlay'),
       accessor: 'autoPlay',
       type: 'checkbox',
-      show: selectedWidgetType === 'Carousel',
+      show: selectedWidgetType?.value === 'Carousel',
       switchClass: switchClass,
     },
     {
@@ -430,8 +434,11 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         required: t('widget.itemsTypePlaceholder'),
       },
       options:
-        selectedWidgetType === 'Tabs'
+        selectedWidgetType?.value === 'Tabs' ||
+        selectedWidgetType?.collectionsOnly
           ? itemsTypes.filter((item) => item.label !== 'Image')
+          : selectedWidgetType?.imageOnly
+          ? itemsTypes.filter((item) => item.label === 'Image')
           : itemsTypes,
     },
     {
@@ -498,7 +505,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       onChange: setSelectedCollectionItems,
       loadOptions: onChangeSearch,
       isLoading: collectionDataLoading,
-      show: !itemsEnabled && selectedWidgetType !== 'Tabs',
+      show: !itemsEnabled && selectedWidgetType?.value !== 'Tabs',
       formatOptionLabel: formatOptionLabel,
       listCode: selectedCollectionType?.value,
       customStyles: reactSelectStyles || {},
@@ -522,7 +529,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         setError={setError}
       />
 
-      {selectedWidgetType === 'Tabs' ? (
+      {selectedWidgetType?.value === 'Tabs' ? (
         <Tabs
           control={control}
           register={register}
@@ -545,7 +552,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         />
       ) : null}
 
-      {!itemsEnabled && selectedWidgetType !== 'Tabs' && (
+      {!itemsEnabled && selectedWidgetType?.value !== 'Tabs' && (
         <DNDItemsList
           items={selectedCollectionItems}
           onDragEnd={onCollectionIndexChange}
@@ -554,7 +561,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         />
       )}
 
-      {itemsEnabled && selectedWidgetType !== 'Tabs' && (
+      {itemsEnabled && selectedWidgetType?.value !== 'Tabs' && (
         <>
           {/* Web Items */}
           <ItemsAccordian

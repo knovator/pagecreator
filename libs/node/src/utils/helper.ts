@@ -180,12 +180,12 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
     },
   ];
   let collectionConfig;
-  const aggregationQueryPiplelines: any[] = [];
   Object.keys(formattedWidgetData).forEach((key: string) => {
     if (
       formattedWidgetData[key].tabs &&
       formattedWidgetData[key].tabs.length > 0
     ) {
+      const aggregationQueryPiplelines: any[] = [];
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
       );

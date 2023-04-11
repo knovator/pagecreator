@@ -152,6 +152,11 @@ const usePage = ({
     ]
   );
   const onPageFormSubmit = async (data: ObjectType) => {
+    if (selectedWidgets.length) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      data.widgets = selectedWidgets.map((item) => item.value);
+    }
     setLoading(true);
     const code =
       formState === 'ADD' ? CALLBACK_CODES.CREATE : CALLBACK_CODES.UPDATE;
@@ -251,6 +256,7 @@ const usePage = ({
     sourceIndex: number,
     destinationIndex: number
   ) => {
+    console.log(sourceIndex, destinationIndex);
     setSelectedWidgets((listData) => {
       const temporaryData = [...listData];
       const [selectedRow] = temporaryData.splice(sourceIndex, 1);

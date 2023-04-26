@@ -127,15 +127,16 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       ) {
         aggregationQueryPiplelines.push(...collectionConfig.aggregations);
       }
+      const ids = formatCollectionItems(
+        formattedWidgetData[key].collectionItems
+      );
       // Build piplelines with config
       aggregationQueryPiplelines.push(
         ...[
           {
             $match: {
               _id: {
-                $in: formatCollectionItems(
-                  formattedWidgetData[key].collectionItems
-                ),
+                $in: ids,
               },
               ...(collectionConfig?.match || {}),
             },
@@ -145,6 +146,8 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
               ...commonExcludedFields,
             },
           },
+          { $addFields: { __order: { $indexOfArray: [ids, '$_id'] } } },
+          { $sort: { __order: 1 } },
         ]
       );
       // Build Aggregation Query

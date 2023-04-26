@@ -30,14 +30,18 @@ const getAggregationQuery = ({
   ) {
     aggregateQueryItem.push(...collectionConfig.aggregations);
   }
-  aggregateQueryItem.push({
-    $match: {
-      _id: {
-        $in: ids,
+  aggregateQueryItem.push(
+    {
+      $match: {
+        _id: {
+          $in: ids,
+        },
+        ...(collectionConfig?.match || {}),
       },
-      ...(collectionConfig?.match || {}),
     },
-  });
+    { $addFields: { __order: { $indexOfArray: [ids, '$_id'] } } },
+    { $sort: { __order: 1 } }
+  );
   return aggregateQueryItem;
 };
 

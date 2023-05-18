@@ -263,7 +263,8 @@ export const getCollectionData = catchAsync(
   async (req: IRequest, res: IResponse) => {
     let limit = 10;
     const { search, collectionName, collectionItems } = req.body;
-    if (Array.isArray(collectionItems)) limit += collectionItems.length;
+    if (Array.isArray(collectionItems))
+      limit = Math.max(collectionItems.length, limit);
     const collectionItem: CollectionItem | undefined =
       defaults.collections.find(
         (collection) => collection.collectionName === collectionName
@@ -276,6 +277,7 @@ export const getCollectionData = catchAsync(
     // fetching data
     let query: any = collectionItem.filters || {};
     const orOptions: any = [];
+    let addFieldOptions: any = {};
     if (
       search &&
       Array.isArray(collectionItem.searchColumns) &&
@@ -293,6 +295,16 @@ export const getCollectionData = catchAsync(
       orOptions.push({});
     }
     if (Array.isArray(collectionItems) && collectionItems.length) {
+      addFieldOptions = {
+        __order: {
+          $indexOfArray: [
+            collectionItems,
+            {
+              $toString: '$_id',
+            },
+          ],
+        },
+      };
       orOptions.push({ _id: { $in: formatCollectionItems(collectionItems) } });
     }
     if (orOptions.length > 0) {
@@ -307,6 +319,12 @@ export const getCollectionData = catchAsync(
         : []),
       {
         $match: query,
+      },
+      { $addFields: addFieldOptions },
+      {
+        $sort: {
+          __order: -1,
+        },
       },
       {
         $limit: limit,

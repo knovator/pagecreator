@@ -16,7 +16,7 @@ const getPath = (folder: string, fileName: string, uri?: string) => {
 const fileData = async (file, folder) => {
   if (
     !file.name.match(
-      /\.(jpg|JPG|jpeg|JPEG|png|PNG|pdf|PDF|docx|DOCX|mp4|MP4|doc|DOC|webm|WEBM|avi|AVI)$/
+      /\.(jpg|JPG|jpeg|JPEG|png|PNG|pdf|PDF|docx|DOCX|mp4|MP4|doc|DOC|webm|WEBM|avi|AVI|gif)$/
     )
   ) {
     throw new Error('Only images files are allowed.');

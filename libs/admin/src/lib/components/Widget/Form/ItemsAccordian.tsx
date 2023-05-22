@@ -27,7 +27,8 @@ const ItemsAccordian = ({
   deleteText = 'Delete',
 }: ItemsAccordianProps) => {
   const { baseUrl } = useProviderState();
-  const { onImageUpload, onImageRemove, t, imageBaseUrl } = useWidgetState();
+  const { onImageUpload, onImageRemove, t, imageBaseUrl, imageMaxSize } =
+    useWidgetState();
   const [itemsShow, setItemsShow] = useState<boolean[]>([]);
   const {
     fields: items,
@@ -157,7 +158,7 @@ const ItemsAccordian = ({
                     <ImageUpload
                       imgId={field.value}
                       clearError={() => clearError(`${name}.${index}.img`)}
-                      maxSize={10_485_760}
+                      maxSize={imageMaxSize}
                       onError={(msg) =>
                         setError(`${name}.${index}.img`, {
                           type: 'custom',

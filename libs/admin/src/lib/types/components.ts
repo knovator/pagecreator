@@ -147,6 +147,7 @@ export interface WidgetProps {
   children?: JSX.Element;
   reactSelectStyles?: any;
   imageBaseUrl?: string;
+  imageMaxSize?: number;
 }
 export interface DerivedTableProps {
   extraActions?: (item: any) => JSX.Element;

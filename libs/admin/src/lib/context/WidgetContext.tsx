@@ -52,6 +52,7 @@ const WidgetContextProvider = ({
   loader = <span />,
   onPartialUpdateWidget = () => Promise.resolve(),
   reactSelectStyles = {},
+  imageMaxSize = 10_485_760,
   // other
   children,
 }: WidgetContextProviderProps) => {
@@ -100,6 +101,7 @@ const WidgetContextProvider = ({
         data,
         canDelete,
         loader,
+        imageMaxSize,
       }}
     >
       {children}

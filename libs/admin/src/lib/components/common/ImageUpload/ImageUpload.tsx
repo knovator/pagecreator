@@ -31,7 +31,7 @@ const ImageUpload = ({
       try {
         if (typeof clearError === 'function') clearError();
         if (acceptedFiles?.length > 0) {
-          const regex = /\.(png|jpeg|jpg|webp|svg)$/gi;
+          const regex = /\.(png|jpeg|jpg|webp|svg|gif)$/gi;
           const files = acceptedFiles.filter((file) => regex.test(file.name));
           if (files[0]) {
             const response = await onImageUpload(files[0]);

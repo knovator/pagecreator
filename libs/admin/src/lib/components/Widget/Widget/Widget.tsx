@@ -32,6 +32,7 @@ const Widget = ({
   preConfirmDelete,
   formatListItem,
   formatOptionLabel,
+  imageMaxSize,
   children,
 }: WidgetProps) => {
   const derivedPermissions = Object.assign(DEFAULT_PERMISSIONS, permissions);
@@ -111,6 +112,7 @@ const Widget = ({
       canPartialUpdate={derivedPermissions.partialUpdate}
       formState={formState}
       closeForm={onCloseForm}
+      imageMaxSize={imageMaxSize}
     >
       {children ? (
         children

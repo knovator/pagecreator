@@ -7,7 +7,8 @@ import { useProviderState } from '../../../context/ProviderContext';
 
 const WidgetFormActions = ({ formRef }: FormActionWrapperProps) => {
   const { onError } = useProviderState();
-  const { closeForm, loading, canAdd, canUpdate, t } = useWidgetState();
+  const { closeForm, loading, canAdd, canUpdate, t, formState } =
+    useWidgetState();
   const onSubmitClick = (
     e?: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -35,7 +36,9 @@ const WidgetFormActions = ({ formRef }: FormActionWrapperProps) => {
   return (
     <FormActions
       loading={loading}
-      primaryLabel={t('saveButtonText')}
+      primaryLabel={
+        formState === 'ADD' ? t('createButtonText') : t('updateButtonText')
+      }
       onPrimaryButtonClick={onSubmitClick}
       onSecondaryButtonClick={closeForm}
       secondaryLabel={t('cancelButtonText')}

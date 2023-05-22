@@ -97,6 +97,7 @@ export interface WidgetContextType {
   onPartialUpdateWidget: (data: any, id: string) => Promise<void>;
   reactSelectStyles?: any;
   imageBaseUrl?: string;
+  imageMaxSize: number;
 }
 
 export interface PageContextType {

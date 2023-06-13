@@ -43,7 +43,9 @@ const Table = ({
         {loading && loader ? (
           <div className="khb_table-height">{loader}</div>
         ) : (
-          <table className="khb_table">
+          <table
+            className={`khb_table ${data.length > 0 ? '' : 'empty-table'}`}
+          >
             <thead className="khb_thead">
               <tr>
                 {dataKeys.map((key, i) => (
@@ -116,7 +118,7 @@ const Table = ({
                   </tr>
                 ))
               ) : (
-                <tr>
+                <tr className="empty-row">
                   <td colSpan={(dataKeys?.length || 0) + 1}>No data found</td>
                 </tr>
               )}

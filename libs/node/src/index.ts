@@ -17,6 +17,9 @@ function setConfig(config: Partial<IConfig>) {
   if (Array.isArray(config.customWidgetTypes)) {
     defaults.customWidgetTypes = config.customWidgetTypes;
   }
+  if (typeof config.redis === 'string' || typeof config.redis === 'object') {
+    defaults.redis = config.redis;
+  }
 }
 
 export { WidgetRoutes, PageRoutes, UserRoutes, Widget, Item, Page, setConfig };

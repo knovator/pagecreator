@@ -5,6 +5,7 @@ import {
   appendCollectionData,
   getCollectionModal,
 } from '../utils/helper';
+import { getRedisValue, setRedisValue } from '../utils/redis';
 import { successResponse, recordNotFound } from './../utils/responseHandlers';
 import { defaults, commonExcludedFields } from '../utils/defaults';
 import { IPageSchema, IRequest, IResponse, IWidgetSchema } from '../types';
@@ -45,168 +46,173 @@ const getAggregationQuery = ({
   return aggregateQueryItem;
 };
 
+export const getWidgetDataDb = async (code: string) => {
+  const widgetDataArr = (await Widget.aggregate([
+    {
+      $match: {
+        isDeleted: false,
+        isActive: true,
+        code,
+      },
+    },
+    {
+      // Get only the fields that are not excluded
+      $project: {
+        ...commonExcludedFields,
+      },
+    },
+    {
+      // Get Items data
+      $lookup: {
+        from: 'items',
+        let: { widget: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ['$widgetId', '$$widget'],
+              },
+              isDeleted: false,
+            },
+          },
+          {
+            $project: {
+              ...commonExcludedFields,
+            },
+          },
+          {
+            $lookup: {
+              from: 'file',
+              let: { img: '$img' },
+              as: 'image',
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$_id', '$$img'],
+                    },
+                  },
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    uri: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $lookup: {
+              from: 'srcsets',
+              let: { item: '$_id' },
+              as: 'srcset',
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$itemId', '$$item'],
+                    },
+                  },
+                },
+                {
+                  $project: {
+                    ...commonExcludedFields,
+                    _id: 0,
+                    itemId: 0,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $unwind: '$image',
+          },
+        ],
+        as: 'items',
+      },
+    },
+  ])) as Array<IWidgetSchema>;
+
+  if (!widgetDataArr.length) {
+    return null;
+  }
+  const widgetData = widgetDataArr[0];
+
+  if (
+    widgetData.collectionName &&
+    widgetData.collectionItems &&
+    widgetData.collectionItems.length > 0
+  ) {
+    const aggregateQueryItem = getAggregationQuery({
+      collectionName: widgetData.collectionName,
+      ids: widgetData.collectionItems,
+    });
+    const collectionModal: any = getCollectionModal(widgetData.collectionName);
+    const collectionItems = await collectionModal.aggregate(aggregateQueryItem);
+    widgetData.collectionItems = collectionItems;
+  }
+  if (
+    widgetData.collectionName &&
+    widgetData.tabs &&
+    widgetData.tabs.length > 0
+  ) {
+    const tabCollectionItemIds = widgetData.tabs.reduce(
+      (acc: string[], tabItem: any) => {
+        acc.push(...tabItem.collectionItems);
+        return acc;
+      },
+      []
+    );
+    const aggregateQueryItem = getAggregationQuery({
+      collectionName: widgetData.collectionName,
+      ids: tabCollectionItemIds,
+    });
+
+    const collectionModal: any = getCollectionModal(widgetData.collectionName);
+    const collectionItems: any = await collectionModal.aggregate(
+      aggregateQueryItem
+    );
+    // converting colleciton items to obj to better access them
+    const collectionItemsObj = collectionItems.reduce((acc: any, item: any) => {
+      acc[item._id] = item;
+      return acc;
+    }, {});
+    widgetData.tabs = widgetData.tabs.map((tabItem) => {
+      return {
+        name: tabItem.name,
+        collectionItems: tabItem.collectionItems.map(
+          (collectionId) => collectionItemsObj[collectionId]
+        ),
+      };
+    });
+  }
+  AddSrcSetsToItems(widgetData);
+  return widgetData;
+};
+
 // TO Do: Optimize the following
 export const getWidgetData = catchAsync(
   async (req: IRequest, res: IResponse) => {
     const { code } = req.body;
-    const widgetDataArr = (await Widget.aggregate([
-      {
-        $match: {
-          isDeleted: false,
-          isActive: true,
-          code,
-        },
-      },
-      {
-        // Get only the fields that are not excluded
-        $project: {
-          ...commonExcludedFields,
-        },
-      },
-      {
-        // Get Items data
-        $lookup: {
-          from: 'items',
-          let: { widget: '$_id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ['$widgetId', '$$widget'],
-                },
-                isDeleted: false,
-              },
-            },
-            {
-              $project: {
-                ...commonExcludedFields,
-              },
-            },
-            {
-              $lookup: {
-                from: 'file',
-                let: { img: '$img' },
-                as: 'image',
-                pipeline: [
-                  {
-                    $match: {
-                      $expr: {
-                        $eq: ['$_id', '$$img'],
-                      },
-                    },
-                  },
-                  {
-                    $project: {
-                      _id: 1,
-                      uri: 1,
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              $lookup: {
-                from: 'srcsets',
-                let: { item: '$_id' },
-                as: 'srcset',
-                pipeline: [
-                  {
-                    $match: {
-                      $expr: {
-                        $eq: ['$itemId', '$$item'],
-                      },
-                    },
-                  },
-                  {
-                    $project: {
-                      ...commonExcludedFields,
-                      _id: 0,
-                      itemId: 0,
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              $unwind: '$image',
-            },
-          ],
-          as: 'items',
-        },
-      },
-    ])) as Array<IWidgetSchema>;
+    let widgetData = await getRedisValue(`widget_${code}`);
+    if (widgetData) {
+      return successResponse(widgetData, res);
+    }
+    widgetData = await getWidgetDataDb(code);
 
-    if (!widgetDataArr.length) {
+    if (!widgetData) {
       res.message = req?.i18n?.t('user.widgetNotFound');
       return recordNotFound(res);
     }
-    const widgetData = widgetDataArr[0];
 
-    if (
-      widgetData.collectionName &&
-      widgetData.collectionItems &&
-      widgetData.collectionItems.length > 0
-    ) {
-      const aggregateQueryItem = getAggregationQuery({
-        collectionName: widgetData.collectionName,
-        ids: widgetData.collectionItems,
-      });
-      const collectionModal: any = getCollectionModal(
-        widgetData.collectionName
-      );
-      const collectionItems = await collectionModal.aggregate(
-        aggregateQueryItem
-      );
-      widgetData.collectionItems = collectionItems;
-    }
-    if (
-      widgetData.collectionName &&
-      widgetData.tabs &&
-      widgetData.tabs.length > 0
-    ) {
-      const tabCollectionItemIds = widgetData.tabs.reduce(
-        (acc: string[], tabItem: any) => {
-          acc.push(...tabItem.collectionItems);
-          return acc;
-        },
-        []
-      );
-      const aggregateQueryItem = getAggregationQuery({
-        collectionName: widgetData.collectionName,
-        ids: tabCollectionItemIds,
-      });
+    await setRedisValue(`widget_${code}`, widgetData);
 
-      const collectionModal: any = getCollectionModal(
-        widgetData.collectionName
-      );
-      const collectionItems: any = await collectionModal.aggregate(
-        aggregateQueryItem
-      );
-      // converting colleciton items to obj to better access them
-      const collectionItemsObj = collectionItems.reduce(
-        (acc: any, item: any) => {
-          acc[item._id] = item;
-          return acc;
-        },
-        {}
-      );
-      widgetData.tabs = widgetData.tabs.map((tabItem) => {
-        return {
-          name: tabItem.name,
-          collectionItems: tabItem.collectionItems.map(
-            (collectionId) => collectionItemsObj[collectionId]
-          ),
-        };
-      });
-    }
-    AddSrcSetsToItems(widgetData);
     return successResponse(widgetData, res);
   }
 );
 
-// TO Do: Optimize the following
-export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
-  const { code } = req.body;
+export const getPageDataDB = async (code: string) => {
   const pageData: any = (await Page.aggregate([
     {
       $match: {
@@ -319,8 +325,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
   ])) as Array<IPageSchema>;
 
   if (!pageData.length) {
-    res.message = req?.i18n?.t('user.pageNotFound');
-    return recordNotFound(res);
+    return null;
   }
   pageData[0].widgetsData = await appendCollectionData(pageData[0].widgetsData);
   if (
@@ -342,6 +347,23 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
     .map((widgetId: string) => pageData[0].widgetsData[widgetId])
     .filter(Boolean);
   delete pageData[0].widgetsData;
-  res.message = req?.i18n?.t('user.pageData');
-  return successResponse(pageData[0], res);
+  return pageData[0];
+};
+
+// TO Do: Optimize the following
+export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
+  const { code } = req.body;
+  let pageData = await getRedisValue(`pageData_${code}`);
+  if (pageData) {
+    return successResponse(pageData, res);
+  }
+  pageData = await getPageDataDB(code);
+
+  if (!pageData) {
+    res.message = req?.i18n?.t('user.pageNotFound');
+    return recordNotFound(res);
+  }
+  await setRedisValue(`pageData_${code}`, pageData);
+
+  return successResponse(pageData, res);
 });

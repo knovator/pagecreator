@@ -21,7 +21,7 @@ export async function update<T extends EntityType>(
   Modal: Model<T>,
   query: FilterQuery<EntityType>,
   data: Partial<T>
-): Promise<ReturnDocument | undefined> {
+): Promise<T | undefined> {
   await getOne(Modal, query);
   const result = await Modal.findOneAndUpdate(query, data, { new: true });
   return result || undefined;

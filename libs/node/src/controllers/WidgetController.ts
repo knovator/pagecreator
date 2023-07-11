@@ -24,6 +24,7 @@ import {
   TypesType,
   ItemsType,
 } from '../types';
+import { updateRedisWidget } from '../services/dataService';
 
 const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Widget');
@@ -85,6 +86,7 @@ export const updateWidget = catchAsync(
       await deleteItems(_id);
       await createItems(items, updatedWidget._id);
     }
+    if (updatedWidget) updateRedisWidget(updatedWidget.code);
     res.message = req?.i18n?.t('widget.update');
     return successResponse(updatedWidget, res);
   }

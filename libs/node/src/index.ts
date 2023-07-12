@@ -4,6 +4,7 @@ import PageRoutes from './routes/PageRoute';
 import UserRoutes from './routes/UserRoute';
 import { Widget, Item, Page } from './models';
 import { IConfig } from './types';
+import { handleUpdateData } from './services/dataService';
 
 function setConfig(config: Partial<IConfig>) {
   if (config.logger) {
@@ -22,4 +23,13 @@ function setConfig(config: Partial<IConfig>) {
   }
 }
 
-export { WidgetRoutes, PageRoutes, UserRoutes, Widget, Item, Page, setConfig };
+export {
+  WidgetRoutes,
+  PageRoutes,
+  UserRoutes,
+  Widget,
+  Item,
+  Page,
+  setConfig,
+  handleUpdateData,
+};

@@ -45,3 +45,13 @@ export const setRedisValue = async (key: string, value: JSON) => {
   const compressed = lz.encodeBase64(lz.compress(JSON.stringify(value)));
   return await redis.set(key, compressed);
 };
+
+export const deleteRedisValue = async (key: string) => {
+  if (redis === null) {
+    initRedis();
+  }
+  if (!redis) {
+    return null;
+  }
+  return await redis.del(key);
+};

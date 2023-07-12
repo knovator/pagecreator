@@ -5,7 +5,7 @@ import {
   appendCollectionData,
   getCollectionModal,
 } from '../utils/helper';
-import { setRedisValue } from '../utils/redis';
+import { setRedisValue, deleteRedisValue } from '../utils/redis';
 import { defaults, commonExcludedFields } from '../utils/defaults';
 import { IPageSchema, IWidgetSchema } from '../types';
 
@@ -335,5 +335,38 @@ export const updateRedisPage = async (code: string) => {
   const pageData = await getPageDataDB(code);
   if (pageData) {
     await setRedisValue(`page_${code}`, pageData);
+  }
+};
+
+export const handleUpdateData = async (
+  collectionName: string,
+  itemId: string | string[]
+) => {
+  const widgets = await Widget.find(
+    {
+      collectionName: collectionName,
+      collectionItems: {
+        $in: Array.isArray(itemId) ? itemId : [itemId],
+      },
+    },
+    'code _id'
+  ).lean();
+  if (widgets.length) {
+    const pageCodes = await Page.find(
+      {
+        widgets: {
+          $in: widgets.map((widget: any) => widget._id),
+        },
+      },
+      'code'
+    ).distinct('code');
+    if (pageCodes.length) {
+      pageCodes.forEach((code) => {
+        deleteRedisValue(`page_${code}`);
+      });
+    }
+    widgets.forEach((widget) => {
+      deleteRedisValue(`widget_${widget.code}`);
+    });
   }
 };

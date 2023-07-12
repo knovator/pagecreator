@@ -1,6 +1,6 @@
 {
   "name": "@knovator/pagecreator-node",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "type": "commonjs",
   "author": "knovator (https://knovator.com/)",
   "description": "PageCreator Node.js module",
@@ -23,7 +23,8 @@
   "dependencies": {
     "mongoose-paginate-v2": "^1.7.0",
     "express-list-endpoints-descriptor": "^1.0.13",
-    "joi": "^17.6.0"
+    "joi": "^17.6.0",
+    "ioredis": "^5.3.2"
   },
   "peerDependencies": {
     "mongoose": "*",

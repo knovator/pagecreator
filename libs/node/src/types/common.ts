@@ -85,6 +85,14 @@ export type CollectionItem = {
   aggregations?: any[];
 };
 
+export type RedisConfig = {
+  HOST: string;
+  PORT: number;
+  PASSWORD?: string;
+  USER?: string;
+  DB?: number;
+};
+
 export interface IConfig {
   logger: any;
   catchAsync: (
@@ -98,6 +106,7 @@ export interface IConfig {
     imageOnly?: boolean;
     collectionsOnly?: boolean;
   }[];
+  redis?: string | RedisConfig;
 }
 
 export type EntityType =

@@ -31,14 +31,14 @@ export const App = () => {
       <Provider baseUrl={process.env['NX_API_URL']} token="ABCD">
         {selectedType === 'widget' && (
           <Widget
-            formatOptionLabel={(code: string, label: any) => (
+            formatOptionLabel={(code: any, label: any) => (
               <div>
-                {label?.assessmentNm}-{label?.label}
+                {label.title}-{label?._id}
               </div>
             )}
-            formatListItem={(code: string, label: any) => (
+            formatListItem={(code: any, label: any) => (
               <div>
-                {label?.assessmentNm}-{label?.label}
+                {label?.title}-{label?._id}
               </div>
             )}
           />

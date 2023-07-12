@@ -8,6 +8,7 @@ import {
 import { IRequest, IResponse } from '../types';
 
 import { defaults } from '../utils/defaults';
+import { updateRedisPage } from '../services/dataService';
 
 const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Page');
@@ -25,6 +26,7 @@ export const updatePage = catchAsync(async (req: IRequest, res: IResponse) => {
   const _id = req.params['id'];
   const updatedPage = await update(Page, { _id }, data);
   res.message = req?.i18n?.t('page.update');
+  if (updatedPage) updateRedisPage(updatedPage.code); // update redis
   return successResponse(updatedPage, res);
 });
 

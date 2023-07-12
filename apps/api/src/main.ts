@@ -11,6 +11,7 @@ import {
   PageRoutes,
   WidgetRoutes,
   UserRoutes,
+  handleUpdateData,
 } from '@knovator/pagecreator-node';
 
 const app = express();
@@ -33,6 +34,11 @@ setConfig({
       searchColumns: ['assessmentNm', 'projectNm'],
     },
   ],
+  redis: {
+    HOST: 'localhost',
+    PORT: 6379,
+    DB: 1,
+  },
 });
 app.get('/status', (_req, res) => {
   res.send('All Okay');
@@ -41,6 +47,11 @@ app.use('/widgets', WidgetRoutes);
 app.use('/media', FileUploadRoute);
 app.use('/pages', PageRoutes);
 app.use('/users', UserRoutes);
+app.get('/delete', (req, res) => {
+  if (typeof req.query.id === 'string')
+    handleUpdateData('notifications', req.query.id);
+  res.send('All Okay');
+});
 app.use(resize(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, './public')));
 

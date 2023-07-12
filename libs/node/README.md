@@ -202,6 +202,13 @@ app.listen(PORT, () => {
 
 Through `setConfig` function e can set `logger`, `collections` and `catchAsync` functions as parameters. By `collections`, we can add reference of application collections.
 
+- `handleUpdateData` is used to handle update redis cache when data is updated in database. It takes `collectionName` and `_id` as parameters.
+  ```js
+    import { handleUpdateData } from '@knovator/pagecreator-node';
+
+    handleUpdateData('notifications', '62c54b15524b6b59d2313c02');
+  ```
+
 ### parameter explanations
 
 - `logger`
@@ -229,6 +236,10 @@ Through `setConfig` function e can set `logger`, `collections` and `catchAsync` 
     ```
 - `collections`
   - Array of collection items to add reference of collections in package.
+- `redis`
+  - Redis URL string or connection object to wrap user APIs into redis cache.
+  - i.e. `redis://localhost:6379` or `{ HOST: 'localhost', PORT: 6379, PASSWORD: "test", USER: "test", DB: 0 }`
+ 
 
 #### Collection Item Format
 

@@ -4,7 +4,7 @@ import PageRoutes from './routes/PageRoute';
 import UserRoutes from './routes/UserRoute';
 import { Widget, Item, Page } from './models';
 import { IConfig } from './types';
-import { handleUpdateData } from './services/dataService';
+import { handleUpdateData, handleResetData } from './services/dataService';
 
 function setConfig(config: Partial<IConfig>) {
   if (config.logger) {
@@ -31,5 +31,6 @@ export {
   Item,
   Page,
   setConfig,
+  handleResetData,
   handleUpdateData,
 };

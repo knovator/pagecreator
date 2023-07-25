@@ -370,3 +370,8 @@ export const handleUpdateData = async (
     });
   }
 };
+
+export const handleResetData = (type: 'widget' | 'page', code: string) => {
+  if ((type === 'widget' || type === 'page') && code)
+    deleteRedisValue(`${type}_${code}`);
+};

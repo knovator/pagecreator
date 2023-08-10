@@ -62,6 +62,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     itemsTypes,
     widgetTypes,
     loading,
+    languages,
     onWidgetFormSubmit,
     getCollectionData,
     collectionData,
@@ -390,22 +391,40 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       wrapperClassName:
         'khb_grid-item-1of2 khb_padding-left-1 khb_align-top khb_margin-top-0',
     },
-    {
-      label: `${t('widget.widgetTitle')}`,
-      accessor: 'widgetTitle',
-      required: true,
-      type: customInputs && customInputs['widgetTitle'] ? undefined : 'text',
-      onInput: handleCapitalize,
-      placeholder: t('widget.widgetTitlePlaceholder'),
-      validations: {
-        required: t('widget.widgetTitleRequired'),
-      },
-      info: t('widget.widgetTitleInfo'),
-      Input:
-        customInputs && customInputs['widgetTitle']
-          ? customInputs['widgetTitle']
-          : undefined,
-    },
+    Array.isArray(languages) && languages.length > 0
+      ? {
+          label: `${t('widget.widgetTitle')}`,
+          accessor: 'widgetTitles',
+          type:
+            customInputs && customInputs['widgetTitle'] ? undefined : 'text',
+          validations: {
+            required: t('widget.widgetTitleRequired'),
+          },
+          info: t('widget.widgetTitleInfo'),
+          placeholder: t('widget.widgetTitlePlaceholder'),
+          onInput: handleCapitalize,
+          Input:
+            customInputs && customInputs['widgetTitle']
+              ? customInputs['widgetTitle']
+              : undefined,
+        }
+      : {
+          label: `${t('widget.widgetTitle')}`,
+          accessor: 'widgetTitle',
+          required: true,
+          type:
+            customInputs && customInputs['widgetTitle'] ? undefined : 'text',
+          onInput: handleCapitalize,
+          placeholder: t('widget.widgetTitlePlaceholder'),
+          validations: {
+            required: t('widget.widgetTitleRequired'),
+          },
+          info: t('widget.widgetTitleInfo'),
+          Input:
+            customInputs && customInputs['widgetTitle']
+              ? customInputs['widgetTitle']
+              : undefined,
+        },
     {
       label: `${t('widget.widgetType')}`,
       required: true,
@@ -527,6 +546,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         setValue={setValue}
         control={control}
         setError={setError}
+        languages={languages}
       />
 
       {selectedWidgetType?.value === 'Tabs' ? (

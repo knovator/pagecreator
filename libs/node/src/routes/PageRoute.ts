@@ -27,5 +27,6 @@ routes
 routes
   .delete(`/:id`, pageController.deletePage)
   .descriptor(`${descriptorPrefix}page.delete`);
-
+// Get all languages
+routes.get(`/languages`, pageController.getLanguages);
 export default routes;

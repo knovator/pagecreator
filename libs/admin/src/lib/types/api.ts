@@ -10,7 +10,8 @@ export type ACTION_TYPES =
   | 'WIDGET_TYPES'
   | 'SELECTION_TYPES'
   | 'COLLECTION_DATA'
-  | 'GET_ONE';
+  | 'GET_ONE'
+  | 'LANGUAGES';
 
 export type API_TYPE = {
   url: string;

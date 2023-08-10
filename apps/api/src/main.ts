@@ -34,11 +34,21 @@ setConfig({
       searchColumns: ['assessmentNm', 'projectNm'],
     },
   ],
-  redis: {
-    HOST: 'localhost',
-    PORT: 6379,
-    DB: 1,
-  },
+  // redis: {
+  //   HOST: 'localhost',
+  //   PORT: 6379,
+  //   DB: 1,
+  // },
+  languages: [
+    {
+      name: 'English',
+      code: 'en',
+    },
+    {
+      name: 'Hindi',
+      code: 'hi',
+    },
+  ],
 });
 app.get('/status', (_req, res) => {
   res.send('All Okay');

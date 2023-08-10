@@ -1,5 +1,5 @@
 import { WidgetType, ItemsType } from './api';
-import { FormActionTypes, OptionType } from './common';
+import { FormActionTypes, LanguageType, OptionType } from './common';
 
 export interface ProviderContextType {
   baseUrl: string;
@@ -51,6 +51,7 @@ export interface WidgetContextType {
   t: (key: string) => string;
   // Form
   list: any[];
+  languages: LanguageType[];
   searchText?: string;
   changeSearch: (str: string) => void;
   formState: FormActionTypes | undefined;

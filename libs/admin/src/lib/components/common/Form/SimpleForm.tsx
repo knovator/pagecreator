@@ -1,7 +1,12 @@
 import classNames from 'classnames';
 import React, { forwardRef, MutableRefObject } from 'react';
 import { Controller } from 'react-hook-form';
-import { CombineObjectType, OptionType, SchemaType } from '../../../types';
+import {
+  CombineObjectType,
+  LanguageType,
+  OptionType,
+  SchemaType,
+} from '../../../types';
 
 import Input from '../Input';
 import CustomReactSelect from '../Input/ReactSelect';
@@ -11,6 +16,7 @@ interface SimpleFormProps {
   isUpdating?: boolean;
   onSubmit: (data: CombineObjectType) => void;
   enable?: boolean;
+  languages?: LanguageType[];
   ref: MutableRefObject<HTMLFormElement | null>;
   register: any;
   errors: any;
@@ -33,6 +39,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
       setValue,
       control,
       setError,
+      languages,
     },
     ref
   ) => {
@@ -122,26 +129,55 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
           case 'url':
           case 'color':
           default:
-            input = (
-              <Input
-                rest={register(schema.accessor, schema.validations || {})}
-                label={schema.label}
-                error={errors[schema.accessor]?.message?.toString()}
-                type={schema.type}
-                className={classNames('w-full p-2', schema.className)}
-                placeholder={schema.placeholder}
-                disabled={
-                  (isUpdating &&
+            if (
+              Array.isArray(languages) &&
+              languages.length > 0 &&
+              schema.accessor === 'widgetTitles'
+            ) {
+              input = languages.map((lang) => (
+                <Input
+                  key={lang.code}
+                  rest={register(
+                    `${schema.accessor}.${lang.code}`,
+                    schema.validations || {}
+                  )}
+                  label={schema.label + ' (' + lang.name + ')'}
+                  onInput={schema.onInput}
+                  error={errors[schema.accessor]?.message}
+                  required={schema.required}
+                  type={schema.type}
+                  className="kms_w-full kms_p-2"
+                  placeholder={
+                    (schema.placeholder || '') + ' (' + lang.name + ')'
+                  }
+                  disabled={
+                    isUpdating &&
                     typeof schema.editable !== 'undefined' &&
-                    !schema.editable) ||
-                  !enable
-                }
-                required={schema.required}
-                onInput={schema.onInput}
-                wrapperClassName={schema.wrapperClassName}
-                info={schema.info}
-              />
-            );
+                    !schema.editable
+                  }
+                />
+              ));
+            } else
+              input = (
+                <Input
+                  rest={register(schema.accessor, schema.validations || {})}
+                  label={schema.label}
+                  error={errors[schema.accessor]?.message?.toString()}
+                  type={schema.type}
+                  className={classNames('w-full p-2', schema.className)}
+                  placeholder={schema.placeholder}
+                  disabled={
+                    (isUpdating &&
+                      typeof schema.editable !== 'undefined' &&
+                      !schema.editable) ||
+                    !enable
+                  }
+                  required={schema.required}
+                  onInput={schema.onInput}
+                  wrapperClassName={schema.wrapperClassName}
+                  info={schema.info}
+                />
+              );
             break;
         }
       } else if (schema.Input) {

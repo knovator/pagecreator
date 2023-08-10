@@ -66,3 +66,10 @@ export const getPages = catchAsync(async (req: IRequest, res: IResponse) => {
   res.message = req?.i18n?.t('page.getAll');
   return successResponse(pages, res);
 });
+
+export const getLanguages = catchAsync(async (req: any, res: any) => {
+  return successResponse(
+    Array.isArray(defaults.languages) ? defaults.languages : [],
+    res
+  );
+});

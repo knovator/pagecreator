@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Accordian from '../../common/Accordian';
 import Button from '../../common/Button';
 import Input from '../../common/Input';
@@ -22,6 +22,7 @@ const ItemsAccordian = ({
   register,
   setError,
   itemType,
+  languages,
   clearError,
   addText = 'Add',
   deleteText = 'Delete',
@@ -58,8 +59,6 @@ const ItemsAccordian = ({
 
   const addTab = (index: number) => {
     appendItem({
-      title: '',
-      subtitle: '',
       altText: '',
       link: '',
       img: '',
@@ -109,24 +108,58 @@ const ItemsAccordian = ({
             }
           >
             <div className="khb-form-items">
-              <Input
-                rest={register(`${name}.${index}.title`, {
-                  required: t('item.titleRequired'),
-                })}
-                label={t('item.title')}
-                error={errors[name]?.[index]?.['title']?.message?.toString()}
-                type={'text'}
-                className="w-full p-2"
-                placeholder={t('item.titlePlaceholder')}
-                required
-              />
-              <Input
-                rest={register(`${name}.${index}.subtitle`)}
-                label={t('item.subtitle')}
-                type={'text'}
-                className="w-full p-2"
-                placeholder={t('item.subTitlePlaceholder')}
-              />
+              {Array.isArray(languages) && languages.length > 0 ? (
+                <>
+                  {languages.map((lang) => (
+                    <Input
+                      rest={register(`${name}.${index}.titles.${lang.code}`, {
+                        required: t('item.titleRequired'),
+                      })}
+                      label={t('item.title') + ` (${lang.name})`}
+                      error={errors[name]?.[index]?.['titles']?.[
+                        lang.code
+                      ]?.message?.toString()}
+                      type="text"
+                      className="w-full p-2"
+                      placeholder={t('item.titlePlaceholder')}
+                      required
+                    />
+                  ))}
+                </>
+              ) : (
+                <Input
+                  rest={register(`${name}.${index}.title`, {
+                    required: t('item.titleRequired'),
+                  })}
+                  label={t('item.title')}
+                  error={errors[name]?.[index]?.['title']?.message?.toString()}
+                  type="text"
+                  className="w-full p-2"
+                  placeholder={t('item.titlePlaceholder')}
+                  required
+                />
+              )}
+              {Array.isArray(languages) && languages.length > 0 ? (
+                <>
+                  {languages.map((lang) => (
+                    <Input
+                      rest={register(`${name}.${index}.subtitles.${lang.code}`)}
+                      label={t('item.subtitle') + ` (${lang.name})`}
+                      type="text"
+                      className="w-full p-2"
+                      placeholder={t('item.subTitlePlaceholder')}
+                    />
+                  ))}
+                </>
+              ) : (
+                <Input
+                  rest={register(`${name}.${index}.subtitle`)}
+                  label={t('item.subtitle')}
+                  type="text"
+                  className="w-full p-2"
+                  placeholder={t('item.subTitlePlaceholder')}
+                />
+              )}
               <Input
                 rest={register(`${name}.${index}.altText`)}
                 label={t('item.altText')}

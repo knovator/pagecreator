@@ -121,7 +121,10 @@ export const getWidgetDataDB = async (code: string) => {
             },
           },
           {
-            $unwind: '$image',
+            $unwind: {
+              path: '$image',
+              preserveNullAndEmptyArrays: true,
+            },
           },
         ],
         as: 'items',
@@ -176,6 +179,7 @@ export const getWidgetDataDB = async (code: string) => {
     widgetData.tabs = widgetData.tabs.map((tabItem) => {
       return {
         name: tabItem.name,
+        names: tabItem.names,
         collectionItems: tabItem.collectionItems.map(
           (collectionId) => collectionItemsObj[collectionId]
         ),
@@ -293,7 +297,10 @@ export const getPageDataDB = async (code: string) => {
                   },
                 },
                 {
-                  $unwind: '$image',
+                  $unwind: {
+                    path: '$image',
+                    preserveNullAndEmptyArrays: true,
+                  },
                 },
               ],
               as: 'items',

@@ -8,6 +8,7 @@ export interface PermissionsObj {
   partialUpdate: boolean;
   delete: boolean;
 }
+export type LanguageType = { name: string; code: string };
 export type ObjectType = {
   [key: string]: string;
 };

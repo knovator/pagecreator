@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import {
   TabList,
@@ -21,10 +21,13 @@ const Tabs = ({
   setActiveTab,
   options,
   control,
-  register,
   listCode,
+  setValue,
+  getValues,
+  languages,
   formatItem,
   deleteTitle,
+  clearErrors,
   loadOptions,
   customStyles,
   noButtonText,
@@ -33,9 +36,11 @@ const Tabs = ({
   itemsPlaceholder,
   formatOptionLabel,
   tabCollectionItems,
-  tabNameRequiredText,
   onCollectionItemsIndexChange,
 }: TabsProps) => {
+  const [selectedLanguage, setSelectedLanguage] = useState<string | undefined>(
+    languages?.[0]?.code
+  );
   const {
     fields: tabFields,
     append: appendField,
@@ -44,10 +49,28 @@ const Tabs = ({
 
   const addTab = () => {
     appendField({
-      name: 'Tab Name',
+      ...(selectedLanguage
+        ? {
+            names: languages?.reduce((acc, lng) => {
+              acc[lng.code] = '';
+              return acc;
+            }, {} as any),
+          }
+        : {
+            name: '',
+          }),
       collectionItems: [],
     });
     setActiveTab(tabFields.length);
+  };
+  const onTabnameChange = (index: number, value: string) => {
+    if (selectedLanguage) {
+      clearErrors(`tabs.${index}.names.${selectedLanguage}`);
+      setValue(`tabs.${index}.names.${selectedLanguage}`, value);
+    } else {
+      clearErrors(`tabs.${index}.name`);
+      setValue(`tabs.${index}.name`, value);
+    }
   };
 
   return (
@@ -58,6 +81,22 @@ const Tabs = ({
         className="khb-tabs"
       >
         <TabList className="khb_tabs-list">
+          {Array.isArray(languages) && languages.length > 0 && (
+            <div className="khb_input-wrapper">
+              <select
+                title="Change Language"
+                value={selectedLanguage}
+                className="khb_input khb_input-sm h-full"
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+              >
+                {languages.map((lng) => (
+                  <option value={lng.code} key={lng.code}>
+                    {lng.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {tabFields?.map((field, index) => {
             return (
               <PkgTab
@@ -69,14 +108,27 @@ const Tabs = ({
                 <TabItem
                   key={field.id}
                   deleteTitle={deleteTitle}
-                  register={register(`tabs.${index}.name`, {
-                    required: tabNameRequiredText,
-                  })}
+                  register={{
+                    value: getValues(`tabs.${index}.names.${selectedLanguage}`),
+                    onChange: (e: any) =>
+                      onTabnameChange(index, e.target.value || ''),
+                  }}
                   onRemoveTab={() => {
                     removeField(index);
                     setActiveTab(index === 0 ? 0 : index - 1);
                   }}
-                  error={errors?.['tabs']?.[index]?.name?.message}
+                  error={
+                    selectedLanguage
+                      ? errors?.['tabs']?.[index]?.names
+                        ? Object.keys(errors?.['tabs']?.[index]?.names)
+                            .map(
+                              (key) =>
+                                errors?.['tabs']?.[index]?.names?.[key]?.message
+                            )
+                            .join(', ')
+                        : ''
+                      : errors?.['tabs']?.[index]?.name?.message
+                  }
                   noButtonText={noButtonText}
                   yesButtonText={yesButtonText}
                   showDelete={tabFields?.length > 1}

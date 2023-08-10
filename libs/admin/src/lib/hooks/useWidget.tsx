@@ -5,7 +5,7 @@ import { paginationDataGatter, dataGatter, build_path } from '../helper/utils';
 import usePagination from './usePagination';
 import request, { getApiType } from '../api';
 import { Routes_Input, WidgetType, ItemsType } from '../types';
-import { FormActionTypes, ObjectType } from '../types/common';
+import { FormActionTypes, ObjectType, LanguageType } from '../types/common';
 
 interface UseWidgetProps {
   canList?: boolean;
@@ -14,22 +14,19 @@ interface UseWidgetProps {
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
   imageBaseUrl?: string;
 }
-interface ItemsList {
-  web: ObjectType[];
-  mobile: ObjectType[];
-}
 
 const useWidget = ({
   canList = true,
   defaultLimit,
   routes,
   preConfirmDelete,
-  imageBaseUrl
+  imageBaseUrl,
 }: UseWidgetProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [languages, setLanguages] = useState<LanguageType[]>([]);
   const [itemData, setItemData] = useState<ObjectType | null>(null);
   const [formState, setFormState] = useState<FormActionTypes>();
   const [itemsTypes, setItemsTypes] = useState<ItemsType[]>([]);
@@ -38,8 +35,15 @@ const useWidget = ({
     useState<boolean>(false);
   const [collectionData, setCollectionData] = useState<any[]>([]);
 
-  const { baseUrl, token, onError, onSuccess, onLogout, widgetRoutesPrefix } =
-    useProviderState();
+  const {
+    baseUrl,
+    token,
+    onError,
+    onSuccess,
+    onLogout,
+    widgetRoutesPrefix,
+    pageRoutesPrefix,
+  } = useProviderState();
   const {
     changeSearch,
     setPageSize,
@@ -108,6 +112,25 @@ const useWidget = ({
       widgetRoutesPrefix,
     ]
   );
+  const getLanguagesList = useCallback(async () => {
+    const api = getApiType({
+      routes,
+      action: 'LANGUAGES',
+      prefix: pageRoutesPrefix,
+    });
+    const response = await request({
+      baseUrl,
+      token,
+      method: api.method,
+      url: api.url,
+      onError: handleError(CALLBACK_CODES.GET_ALL),
+    });
+    if (response?.code === 'SUCCESS') {
+      setLanguages(response.data);
+      return response.data;
+    }
+  }, [baseUrl, handleError, pageRoutesPrefix, routes, token]);
+
   const onCofirmDeleteWidget = async () => {
     try {
       let proceed = true;
@@ -450,10 +473,15 @@ const useWidget = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canList]);
 
+  useEffect(() => {
+    getLanguagesList();
+  }, [getLanguagesList]);
+
   return {
     list,
     getWidgets,
     loading,
+    languages,
     setLoading,
 
     // Pagination

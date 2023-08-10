@@ -2,6 +2,13 @@ import { Schema, model, Types } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { softDeletePlugin } from '../plugins/softDelete';
 import { IModel, IWidgetSchema, WidgetTypes, ItemsType } from '../types';
+import { defaults } from '../utils/defaults';
+
+const languageTitlesSchema =
+  defaults.languages?.reduce((acc: any, lang) => {
+    acc[lang.code] = { type: String, required: true };
+    return acc;
+  }, {}) || {};
 
 const WidgetSchema = new Schema<IWidgetSchema>({
   name: String,
@@ -15,6 +22,7 @@ const WidgetSchema = new Schema<IWidgetSchema>({
     default: true,
   },
   widgetTitle: String,
+  widgetTitles: languageTitlesSchema,
   webPerRow: Number,
   mobilePerRow: Number,
   tabletPerRow: Number,
@@ -34,6 +42,7 @@ const WidgetSchema = new Schema<IWidgetSchema>({
   tabs: [
     {
       name: String,
+      names: languageTitlesSchema,
       collectionItems: [{ type: Types.ObjectId, refPath: 'collectionName' }],
     },
   ],

@@ -428,7 +428,7 @@ input:checked + .slider:before {
     @apply mb-2;
 }
 .khb_tabs-item {
-    @apply bg-gray-200 rounded-md transition-colors cursor-pointer p-2 self-center flex;
+    @apply bg-gray-200 rounded-md transition-colors cursor-pointer p-2 self-center flex flex-col;
 }
 .khb_tabs-item:hover {
     @apply bg-gray-300 cursor-pointer;

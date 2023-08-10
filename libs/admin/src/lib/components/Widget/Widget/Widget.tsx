@@ -67,6 +67,7 @@ const Widget = ({
     totalRecords,
     currentPage,
     pageSize,
+    languages,
     setCurrentPage,
   } = useWidget({
     canList: derivedPermissions.list,
@@ -79,6 +80,7 @@ const Widget = ({
     <WidgetContextProvider
       loading={loading}
       list={list}
+      languages={languages}
       imageBaseUrl={imageBaseUrl}
       onChangeFormState={onChangeFormState}
       t={derivedT}

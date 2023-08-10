@@ -13,6 +13,7 @@ const WidgetContextProvider = ({
   t = () => '',
   // Form
   list = [],
+  languages = [],
   imageBaseUrl = '',
   searchText = '',
   changeSearch = () => {},
@@ -62,6 +63,7 @@ const WidgetContextProvider = ({
         t,
         // Form
         list,
+        languages,
         imageBaseUrl,
         closeForm,
         formState,

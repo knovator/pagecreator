@@ -4,7 +4,8 @@ import { ITabSchema, IDefaultValidations } from '../../types';
 type TabValidation = ITabSchema & IDefaultValidations;
 
 export const create = joi.object<TabValidation>({
-  name: joi.string().required(),
+  name: joi.string().optional(),
+  names: joi.object().optional(),
   widgetId: joi.string().required(),
   collectionItems: joi.array().items(joi.string()).optional(),
   createdBy: joi.any().optional(),
@@ -14,7 +15,8 @@ export const create = joi.object<TabValidation>({
 });
 
 export const update = joi.object<TabValidation>({
-  name: joi.string().required(),
+  name: joi.string().optional(),
+  names: joi.object().optional(),
   widgetId: joi.string().optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
   createdBy: joi.any().optional(),

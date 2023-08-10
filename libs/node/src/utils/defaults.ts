@@ -23,6 +23,7 @@ export const defaults: IConfig = {
   collections: [] as CollectionItem[],
   customWidgetTypes: [],
   redis: undefined,
+  languages: [],
 };
 
 export const commonExcludedFields = {

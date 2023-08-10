@@ -2,6 +2,13 @@ import { Schema, Types, model } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 import { softDeletePlugin } from '../plugins/softDelete';
 import { IModel, IItemSchema, ItemTypes } from '../types';
+import { defaults } from '../utils/defaults';
+
+const titlesSchema =
+  defaults.languages?.reduce((acc: any, lang) => {
+    acc[lang.code] = { type: String, required: true };
+    return acc;
+  }, {}) || {};
 
 const ItemSchema = new Schema<IItemSchema>({
   widgetId: {
@@ -9,7 +16,9 @@ const ItemSchema = new Schema<IItemSchema>({
     ref: 'Widget',
   },
   title: String,
+  titles: titlesSchema,
   subtitle: String,
+  subtitles: titlesSchema,
   altText: String,
   link: String,
   sequence: Number,

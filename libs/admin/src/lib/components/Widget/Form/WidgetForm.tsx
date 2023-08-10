@@ -585,6 +585,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         <>
           {/* Web Items */}
           <ItemsAccordian
+            languages={languages}
             clearError={clearErrors}
             collapseId={constants.webItems}
             title={t('widget.webItems')}
@@ -604,6 +605,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
 
           {/* Mobile Items */}
           <ItemsAccordian
+            languages={languages}
             clearError={clearErrors}
             collapseId={constants.mobileItems}
             title={t('widget.mobileItems')}

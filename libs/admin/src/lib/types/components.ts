@@ -7,6 +7,7 @@ import {
   FormActionTypes,
   PermissionsObj,
   ObjectType,
+  LanguageType,
 } from './common';
 
 export interface DNDItemsListProps {
@@ -230,6 +231,7 @@ export interface ItemsAccordianProps {
   addText?: string;
   deleteText?: string;
   loading?: boolean;
+  languages?: LanguageType[];
 
   name: string;
   itemType: 'Web' | 'Mobile';

@@ -143,7 +143,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
                   )}
                   label={schema.label + ' (' + lang.name + ')'}
                   onInput={schema.onInput}
-                  error={errors[schema.accessor]?.message}
+                  error={errors[schema.accessor]?.[lang.code]?.message}
                   required={schema.required}
                   type={schema.type}
                   className="kms_w-full kms_p-2"

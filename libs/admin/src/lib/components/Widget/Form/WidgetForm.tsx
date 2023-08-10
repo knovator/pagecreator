@@ -427,6 +427,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       ? {
           label: `${t('widget.widgetTitle')}`,
           accessor: 'widgetTitles',
+          required: true,
           type:
             customInputs && customInputs['widgetTitle'] ? undefined : 'text',
           validations: {

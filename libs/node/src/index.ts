@@ -21,6 +21,9 @@ function setConfig(config: Partial<IConfig>) {
   if (typeof config.redis === 'string' || typeof config.redis === 'object') {
     defaults.redis = config.redis;
   }
+  if (Array.isArray(config.languages) && config.languages.length > 0) {
+    defaults.languages = config.languages;
+  }
 }
 
 export {

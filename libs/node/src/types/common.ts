@@ -9,12 +9,9 @@ import {
 import { ItemsType, WidgetTypes, ItemTypes } from '.';
 
 export type TypesType = { value: string; label: string };
-// export type CollectionItem = {
-//   title: string;
-//   collectionName: string;
-//   filters?: { [key: string]: string };
-//   searchColumns: string[];
-// };
+
+export type LanguageSchemaFieldType = { [key: string]: string };
+
 export interface iConfig {
   logger: any;
   catchAsync: (
@@ -32,6 +29,7 @@ export interface IPageSchema extends Document {
 }
 export interface ITabSchema extends Document {
   name: string;
+  names: LanguageSchemaFieldType;
   widgetId: typeof Types.ObjectId;
   collectionItems: string[];
 }
@@ -48,6 +46,7 @@ export interface IWidgetSchema extends Document {
   autoPlay: boolean;
   isActive: boolean;
   widgetTitle: string;
+  widgetTitles: LanguageSchemaFieldType;
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;
@@ -55,13 +54,19 @@ export interface IWidgetSchema extends Document {
   widgetType: WidgetTypes;
   collectionName: string;
   collectionItems: string[];
-  tabs: { name: string; collectionItems: string[] }[];
+  tabs: {
+    name: string;
+    names?: LanguageSchemaFieldType;
+    collectionItems: string[];
+  }[];
   backgroundColor: string;
 }
 export interface IItemSchema extends Document {
   widgetId: typeof Types.ObjectId;
   title: string;
+  titles: LanguageSchemaFieldType;
   subtitle: string;
+  subtitles: LanguageSchemaFieldType;
   altText: string;
   link: string;
   sequence: number;
@@ -107,6 +112,7 @@ export interface IConfig {
     collectionsOnly?: boolean;
   }[];
   redis?: string | RedisConfig;
+  languages?: LanguageType[];
 }
 
 export type EntityType =
@@ -153,3 +159,5 @@ export interface IWidgetDataSchema {
   tabs: { name: string; collectionItems: string[] }[];
 }
 export type IWidgetData = { [key: string]: IWidgetDataSchema };
+
+export type LanguageType = { code: string; name: string };

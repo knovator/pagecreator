@@ -35,8 +35,10 @@ const srcset = joi.object().keys({
 });
 
 const item = joi.object({
-  title: joi.string().required(),
+  title: joi.string().optional(),
+  titles: joi.object().optional(),
   subtitle: joi.string().optional().allow(''),
+  subtitles: joi.object().optional(),
   altText: joi.string().optional().allow(''),
   link: joi.string().optional().allow(''),
   sequence: joi.number().optional(),
@@ -50,7 +52,8 @@ const item = joi.object({
 
 export const create = joi.object<ItemValidation>({
   name: joi.string().required(),
-  widgetTitle: joi.string().required(),
+  widgetTitle: joi.string().optional(),
+  widgetTitles: joi.object().optional(),
   code: joi
     .string()
     .uppercase()
@@ -68,7 +71,8 @@ export const create = joi.object<ItemValidation>({
     .array()
     .items(
       joi.object({
-        name: joi.string(),
+        name: joi.string().optional(),
+        names: joi.object().optional(),
         collectionItems: joi.array().items(joi.string()).optional(),
       })
     )
@@ -103,7 +107,8 @@ export const create = joi.object<ItemValidation>({
 
 export const update = joi.object<ItemValidation>({
   name: joi.string().required(),
-  widgetTitle: joi.string().required(),
+  widgetTitle: joi.string().optional(),
+  widgetTitles: joi.object().optional(),
   isActive: joi.boolean().optional(),
   webPerRow: joi.number().allow(null).optional(),
   mobilePerRow: joi.number().allow(null).optional(),
@@ -114,7 +119,8 @@ export const update = joi.object<ItemValidation>({
     .array()
     .items(
       joi.object({
-        name: joi.string(),
+        name: joi.string().optional(),
+        names: joi.object().optional(),
         collectionItems: joi.array().items(joi.string()).optional(),
       })
     )

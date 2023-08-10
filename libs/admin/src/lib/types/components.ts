@@ -1,6 +1,12 @@
 import React, { MutableRefObject } from 'react';
 import { DropResult } from 'react-beautiful-dnd';
-import { RegisterOptions } from 'react-hook-form';
+import {
+  FieldValues,
+  RegisterOptions,
+  UseFormClearErrors,
+  UseFormGetValues,
+  UseFormSetValue,
+} from 'react-hook-form';
 import { Routes_Input } from './api';
 import {
   OptionType,
@@ -256,11 +262,9 @@ export interface TabsProps {
   setActiveTab: (value: number) => void;
   onSubmit?: () => void;
   control: any;
-  register: any;
   options?: { value: string; label: string }[];
   deleteTitle: string;
   listCode: string;
-  tabNameRequiredText: string;
   noButtonText: string;
   yesButtonText: string;
   itemsPlaceholder?: string;
@@ -271,6 +275,10 @@ export interface TabsProps {
   tabCollectionItems: any[];
   errors?: { [key: string]: any };
   customStyles?: any;
+  clearErrors: UseFormClearErrors<FieldValues>;
+  getValues: UseFormGetValues<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
+  languages?: LanguageType[];
   loadOptions?: (
     value?: string,
     callback?: (options: OptionType[]) => void

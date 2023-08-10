@@ -269,6 +269,33 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     },
     [getFirstItemTypeValue, itemsTypes, widgetTypes]
   );
+  const validateTabs = (tabsData: any) => {
+    const isLanguagesProvided =
+      Array.isArray(languages) && languages.length > 0;
+    let isTabsValid = true;
+    if (Array.isArray(tabsData) && tabsData.length > 0) {
+      tabsData.forEach((tabItem: any, index: number) => {
+        if (isLanguagesProvided) {
+          languages.forEach((lang: any) => {
+            if (!tabItem.names[lang.code]) {
+              setError(`tabs.${index}.names.${lang.code}`, {
+                type: 'manual',
+                message: `${t('widget.tabNameRequired')} (${lang.name})`,
+              });
+              isTabsValid = false;
+            }
+          });
+        } else if (!tabItem.name) {
+          setError(`tabs.${index}.name`, {
+            type: 'manual',
+            message: t('widget.tabNameRequired'),
+          });
+          isTabsValid = false;
+        }
+      });
+    }
+    return isTabsValid;
+  };
   const onFormSubmit = (data: CombineObjectType) => {
     const formData = { ...data };
     // setting widget type if undefined
@@ -277,6 +304,10 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     }
     // setting tabs data if widgetType tab is selected
     const tabsData = getValues('tabs');
+    if (Array.isArray(tabsData) && tabsData.length > 0) {
+      const isTabsValid = validateTabs(tabsData);
+      if (!isTabsValid) return;
+    }
     if (
       Array.isArray(tabsData) &&
       (formData[constants.widgetTypeAccessor] ===
@@ -285,6 +316,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     ) {
       formData[constants.tabsAccessor] = tabsData.map((tabItem) => ({
         name: tabItem.name,
+        names: tabItem.names,
         collectionItems: tabItem.collectionItems.map(
           (item: string | OptionType) =>
             typeof item == 'string' ? item : item.value
@@ -551,13 +583,15 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
 
       {selectedWidgetType?.value === 'Tabs' ? (
         <Tabs
+          clearErrors={clearErrors}
+          getValues={getValues}
+          setValue={setValue}
           control={control}
-          register={register}
+          languages={languages}
           deleteTitle={t('widget.tabDeleteTitle')}
           yesButtonText={t('yesButtonText')}
           noButtonText={t('cancelButtonText')}
           errors={errors}
-          tabNameRequiredText={t('widget.tabNameRequired')}
           itemsPlaceholder={`Select ${selectedCollectionType?.label}...`}
           loadOptions={onChangeSearch}
           isItemsLoading={collectionDataLoading}

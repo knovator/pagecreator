@@ -79,6 +79,7 @@ export async function appendCollectionData(widgetData: IWidgetSchema[]) {
           tabs: widget.tabs.map((tabItem) => {
             return {
               name: tabItem.name,
+              names: tabItem.names,
               collectionItems: tabItem.collectionItems
                 .map((collectionId) => collectionItemsObj[collectionId])
                 .filter(Boolean),

@@ -72,5 +72,6 @@ routes
 routes
   .get(`/:id`, widgetController.getSingleWidget)
   .descriptor(`${descriptorPrefix}widget.getOne`);
-
+// Get all languages
+routes.get(`/languages`, widgetController.getLanguages);
 export default routes;

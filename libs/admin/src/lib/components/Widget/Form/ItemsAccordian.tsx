@@ -98,8 +98,10 @@ const ItemsAccordian = ({
               <ConfirmPopover
                 onConfirm={() => removeItem(index)}
                 title={t('item.deleteTitle')}
-                confirmText={t('yesButtonText')}
-                cancelText={t('cancelButtonText')}
+                confirmText={t('yesButtonText') || t('common:yesButtonText')}
+                cancelText={
+                  t('cancelButtonText') || t('common:cancelButtonText')
+                }
               >
                 <Button type="danger" size="sm" disabled={loading}>
                   {deleteText}

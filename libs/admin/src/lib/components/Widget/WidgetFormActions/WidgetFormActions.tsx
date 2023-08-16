@@ -37,11 +37,13 @@ const WidgetFormActions = ({ formRef }: FormActionWrapperProps) => {
     <FormActions
       loading={loading}
       primaryLabel={
-        formState === 'ADD' ? t('createButtonText') : t('updateButtonText')
+        formState === 'ADD'
+          ? t('createButtonText') || t('common:createButtonText')
+          : t('updateButtonText') || t('common:updateButtonText')
       }
       onPrimaryButtonClick={onSubmitClick}
       onSecondaryButtonClick={closeForm}
-      secondaryLabel={t('cancelButtonText')}
+      secondaryLabel={t('cancelButtonText') || t('common:cancelButtonText')}
     />
   );
 };

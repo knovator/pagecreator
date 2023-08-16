@@ -429,7 +429,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
           accessor: 'widgetTitles',
           required: true,
           type:
-            customInputs && customInputs['widgetTitle'] ? undefined : 'text',
+            customInputs && customInputs['widgetTitles'] ? undefined : 'text',
           validations: {
             required: t('widget.widgetTitleRequired'),
           },
@@ -437,8 +437,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
           placeholder: t('widget.widgetTitlePlaceholder'),
           onInput: handleCapitalize,
           Input:
-            customInputs && customInputs['widgetTitle']
-              ? customInputs['widgetTitle']
+            customInputs && customInputs['widgetTitles']
+              ? customInputs['widgetTitles']
               : undefined,
         }
       : {

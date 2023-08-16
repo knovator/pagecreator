@@ -181,42 +181,92 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
             break;
         }
       } else if (schema.Input) {
-        input = (
-          <div
-            className={classNames('khb_input-wrapper', schema.wrapperClassName)}
-          >
-            {schema.label && (
+        if (
+          Array.isArray(languages) &&
+          languages.length > 0 &&
+          schema.accessor === 'widgetTitles'
+        ) {
+          input = languages.map((lang) => (
+            <div
+              key={lang.code}
+              className={classNames(
+                'khb_input-wrapper',
+                schema.wrapperClassName
+              )}
+            >
               <label className="khb_input-label">
-                {schema.label}
+                {schema.label} ({lang.name})
                 {schema.required ? (
                   <span className="khb_input-label-required">*</span>
                 ) : null}
               </label>
-            )}
-            <Controller
-              control={control}
-              name={schema.accessor}
-              rules={schema.validations}
-              render={({ field }) =>
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                schema.Input!({
-                  field,
-                  error: errors[schema.accessor]?.message?.toString(),
-                  disabled:
-                    (isUpdating &&
-                      typeof schema.editable !== 'undefined' &&
-                      !schema.editable) ||
-                    !enable,
-                  setError: (msg) =>
-                    setError.call(null, schema.accessor, {
-                      type: 'custom',
-                      message: msg,
-                    }),
-                })
-              }
-            />
-          </div>
-        );
+              <Controller
+                control={control}
+                name={`${schema.accessor}.${lang.code}`}
+                rules={schema.validations}
+                render={({ field }) =>
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  schema.Input!({
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    field,
+                    error:
+                      errors[schema.accessor]?.[lang.code]?.message?.toString(),
+                    disabled:
+                      (isUpdating &&
+                        typeof schema.editable !== 'undefined' &&
+                        !schema.editable) ||
+                      !enable,
+                    setError: (msg) =>
+                      setError.call(null, schema.accessor, {
+                        type: 'custom',
+                        message: msg,
+                      }),
+                  })
+                }
+              />
+            </div>
+          ));
+        } else
+          input = (
+            <div
+              className={classNames(
+                'khb_input-wrapper',
+                schema.wrapperClassName
+              )}
+            >
+              {schema.label && (
+                <label className="khb_input-label">
+                  {schema.label}
+                  {schema.required ? (
+                    <span className="khb_input-label-required">*</span>
+                  ) : null}
+                </label>
+              )}
+              <Controller
+                control={control}
+                name={schema.accessor}
+                rules={schema.validations}
+                render={({ field }) =>
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  schema.Input!({
+                    field,
+                    error: errors[schema.accessor]?.message?.toString(),
+                    disabled:
+                      (isUpdating &&
+                        typeof schema.editable !== 'undefined' &&
+                        !schema.editable) ||
+                      !enable,
+                    setError: (msg) =>
+                      setError.call(null, schema.accessor, {
+                        type: 'custom',
+                        message: msg,
+                      }),
+                  })
+                }
+              />
+            </div>
+          );
       } else
         throw new Error(
           `Please provide Input or type prop to render input Labeled ${schema.label}`

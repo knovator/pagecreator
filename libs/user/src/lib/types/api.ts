@@ -31,6 +31,7 @@ export interface PageData {
 }
 export interface TabData {
   name: string;
+  names: Record<string, string>;
   collectionItems: any[];
 }
 export interface WidgetData {

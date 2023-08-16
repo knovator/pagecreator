@@ -42,7 +42,7 @@ export interface ReviewCardProps extends UserCardProps {
 }
 
 type formatTabTitleFunction = (
-  title: string,
+  title: string | Record<string, string>,
   collectionData: any[],
   isActive: boolean
 ) => JSX.Element;

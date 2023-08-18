@@ -56,7 +56,10 @@ export interface WidgetProps {
   settings?: SwiperProps;
   className?: string;
   formatTabTitle?: formatTabTitleFunction;
-  formatHeader?: (title: string, data: WidgetData) => string | JSX.Element;
+  formatHeader?: (
+    title: Record<string, string> | string,
+    data: WidgetData
+  ) => string | JSX.Element;
   formatFooter?: (data: WidgetData) => string | JSX.Element;
   itemsContainer?: (children: JSX.Element) => JSX.Element;
 }

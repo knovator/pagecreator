@@ -41,6 +41,7 @@ export interface WidgetData {
   autoPlay: boolean;
   isActive: boolean;
   widgetTitle: string;
+  widgetTitles?: Record<string, string>;
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;

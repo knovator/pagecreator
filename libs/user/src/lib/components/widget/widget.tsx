@@ -69,12 +69,19 @@ export function Widget({
       style={{ backgroundColor: widgetData.backgroundColor }}
     >
       {hideTitle === true ? null : typeof formatHeader === 'function' ? (
-        formatHeader(widgetData.widgetTitle, widgetData)
+        formatHeader(
+          widgetData.widgetTitles || widgetData.widgetTitle,
+          widgetData
+        )
       ) : (
         <h2
           className="kpc_widget-title"
-          dangerouslySetInnerHTML={{ __html: widgetData.widgetTitle }}
-        ></h2>
+          dangerouslySetInnerHTML={{
+            __html: widgetData.widgetTitles
+              ? JSON.stringify(widgetData.widgetTitles)
+              : widgetData.widgetTitle,
+          }}
+        />
       )}
       <div className="kpc_widget-body">
         {widgetData.widgetType === 'Carousel' ? (

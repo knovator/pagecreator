@@ -17,7 +17,7 @@ export function TabWidget({
         {widgetData.tabs.map((tab, index) => (
           <Tab key={index}>
             {formatTabTitle(
-              tab.name || tab.names,
+              tab.names || tab.name,
               tab.collectionItems,
               activeTab === index
             )}

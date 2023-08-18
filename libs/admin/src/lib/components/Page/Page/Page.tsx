@@ -127,13 +127,25 @@ const Page = ({
           itemData={itemData}
           onClose={onCloseForm}
           onConfirmDelete={onCofirmDeletePage}
-          confirmationRequired={derivedT('confirmationRequired')}
-          confirm={derivedT('confirm')}
-          lossOfData={derivedT('lossOfData')}
-          permanentlyDelete={derivedT('permanentlyDelete')}
-          pleaseType={derivedT('pleaseType')}
-          toProceedOrCancel={derivedT('toProceedOrCancel')}
-          typeHerePlaceholder={derivedT('typeHerePlaceholder')}
+          confirmationRequired={
+            derivedT('confirmationRequired') ||
+            derivedT('common:confirmationRequired')
+          }
+          confirm={derivedT('confirm') || derivedT('common:confirm')}
+          lossOfData={derivedT('lossOfData') || derivedT('common:lossOfData')}
+          permanentlyDelete={
+            derivedT('permanentlyDelete') ||
+            derivedT('common:permanentlyDelete')
+          }
+          pleaseType={derivedT('pleaseType') || derivedT('common:pleaseType')}
+          toProceedOrCancel={
+            derivedT('toProceedOrCancel') ||
+            derivedT('common:toProceedOrCancel')
+          }
+          typeHerePlaceholder={
+            derivedT('typeHerePlaceholder') ||
+            derivedT('common:typeHerePlaceholder')
+          }
         />
       )}
     </PageContextProvider>

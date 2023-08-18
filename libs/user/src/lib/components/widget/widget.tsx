@@ -52,13 +52,15 @@ export function Widget({
       );
   };
   const formatTabTitles = (
-    title: string,
+    title: string | Record<string, string>,
     collectionData: any[],
     isActive: boolean
   ) => {
     if (typeof formatTabTitle === 'function' && formatTabTitle)
       return formatTabTitle(title, collectionData, isActive);
-    return <div>{title}</div>;
+    return (
+      <div>{typeof title === 'string' ? title : JSON.stringify(title)}</div>
+    );
   };
   if (!widgetData) return null;
   return (

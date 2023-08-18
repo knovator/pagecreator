@@ -336,3 +336,10 @@ export const getCollectionData = catchAsync(
     return successResponse({ docs: collectionData }, res);
   }
 );
+
+export const getLanguages = catchAsync(async (req: any, res: any) => {
+  return successResponse(
+    Array.isArray(defaults.languages) ? defaults.languages : [],
+    res
+  );
+});

@@ -67,10 +67,11 @@ routes
 routes
   .get('/tabs/:widgetId', tabController.getTabs)
   .descriptor(`${descriptorPrefix}tab.getAll`);
-
+// Get all languages
+routes.get(`/languages`, widgetController.getLanguages);
 // Get single widget
 routes
   .get(`/:id`, widgetController.getSingleWidget)
   .descriptor(`${descriptorPrefix}widget.getOne`);
-
+    
 export default routes;

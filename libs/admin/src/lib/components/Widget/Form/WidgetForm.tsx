@@ -590,8 +590,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
           control={control}
           languages={languages}
           deleteTitle={t('widget.tabDeleteTitle')}
-          yesButtonText={t('yesButtonText')}
-          noButtonText={t('cancelButtonText')}
+          yesButtonText={t('yesButtonText') || t('common:yesButtonText')}
+          noButtonText={t('cancelButtonText') || t('common:cancelButtonText')}
           errors={errors}
           itemsPlaceholder={`Select ${selectedCollectionType?.label}...`}
           loadOptions={onChangeSearch}
@@ -635,7 +635,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             register={register}
             loading={loading}
             addText={t('addButtonText')}
-            deleteText={t('deleteButtonText')}
+            deleteText={t('deleteButtonText') || t('common:deleteButtonText')}
           />
 
           {/* Mobile Items */}
@@ -658,7 +658,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             control={control}
             register={register}
             addText={t('addButtonText')}
-            deleteText={t('deleteButtonText')}
+            deleteText={t('deleteButtonText') || t('common:deleteButtonText')}
           />
         </>
       )}

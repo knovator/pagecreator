@@ -35,15 +35,8 @@ const useWidget = ({
     useState<boolean>(false);
   const [collectionData, setCollectionData] = useState<any[]>([]);
 
-  const {
-    baseUrl,
-    token,
-    onError,
-    onSuccess,
-    onLogout,
-    widgetRoutesPrefix,
-    pageRoutesPrefix,
-  } = useProviderState();
+  const { baseUrl, token, onError, onSuccess, onLogout, widgetRoutesPrefix } =
+    useProviderState();
   const {
     changeSearch,
     setPageSize,
@@ -116,7 +109,7 @@ const useWidget = ({
     const api = getApiType({
       routes,
       action: 'LANGUAGES',
-      prefix: pageRoutesPrefix,
+      prefix: widgetRoutesPrefix,
     });
     const response = await request({
       baseUrl,
@@ -129,7 +122,7 @@ const useWidget = ({
       setLanguages(response.data);
       return response.data;
     }
-  }, [baseUrl, handleError, pageRoutesPrefix, routes, token]);
+  }, [baseUrl, handleError, widgetRoutesPrefix, routes, token]);
 
   const onCofirmDeleteWidget = async () => {
     try {

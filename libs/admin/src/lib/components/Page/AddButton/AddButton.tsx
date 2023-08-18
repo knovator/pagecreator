@@ -5,10 +5,10 @@ import { usePageState } from "../../../context/PageContext";
 const AddButton = () => {
 	const { onChangeFormState, t, canAdd } = usePageState();
 	return (
-		<Button disabled={!canAdd} onClick={() => onChangeFormState("ADD")}>
-			{t("addButtonText")}
-		</Button>
-	);
+    <Button disabled={!canAdd} onClick={() => onChangeFormState('ADD')}>
+      {t('addButtonText') || t('common:addButtonText')}
+    </Button>
+  );
 };
 
 export default AddButton;

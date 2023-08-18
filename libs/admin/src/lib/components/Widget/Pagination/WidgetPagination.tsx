@@ -7,11 +7,11 @@ const WidgetPagination = () => {
     useWidgetState();
   return (
     <Pagination
-      ofText={t('of')}
-      pageText={t('page')}
-      showingText={t('showing')}
-      nextContent={t('nextContent')}
-      previousContent={t('previousContent')}
+      ofText={t('of') || t('common:of')}
+      pageText={t('confirm') || t('common:confirm')}
+      showingText={t('showing') || t('common:showing')}
+      nextContent={t('nextContent') || t('common:nextContent')}
+      previousContent={t('previousContent') || t('common:previousContent')}
       totalPages={totalPages}
       totalRecords={totalRecords}
       currentPage={currentPage}

@@ -40,10 +40,12 @@ const item = joi.object({
   subtitle: joi.string().optional().allow(''),
   subtitles: joi.object().optional(),
   altText: joi.string().optional().allow(''),
+  altTexts: joi.object().optional(),
   link: joi.string().optional().allow(''),
   sequence: joi.number().optional(),
   srcset: joi.array().items(srcset),
   img: joi.string().allow(null).optional(),
+  imgs: joi.object().optional(),
   itemType: joi
     .string()
     .valid(...Object.values(ItemTypes))

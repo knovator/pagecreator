@@ -9,6 +9,70 @@ import { useWidgetState } from '../../../context/WidgetContext';
 import { useProviderState } from '../../../context/ProviderContext';
 import ConfirmPopover from '../../common/ConfirmPopover';
 
+interface ImageInputProps {
+  label: string;
+  control: any;
+  name: string;
+  error: any;
+  baseUrl: string;
+  imageMaxSize: number;
+  onImageUpload: (file: File) => Promise<void | {
+    fileUrl: string;
+    fileId: string;
+    fileUri: string;
+  }>;
+  text: string | JSX.Element;
+  onImageRemove: (fileId: string) => Promise<void>;
+  setError: (name: string, error: any) => void;
+  clearError: (name: string) => void;
+}
+
+const ImageInput = ({
+  label,
+  control,
+  name,
+  text,
+  error,
+  baseUrl,
+  setError,
+  clearError,
+  onImageRemove,
+  imageMaxSize,
+  onImageUpload,
+}: ImageInputProps) => {
+  return (
+    <div className="kms_input-wrapper">
+      <label className="kms_input-label">{label}</label>
+      <Controller
+        control={control}
+        name={name}
+        render={({ field }) => (
+          <ImageUpload
+            imgId={field.value}
+            clearError={() => clearError(name)}
+            maxSize={imageMaxSize}
+            onError={(msg) =>
+              setError(name, {
+                type: 'custom',
+                message: msg,
+              })
+            }
+            error={error}
+            setImgId={(value) => {
+              field.onChange(value);
+            }}
+            baseUrl={baseUrl}
+            text={text}
+            onImageUpload={onImageUpload}
+            onImageRemove={onImageRemove}
+            className="khb_img-upload-wrapper-3"
+          />
+        )}
+      />
+    </div>
+  );
+};
+
 const ItemsAccordian = ({
   show,
   title,
@@ -118,12 +182,18 @@ const ItemsAccordian = ({
                         required: t('item.titleRequired'),
                       })}
                       label={t('item.title') + ` (${lang.name})`}
-                      error={errors[name]?.[index]?.['titles']?.[
-                        lang.code
-                      ]?.message?.toString()}
+                      error={
+                        errors[name]?.[index]?.['titles']?.[lang.code]
+                          ? errors[name]?.[index]?.['titles']?.[
+                              lang.code
+                            ]?.message?.toString() + ` (${lang.name})`
+                          : ''
+                      }
                       type="text"
                       className="w-full p-2"
-                      placeholder={t('item.titlePlaceholder')}
+                      placeholder={
+                        t('item.titlePlaceholder') + ` (${lang.name})`
+                      }
                       required
                     />
                   ))}
@@ -149,7 +219,9 @@ const ItemsAccordian = ({
                       label={t('item.subtitle') + ` (${lang.name})`}
                       type="text"
                       className="w-full p-2"
-                      placeholder={t('item.subTitlePlaceholder')}
+                      placeholder={
+                        t('item.subTitlePlaceholder') + ` (${lang.name})`
+                      }
                     />
                   ))}
                 </>
@@ -162,13 +234,29 @@ const ItemsAccordian = ({
                   placeholder={t('item.subTitlePlaceholder')}
                 />
               )}
-              <Input
-                rest={register(`${name}.${index}.altText`)}
-                label={t('item.altText')}
-                type={'text'}
-                className="w-full p-2"
-                placeholder={t('item.altTextPlaceholder')}
-              />
+              {Array.isArray(languages) && languages.length > 0 ? (
+                <>
+                  {languages.map((lang) => (
+                    <Input
+                      rest={register(`${name}.${index}.altTexts.${lang.code}`)}
+                      label={t('item.altText') + ` (${lang.name})`}
+                      type={'text'}
+                      className="w-full p-2"
+                      placeholder={
+                        t('item.altTextPlaceholder') + ` (${lang.name})`
+                      }
+                    />
+                  ))}
+                </>
+              ) : (
+                <Input
+                  rest={register(`${name}.${index}.altText`)}
+                  label={t('item.altText')}
+                  type={'text'}
+                  className="w-full p-2"
+                  placeholder={t('item.altTextPlaceholder')}
+                />
+              )}
               <Input
                 rest={register(`${name}.${index}.link`)}
                 label={t('item.link')}
@@ -184,29 +272,23 @@ const ItemsAccordian = ({
                 errors={errors[name]?.[index]?.['srcset']}
                 t={t}
               />
-              <div className="kms_input-wrapper">
-                <label className="kms_input-label">{t('item.image')}</label>
-                <Controller
-                  control={control}
-                  name={`${name}.${index}.img`}
-                  render={({ field }) => (
-                    <ImageUpload
-                      imgId={field.value}
-                      clearError={() => clearError(`${name}.${index}.img`)}
-                      maxSize={imageMaxSize}
-                      onError={(msg) =>
-                        setError(`${name}.${index}.img`, {
-                          type: 'custom',
-                          message: msg,
-                        })
-                      }
-                      error={errors[name]?.[index]?.[
-                        'img'
+              {Array.isArray(languages) && languages.length > 0 ? (
+                <>
+                  {languages.map((lang) => (
+                    <ImageInput
+                      key={lang.code}
+                      label={t('item.image') + ` (${lang.name})`}
+                      control={control}
+                      name={`${name}.${index}.imgs.${lang.code}`}
+                      error={errors[name]?.[index]?.['imgs']?.[
+                        lang.code
                       ]?.message?.toString()}
-                      setImgId={(value) => {
-                        field.onChange(value);
-                      }}
                       baseUrl={imageBaseUrl ? imageBaseUrl : baseUrl}
+                      setError={setError}
+                      clearError={clearError}
+                      onImageRemove={onImageRemove}
+                      imageMaxSize={imageMaxSize}
+                      onImageUpload={onImageUpload}
                       text={
                         <>
                           <div className="khb_img-text-wrapper">
@@ -222,13 +304,36 @@ const ItemsAccordian = ({
                           </p>
                         </>
                       }
-                      onImageUpload={onImageUpload}
-                      onImageRemove={onImageRemove}
-                      className="khb_img-upload-wrapper-3"
                     />
-                  )}
+                  ))}
+                </>
+              ) : (
+                <ImageInput
+                  label={t('item.image')}
+                  control={control}
+                  name={`${name}.${index}.img`}
+                  error={errors[name]?.[index]?.['img']?.message?.toString()}
+                  baseUrl={imageBaseUrl ? imageBaseUrl : baseUrl}
+                  setError={setError}
+                  clearError={clearError}
+                  onImageRemove={onImageRemove}
+                  imageMaxSize={imageMaxSize}
+                  onImageUpload={onImageUpload}
+                  text={
+                    <>
+                      <div className="khb_img-text-wrapper">
+                        <div className="khb_img-text-label">
+                          <span>{t('item.uploadFile')}</span>
+                        </div>
+                        <p className="khb_img-text-1">{t('item.dragDrop')}</p>
+                      </div>
+                      <p className="khb_img-text-2">
+                        {t('item.allowedFormat')}
+                      </p>
+                    </>
+                  }
                 />
-              </div>
+              )}
             </div>
           </Accordian>
         ))}

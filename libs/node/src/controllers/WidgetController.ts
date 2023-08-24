@@ -156,30 +156,74 @@ export const getSingleWidget = catchAsync(
           ...commonExcludedFields,
         },
       },
-      {
-        $lookup: {
-          from: 'file',
-          let: { imgId: '$img' },
-          as: 'img',
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ['$_id', '$$imgId'],
+      ...(defaults.languages && defaults.languages?.length > 0
+        ? defaults.languages.reduce((arr: any[], lng) => {
+            arr.push(
+              {
+                $lookup: {
+                  from: 'file',
+                  let: { imgsId: { $toObjectId: `$imgs.${lng.code}` } },
+                  as: `imgs.${lng.code}`,
+                  pipeline: [
+                    {
+                      $match: {
+                        $expr: {
+                          $eq: ['$_id', '$$imgsId'],
+                        },
+                      },
+                    },
+                    {
+                      $project: {
+                        ...commonExcludedFields,
+                        width: 0,
+                        module: 0,
+                        height: 0,
+                      },
+                    },
+                  ],
                 },
               },
-            },
+              {
+                $unwind: {
+                  path: `$imgs.${lng.code}`,
+                  preserveNullAndEmptyArrays: true,
+                },
+              }
+            );
+            return arr;
+          }, [])
+        : [
             {
-              $project: {
-                ...commonExcludedFields,
-                width: 0,
-                module: 0,
-                height: 0,
+              $lookup: {
+                from: 'file',
+                let: { imgId: '$img' },
+                as: 'img',
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $eq: ['$_id', '$$imgId'],
+                      },
+                    },
+                  },
+                  {
+                    $project: {
+                      ...commonExcludedFields,
+                      width: 0,
+                      module: 0,
+                      height: 0,
+                    },
+                  },
+                ],
               },
             },
-          ],
-        },
-      },
+            {
+              $unwind: {
+                path: '$img',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+          ]),
       {
         $lookup: {
           from: 'srcsets',
@@ -201,12 +245,6 @@ export const getSingleWidget = catchAsync(
               },
             },
           ],
-        },
-      },
-      {
-        $unwind: {
-          path: '$img',
-          preserveNullAndEmptyArrays: true,
         },
       },
     ]);

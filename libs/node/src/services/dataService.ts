@@ -70,62 +70,100 @@ export const getWidgetDataDB = async (code: string) => {
               isDeleted: false,
             },
           },
+          ...(defaults.languages && defaults.languages?.length > 0
+            ? defaults.languages.reduce((arr: any[], lng) => {
+                arr.push(
+                  {
+                    $lookup: {
+                      from: 'file',
+                      let: { img: { $toObjectId: `$imgs.${lng.code}` } },
+                      as: `images.${lng.code}`,
+                      pipeline: [
+                        {
+                          $match: {
+                            $expr: {
+                              $eq: ['$_id', '$$img'],
+                            },
+                          },
+                        },
+                        {
+                          $project: {
+                            _id: 1,
+                            uri: 1,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    $unwind: {
+                      path: `$images.${lng.code}`,
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  }
+                );
+                return arr;
+              }, [])
+            : [
+                {
+                  $lookup: {
+                    from: 'file',
+                    let: { img: '$img' },
+                    as: 'image',
+                    pipeline: [
+                      {
+                        $match: {
+                          $expr: {
+                            $eq: ['$_id', '$$img'],
+                          },
+                        },
+                      },
+                      {
+                        $project: {
+                          _id: 1,
+                          uri: 1,
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  $unwind: {
+                    path: '$image',
+                    preserveNullAndEmptyArrays: true,
+                  },
+                },
+              ]),
           {
             $project: {
+              sequence: 0,
+              imgs: 0,
               ...commonExcludedFields,
             },
           },
-          {
-            $lookup: {
-              from: 'file',
-              let: { img: '$img' },
-              as: 'image',
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $eq: ['$_id', '$$img'],
-                    },
-                  },
-                },
-                {
-                  $project: {
-                    _id: 1,
-                    uri: 1,
-                  },
-                },
-              ],
-            },
-          },
-          {
-            $lookup: {
-              from: 'srcsets',
-              let: { item: '$_id' },
-              as: 'srcset',
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $eq: ['$itemId', '$$item'],
-                    },
-                  },
-                },
-                {
-                  $project: {
-                    ...commonExcludedFields,
-                    _id: 0,
-                    itemId: 0,
-                  },
-                },
-              ],
-            },
-          },
-          {
-            $unwind: {
-              path: '$image',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
+          // {
+          //   $lookup: {
+          //     from: 'srcsets',
+          //     let: { item: '$_id' },
+          //     as: 'srcset',
+          //     pipeline: [
+          //       {
+          //         $match: {
+          //           $expr: {
+          //             $eq: ['$itemId', '$$item'],
+          //           },
+          //         },
+          //       },
+          //       {
+          //         $project: {
+          //           ...commonExcludedFields,
+          //           _id: 0,
+          //           itemId: 0,
+          //         },
+          //       },
+          //     ],
+          //   },
+          // },
         ],
         as: 'items',
       },
@@ -246,62 +284,100 @@ export const getPageDataDB = async (code: string) => {
                     isDeleted: false,
                   },
                 },
+                ...(defaults.languages && defaults.languages?.length > 0
+                  ? defaults.languages.reduce((arr: any[], lng) => {
+                      arr.push(
+                        {
+                          $lookup: {
+                            from: 'file',
+                            let: { img: { $toObjectId: `$imgs.${lng.code}` } },
+                            as: `images.${lng.code}`,
+                            pipeline: [
+                              {
+                                $match: {
+                                  $expr: {
+                                    $eq: ['$_id', '$$img'],
+                                  },
+                                },
+                              },
+                              {
+                                $project: {
+                                  _id: 1,
+                                  uri: 1,
+                                },
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          $unwind: {
+                            path: `$images.${lng.code}`,
+                            preserveNullAndEmptyArrays: true,
+                          },
+                        }
+                      );
+                      return arr;
+                    }, [])
+                  : [
+                      {
+                        $lookup: {
+                          from: 'file',
+                          let: { img: '$img' },
+                          as: 'image',
+                          pipeline: [
+                            {
+                              $match: {
+                                $expr: {
+                                  $eq: ['$_id', '$$img'],
+                                },
+                              },
+                            },
+                            {
+                              $project: {
+                                _id: 1,
+                                uri: 1,
+                              },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        $unwind: {
+                          path: '$image',
+                          preserveNullAndEmptyArrays: true,
+                        },
+                      },
+                    ]),
                 {
                   $project: {
+                    sequence: 0,
+                    imgs: 0,
                     ...commonExcludedFields,
                   },
                 },
-                {
-                  $lookup: {
-                    from: 'file',
-                    let: { img: '$img' },
-                    as: 'image',
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $eq: ['$_id', '$$img'],
-                          },
-                        },
-                      },
-                      {
-                        $project: {
-                          _id: 1,
-                          uri: 1,
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  $lookup: {
-                    from: 'srcsets',
-                    let: { item: '$_id' },
-                    as: 'srcset',
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $eq: ['$itemId', '$$item'],
-                          },
-                        },
-                      },
-                      {
-                        $project: {
-                          ...commonExcludedFields,
-                          _id: 0,
-                          itemId: 0,
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  $unwind: {
-                    path: '$image',
-                    preserveNullAndEmptyArrays: true,
-                  },
-                },
+                // {
+                //   $lookup: {
+                //     from: 'srcsets',
+                //     let: { item: '$_id' },
+                //     as: 'srcset',
+                //     pipeline: [
+                //       {
+                //         $match: {
+                //           $expr: {
+                //             $eq: ['$itemId', '$$item'],
+                //           },
+                //         },
+                //       },
+                //       {
+                //         $project: {
+                //           ...commonExcludedFields,
+                //           _id: 0,
+                //           itemId: 0,
+                //         },
+                //       },
+                //     ],
+                //   },
+                // },
               ],
               as: 'items',
             },

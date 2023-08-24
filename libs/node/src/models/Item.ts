@@ -10,6 +10,18 @@ const titlesSchema =
     return acc;
   }, {}) || {};
 
+const imagesSchema =
+  defaults.languages?.reduce((acc: any, lang) => {
+    acc[lang.code] = { type: Schema.Types.ObjectId, ref: 'file' };
+    return acc;
+  }, {}) || {};
+
+const altTextsSchema =
+  defaults.languages?.reduce((acc: any, lang) => {
+    acc[lang.code] = { type: String };
+    return acc;
+  }, {}) || {};
+
 const ItemSchema = new Schema<IItemSchema>({
   widgetId: {
     type: Types.ObjectId,
@@ -20,9 +32,11 @@ const ItemSchema = new Schema<IItemSchema>({
   subtitle: String,
   subtitles: titlesSchema,
   altText: String,
+  altTexts: altTextsSchema,
   link: String,
   sequence: Number,
   img: { type: Schema.Types.ObjectId, ref: 'file' },
+  imgs: imagesSchema,
   itemType: {
     type: String,
     enum: Object.values(ItemTypes),

@@ -354,6 +354,18 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       ...(getValues(constants.mobileItems) || []),
     ];
     items = items.map(({ _id, __v, widgetId, ...item }) => {
+      if (typeof item['imgs'] === 'object' && item['imgs']) {
+        Object.keys(item['imgs']).forEach((key) => {
+          if (item['imgs'][key] && item['imgs'][key]['_id']) {
+            item['imgs'][key] = item['imgs'][key]['_id'];
+          } else if (
+            typeof item['imgs'][key] !== 'string' ||
+            !item['imgs'][key]
+          ) {
+            delete item['imgs'][key];
+          }
+        });
+      }
       if (item['img'] && item['img']['_id']) {
         item['img'] = item['img']['_id'];
       } else if (typeof item['img'] !== 'string' || !item['img']) {

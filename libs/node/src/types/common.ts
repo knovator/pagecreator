@@ -68,10 +68,12 @@ export interface IItemSchema extends Document {
   subtitle: string;
   subtitles: LanguageSchemaFieldType;
   altText: string;
+  altTexts: LanguageSchemaFieldType;
   link: string;
   sequence: number;
   itemType: ItemTypes;
   img: any;
+  imgs: any;
   srcset?: SrcSetItem[];
 }
 export interface SrcSetItem {

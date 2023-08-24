@@ -115,7 +115,7 @@ export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
   const customOptions = {
     pagination: !all,
     sort,
-    select: 'name code isActive',
+    select: 'name widgetTitles code isActive',
     ...(page && limit ? { page, limit } : {}),
   };
   const orOptions: any = [];

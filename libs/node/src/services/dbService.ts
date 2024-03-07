@@ -30,9 +30,10 @@ export async function update<T extends EntityType>(
 export async function remove<T extends EntityType>(
   Modal: Model<T>,
   query: FilterQuery<EntityType>
-): Promise<ReturnDocument> {
+): Promise<T | undefined> {
   const modalInstance = await getOne(Modal, query);
-  return await modalInstance.remove();
+  await modalInstance.remove();
+  return modalInstance;
 }
 // delete-all
 export async function deleteAll<T extends EntityType>(Modal: Model<T>, query: FilterQuery<T>) {

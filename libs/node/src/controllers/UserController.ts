@@ -13,7 +13,7 @@ export const getWidgetData = catchAsync(
   async (req: IRequest, res: IResponse) => {
     const { fresh } = req.query;
     const { code } = req.body;
-    let widgetData = await getRedisValue(`widget_${code}`);
+    let widgetData = await getRedisValue(`widgetData_${code}`);
     if (widgetData && fresh !== 'true') {
       return successResponse(widgetData, res);
     }
@@ -24,7 +24,7 @@ export const getWidgetData = catchAsync(
       return recordNotFound(res);
     }
 
-    await setRedisValue(`widget_${code}`, widgetData);
+    await setRedisValue(`widgetData_${code}`, widgetData);
 
     return successResponse(widgetData, res);
   }

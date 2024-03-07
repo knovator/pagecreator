@@ -231,7 +231,23 @@ export const getWidgetDataDB = async (code: string) => {
 export const updateRedisWidget = async (code: string) => {
   const widgetData = await getWidgetDataDB(code);
   if (widgetData) {
-    await setRedisValue(`widget_${code}`, widgetData as unknown as JSON);
+    await setRedisValue(`widgetData_${code}`, widgetData as unknown as JSON);
+  }
+};
+
+export const updateWidgetPagesData = async (widgetIds: string[]) => {
+  const pageCodes = await Page.find(
+    {
+      widgets: {
+        $in: widgetIds,
+      },
+    },
+    'code'
+  ).distinct('code');
+  if (pageCodes.length) {
+    pageCodes.forEach((code) => {
+      deleteRedisValue(`pageData_${code}`);
+    });
   }
 };
 
@@ -417,7 +433,7 @@ export const getPageDataDB = async (code: string) => {
 export const updateRedisPage = async (code: string) => {
   const pageData = await getPageDataDB(code);
   if (pageData) {
-    await setRedisValue(`page_${code}`, pageData);
+    await setRedisValue(`pageData_${code}`, pageData);
   }
 };
 
@@ -435,21 +451,9 @@ export const handleUpdateData = async (
     'code _id'
   ).lean();
   if (widgets.length) {
-    const pageCodes = await Page.find(
-      {
-        widgets: {
-          $in: widgets.map((widget: any) => widget._id),
-        },
-      },
-      'code'
-    ).distinct('code');
-    if (pageCodes.length) {
-      pageCodes.forEach((code) => {
-        deleteRedisValue(`page_${code}`);
-      });
-    }
+    updateWidgetPagesData(widgets.map((widget: any) => widget._id));
     widgets.forEach((widget) => {
-      deleteRedisValue(`widget_${widget.code}`);
+      deleteRedisValue(`widgetData_${widget.code}`);
     });
   }
 };

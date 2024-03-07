@@ -24,7 +24,10 @@ import {
   TypesType,
   ItemsType,
 } from '../types';
-import { updateRedisWidget } from '../services/dataService';
+import {
+  updateRedisWidget,
+  updateWidgetPagesData,
+} from '../services/dataService';
 
 const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Widget');
@@ -86,7 +89,10 @@ export const updateWidget = catchAsync(
       await deleteItems(_id);
       await createItems(items, updatedWidget._id);
     }
-    if (updatedWidget) updateRedisWidget(updatedWidget.code);
+    if (updatedWidget) {
+      updateRedisWidget(updatedWidget.code);
+      updateWidgetPagesData([updatedWidget.id]);
+    }
     res.message = req?.i18n?.t('widget.update');
     return successResponse(updatedWidget, res);
   }
@@ -96,9 +102,13 @@ export const deleteWidget = catchAsync(
   async (req: IRequest, res: IResponse) => {
     await deleteItems(req.params['id']);
     const _id = new Types.ObjectId(req.params['id']);
-    const deletedNotification = await remove(Widget, { _id });
+    const deletedWidget = await remove(Widget, { _id });
+    if (deletedWidget) {
+      updateRedisWidget(deletedWidget.code);
+      updateWidgetPagesData([deletedWidget.id]);
+    }
     res.message = req?.i18n?.t('widget.delete');
-    return successResponse(deletedNotification, res);
+    return successResponse(deletedWidget, res);
   }
 );
 
@@ -257,9 +267,13 @@ export const partialUpdateWidget = catchAsync(
   async (req: IRequest, res: IResponse) => {
     const data = req.body;
     const _id = req.params['id'];
-    const updatedNotification = await update(Widget, { _id }, data);
+    const updatedWidget = await update(Widget, { _id }, data);
+    if (updatedWidget) {
+      updateRedisWidget(updatedWidget.code);
+      updateWidgetPagesData([updatedWidget.id]);
+    }
     res.message = req?.i18n?.t('widget.partialUpdate');
-    return successResponse(updatedNotification, res);
+    return successResponse(updatedWidget, res);
   }
 );
 

@@ -121,7 +121,9 @@ export const update = joi.object<ItemValidation>({
   updatedBy: joi.any().optional(),
   deletedBy: joi.any().optional(),
   deletedAt: joi.any().optional(),
-  textContent: joi.string().optional()
+  textContent: joi.string().optional(),
+  htmlContent: joi.string().optional()
+
 });
 
 export const list = joi.object({

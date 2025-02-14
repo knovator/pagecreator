@@ -475,12 +475,9 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       ? {
           label: commonTranslations.title,
           accessor: 'widgetTitles',
-          required: true,
+          required: false,
           type:
             customInputs && customInputs['widgetTitles'] ? undefined : 'text',
-          validations: {
-            required: commonTranslations.titleRequired,
-          },
           info: widgetTranslations.widgetTitleInfo,
           placeholder: commonTranslations.titlePlaceholder,
           onInput: handleCapitalize,

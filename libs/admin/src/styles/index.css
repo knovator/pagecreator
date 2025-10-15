@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
 /* Buttons */
 .khb_btn {
@@ -32,7 +30,7 @@
 }
 
 .khb_btn-xs {
-    @apply text-xs px-1.5 py-1
+    @apply text-xs px-1.5 py-1;
 }
 .khb_btn-sm {
     @apply text-sm px-3 py-2;
@@ -82,10 +80,10 @@
     @apply p-0.5;
 }
 .khb_actions-update {
-    @apply khb_btn khb_btn-primary khb_btn-xs;
+    @apply rounded-lg font-medium text-center m-1 focus:outline-none focus:ring-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 text-xs px-1.5 py-1;
 }
 .khb_actions-delete {
-    @apply khb_btn khb_btn-danger khb_btn-xs;
+    @apply rounded-lg font-medium text-center m-1 focus:outline-none focus:ring-4 text-white bg-red-700 hover:bg-red-800 focus:ring-red-300 text-xs px-1.5 py-1;
 }
 /* \ End of Table */
 
@@ -160,7 +158,7 @@
     @apply absolute inset-0 overflow-hidden;
 }
 .khb_drawer-backdrop {
-    @apply absolute inset-0 transition-opacity bg-black bg-opacity-75 backdrop-blur-sm;
+    @apply absolute inset-0 transition-opacity bg-black opacity-75 backdrop-blur-sm;
 }
 .khb_drawer-container-1 {
     @apply fixed inset-y-0 right-0 flex max-w-full pl-10;
@@ -214,7 +212,7 @@
     @apply align-top;
 }
 .khb_margin-top-0 {
-    @apply !mt-0;
+    @apply mt-0!;
 }
 /* \ End of Utility */
 
@@ -270,7 +268,7 @@
     @apply flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0 relative;
 }
 .khb_modal-backdrop {
-    @apply absolute inset-0 transition-opacity bg-black bg-opacity-75 backdrop-blur-sm;
+    @apply absolute inset-0 transition-opacity bg-black opacity-75 backdrop-blur-sm;
 }
 .khb_modal-container-1 {
     @apply opacity-100 min-h-screen flex justify-center items-center;
@@ -387,6 +385,9 @@
     /* background-repeat: no-repeat; */
     /* background-position: center; */
 }
+.khb_switch .slider.khb_btn {
+    @apply rounded-lg font-medium text-center m-1 focus:outline-none focus:ring-4;
+}
 /* Switch Rounded sliders */
 .khb_switch .slider.round {
     border-radius: 34px;
@@ -442,9 +443,9 @@ input:checked + .slider:before {
 .khb_tabs-remove {
     @apply text-red-600 hover:text-red-700 focus:ring-red-300;
 }
-.khb_tabs-add {
+/* .khb_tabs-add {
     @apply khb_btn khb_btn-primary khb_btn-xs;
-}
+} */
 .khb_tabs-list {
     @apply flex gap-x-4 gap-y-2.5 flex-wrap;
 }

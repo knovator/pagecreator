@@ -4,7 +4,6 @@
     "outDir": "../../dist/out-tsc",
     "types": ["node"],
     "composite": true,
-    "declaration": true,
     "jsx": "react"
   },
   "files": [

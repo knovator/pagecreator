@@ -252,7 +252,7 @@ export function NxWelcome({ title }: { title: string }) {
       -webkit-backdrop-filter;
       transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
       transition-duration: 150ms;
-      shrink: 0;
+      flex-shrink: 0;
       width: 3rem;
     }
     .button-pill > span {
@@ -296,7 +296,7 @@ export function NxWelcome({ title }: { title: string }) {
     }
     #nx-cloud > div svg {
       border-radius: 0.375rem;
-      shrink: 0;
+      flex-shrink: 0;
       width: 3rem;
     }
     #nx-cloud > div h2 {

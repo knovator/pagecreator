@@ -91,6 +91,7 @@ const usePage = ({
             return {
               label: item['name'],
               value: item['_id'] || item['id'],
+              code: item['code'],
             };
           });
           if (typeof callback === 'function') callback(widgetsData);

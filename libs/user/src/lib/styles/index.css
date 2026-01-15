@@ -1,8 +1,6 @@
 @import url('swiper/swiper-bundle.min.css');
 @import url('react-tabs/style/react-tabs.css');
-@tailwind components;
-@tailwind base;
-@tailwind utilities;
+@import 'tailwindcss';
 
 .kpc_widget-title {
     @apply mb-2 font-bold text-2xl;
@@ -39,7 +37,6 @@
     @apply h-full w-full aspect-square;
 }
 
-.kpc_page {}
 .kpc_page-title {
     @apply mb-2 font-bold text-2xl;
 }

@@ -13,8 +13,5 @@ module.exports = {
   theme: {
     extend: {},
   },
-  safelist: {
-    pattern: /khb_.+/,
-  },
   plugins: [],
 };

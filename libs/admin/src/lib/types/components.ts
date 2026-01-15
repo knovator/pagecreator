@@ -14,6 +14,7 @@ export interface DNDItemsListProps {
   items: OptionType[];
   listCode?: string;
   formatItem?: (code: string, data: any) => JSX.Element;
+  onFilterClick?: (item: OptionType) => void;
 }
 export interface DrawerProps {
   children?: React.ReactNode;

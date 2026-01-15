@@ -41,13 +41,14 @@ const CustomReactSelect = ({
         options={options}
         isSearchable={isSearchable}
         isLoading={isLoading}
-        onKeyDown={(e) =>
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
           onSearch && onSearch((e.target as HTMLInputElement).value)
         }
         placeholder={placeholder}
         formatOptionLabel={
           formatOptionLabel
-            ? (option) => formatOptionLabel(listCode!, option)
+            ? (option: { [key: string]: any }) =>
+                formatOptionLabel(listCode!, option)
             : undefined
         }
       />

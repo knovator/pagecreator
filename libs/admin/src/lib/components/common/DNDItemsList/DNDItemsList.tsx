@@ -1,17 +1,24 @@
 import React from 'react';
 import { DNDItemsListProps } from '../../../types';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import Settings from '../../../icons/settings';
+
+const DragDropContextWrapper =
+  DragDropContext as unknown as React.ComponentType<any>;
+const DroppableWrapper: any = Droppable;
+const DraggableWrapper: any = Draggable;
 
 const DNDItemsList = ({
   onDragEnd,
   items,
   formatItem,
   listCode,
+  onFilterClick,
 }: DNDItemsListProps) => {
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable">
-        {(droppableProvided) => (
+    <DragDropContextWrapper onDragEnd={onDragEnd}>
+      <DroppableWrapper droppableId="droppable">
+        {(droppableProvided: any) => (
           <div
             className="khb_DND-items"
             ref={droppableProvided.innerRef}
@@ -19,12 +26,12 @@ const DNDItemsList = ({
           >
             {items
               ? items.map((item, index) => (
-                  <Draggable
+                  <DraggableWrapper
                     key={item.value}
                     draggableId={item.value}
                     index={index}
                   >
-                    {(provided) => (
+                    {(provided: any) => (
                       <div
                         className="khb_DND-item"
                         key={item.value}
@@ -35,18 +42,32 @@ const DNDItemsList = ({
                         {typeof formatItem === 'function' && listCode ? (
                           formatItem(listCode, item)
                         ) : (
-                          <p className="khb_DND-item-text">{item.label}</p>
+                          <div className="khb_DND-item-content">
+                            <p className="khb_DND-item-text">{item.label}</p>
+                            {((item as { code?: string }).code ===
+                              'BROWSE_JOBS' ||
+                              item.value === 'BROWSE_JOBS') && (
+                              <button
+                                type="button"
+                                className="khb_DND-item-settings"
+                                onClick={() => onFilterClick?.(item)}
+                                aria-label="Open filter settings"
+                              >
+                                <Settings className="khb_DND-item-settings-icon" />
+                              </button>
+                            )}
+                          </div>
                         )}
                       </div>
                     )}
-                  </Draggable>
+                  </DraggableWrapper>
                 ))
               : null}
             {droppableProvided.placeholder}
           </div>
         )}
-      </Droppable>
-    </DragDropContext>
+      </DroppableWrapper>
+    </DragDropContextWrapper>
   );
 };
 

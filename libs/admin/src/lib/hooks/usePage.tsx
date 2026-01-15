@@ -4,7 +4,7 @@ import { useProviderState } from '../context/ProviderContext';
 import { paginationDataGatter } from '../helper/utils';
 import usePagination from './usePagination';
 import request, { getApiType } from '../api';
-import { FormActionTypes, ObjectType, Routes_Input } from '../types';
+import { FormActionTypes, ObjectType, OptionType, Routes_Input } from '../types';
 
 interface UsePageProps {
   defaultLimit: number;
@@ -16,9 +16,7 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
   const [loading, setLoading] = useState(false);
   const [widgets, setWidgets] = useState<ObjectType[]>([]);
-  const [selectedWidgets, setSelectedWidgets] = useState<
-    { label: string; value: string }[]
-  >([]);
+  const [selectedWidgets, setSelectedWidgets] = useState<OptionType[]>([]);
   const [widgetsLoading, setWidgetsLoading] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -72,6 +70,7 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
           return {
             label: item['name'],
             value: item['_id'] || item['id'],
+            code: item['code'],
           };
         });
         return setWidgets(widgetsData);

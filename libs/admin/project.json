@@ -4,8 +4,21 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "css": {
+      "executor": "nx:run-commands",
+      "options": {
+        "assets": [
+          { "glob": "libs/admin/src/styles/index.css", "input": ".", "output": "." }
+        ],
+        "commands": [
+          "npx @tailwindcss/cli -i src/styles/index.css -o index.css --minify"
+        ],
+        "cwd": "libs/admin",
+        "parallel": true
+      }
+    },
     "build": {
-      "executor": "@nrwl/web:rollup",
+      "executor": "@nrwl/rollup:rollup",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/admin",
@@ -17,6 +30,11 @@
         "assets": [
           {
             "glob": "libs/admin/README.md",
+            "input": ".",
+            "output": "."
+          },
+          {
+            "glob": "libs/admin/src/styles/index.css",
             "input": ".",
             "output": "."
           }

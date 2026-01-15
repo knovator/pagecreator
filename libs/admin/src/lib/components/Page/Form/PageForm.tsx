@@ -16,7 +16,7 @@ import {
 import { CONSTANTS } from '../../../constants/common';
 import { useProviderState } from '../../../context/ProviderContext';
 
-const PageForm = ({ formRef }: FormProps) => {
+const PageForm = ({ formRef, onFilterClick, filterQuery }: FormProps) => {
   const { commonTranslations } = useProviderState();
   const {
     data,
@@ -109,6 +109,14 @@ const PageForm = ({ formRef }: FormProps) => {
     if (destination) onChangeWidgetSequence(source.index, destination.index);
   };
 
+  const handlePageSubmit = (formData: Record<string, unknown>) => {
+    const dataToSubmit =
+      typeof filterQuery !== 'undefined'
+        ? { ...formData, filterQuery }
+        : formData;
+    return onPageFormSubmit(dataToSubmit);
+  };
+
   // Schemas
   const pageFormSchema: SchemaType[] = [
     {
@@ -163,7 +171,7 @@ const PageForm = ({ formRef }: FormProps) => {
     <div className="khb_form">
       <SimpleForm
         schema={pageFormSchema}
-        onSubmit={onPageFormSubmit}
+        onSubmit={handlePageSubmit}
         ref={formRef}
         isUpdating={formState === 'UPDATE'}
         register={register}
@@ -186,7 +194,7 @@ const PageForm = ({ formRef }: FormProps) => {
         }}
       /> */}
 
-      <DNDItemsList onDragEnd={onDragEnd} items={selectedWidgets} />
+      <DNDItemsList onDragEnd={onDragEnd} onFilterClick={onFilterClick} items={selectedWidgets} />
     </div>
   );
 };

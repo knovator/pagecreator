@@ -13,6 +13,7 @@ export const create = joi.object<PageValidation>({
   slug: joi
     .string()
     .required(),
+  filterQuery: joi.string().optional().allow(''),
   widgets: joi.array().items(joi.string()).optional(),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),
@@ -25,6 +26,7 @@ export const update = joi.object<PageValidation>({
   widgets: joi.array().items(joi.string()).optional(),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),
+  filterQuery: joi.string().optional().allow(''),
   deletedBy: joi.any().optional(),
   deletedAt: joi.any().optional(),
 });

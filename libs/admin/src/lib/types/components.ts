@@ -22,7 +22,7 @@ export interface DNDItemsListProps {
   items: OptionType[];
   listCode?: string;
   formatItem?: (code: string, data: any) => JSX.Element;
-  onFilterClick?: (item: OptionType) => void;
+  onFilterClick?: () => void;
 }
 export interface DrawerProps {
   children?: React.ReactNode;
@@ -142,6 +142,8 @@ export interface CustomInputType {
   setError: (msg: string) => void;
 }
 export interface FormProps {
+  onFilterClick?: () => void;
+  filterQuery?: string;
   formRef: MutableRefObject<HTMLFormElement | null>;
   customInputs?: Record<string, (props: InputRendererProps) => JSX.Element>;
 }

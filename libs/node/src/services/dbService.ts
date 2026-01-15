@@ -6,7 +6,7 @@ import {
   HydratedDocument,
   QueryWithHelpers,
 } from 'mongoose';
-import { IModel } from '../types';
+import { EntityType, IModel } from '../types';
 
 // create
 export async function create<T>(
@@ -83,4 +83,23 @@ export async function bulkInsert<T>(
   docs: T[]
 ): Promise<Array<HydratedDocument<T>>> {
   return (await Modal.insertMany(docs)) as Array<HydratedDocument<T>>;
+}
+
+export async function checkUnique<T extends EntityType>({
+Modal,
+uniqueField,
+errorMessage,
+value
+}: {
+  Modal: Model<T>,
+  uniqueField: keyof T,
+  value: any,
+  errorMessage: string
+}): Promise<void> {
+  const query: FilterQuery<T> = { [uniqueField]: value } as FilterQuery<T>;
+  let result;
+  try {
+    result = await getOne(Modal, query);
+  } catch (error) {}
+  if(result) throw new Error(errorMessage)
 }

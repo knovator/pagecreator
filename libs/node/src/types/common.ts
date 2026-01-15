@@ -28,6 +28,7 @@ export interface IPageSchema extends Document {
   slug: string;
   canDel: boolean;
   widgets: string[];
+  filterQuery: string;
 }
 export interface ITabSchema extends Document {
   name: string;

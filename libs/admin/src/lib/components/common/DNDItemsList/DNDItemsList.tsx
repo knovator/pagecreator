@@ -15,11 +15,6 @@ const DNDItemsList = ({
   listCode,
   onFilterClick,
 }: DNDItemsListProps) => {
-  const shouldShowSettings = (item: { value: string; code?: string }) => {
-    console.log('item:', item);
-    return item.code === 'BROWSE_JOBS' || item.value === 'BROWSE_JOBS';
-  };
-
   return (
     <DragDropContextWrapper onDragEnd={onDragEnd}>
       <DroppableWrapper droppableId="droppable">
@@ -44,23 +39,25 @@ const DNDItemsList = ({
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        <div className="khb_DND-item-content">
-                          {typeof formatItem === 'function' && listCode ? (
-                            formatItem(listCode, item)
-                          ) : (
+                        {typeof formatItem === 'function' && listCode ? (
+                          formatItem(listCode, item)
+                        ) : (
+                          <div className="khb_DND-item-content">
                             <p className="khb_DND-item-text">{item.label}</p>
-                          )}
-                          {shouldShowSettings(item) && (
-                            <button
-                              type="button"
-                              className="khb_DND-item-settings"
-                              onClick={() => onFilterClick?.(item)}
-                              aria-label="Open filter settings"
-                            >
-                              <Settings className="khb_DND-item-settings-icon" />
-                            </button>
-                          )}
-                        </div>
+                            {((item as { code?: string }).code ===
+                              'BROWSE_JOBS' ||
+                              item.value === 'BROWSE_JOBS') && (
+                              <button
+                                type="button"
+                                className="khb_DND-item-settings"
+                                onClick={onFilterClick}
+                                aria-label="Open filter settings"
+                              >
+                                <Settings className="khb_DND-item-settings-icon" />
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                   </DraggableWrapper>

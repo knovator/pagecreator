@@ -1,5 +1,3 @@
-// import 'slick-carousel/slick/slick.css';
-// import 'slick-carousel/slick/slick-theme.css';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import 'libs/user/assets/style.css';
 import '../styles/global.css';

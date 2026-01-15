@@ -7,12 +7,18 @@ import request, { getApiType } from '../api';
 import { FormActionTypes, ObjectType, OptionType, Routes_Input } from '../types';
 
 interface UsePageProps {
+  canList?: boolean;
   defaultLimit: number;
   routes?: Routes_Input;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
 }
 
-const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
+const usePage = ({
+  routes,
+  defaultLimit,
+  canList = true,
+  preConfirmDelete,
+}: UsePageProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
   const [loading, setLoading] = useState(false);
   const [widgets, setWidgets] = useState<ObjectType[]>([]);
@@ -32,8 +38,16 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
     pageRoutesPrefix,
     widgetRoutesPrefix,
   } = useProviderState();
-  const { setPageSize, pageSize, currentPage, setCurrentPage, filter } =
-    usePagination({ defaultLimit });
+  const {
+    setPageSize,
+    pageSize,
+    currentPageRef,
+    setCurrentPage,
+    offsetRef,
+    limitRef,
+    searchRef,
+    changeSearch,
+  } = usePagination({ defaultLimit });
 
   const handleError = useCallback(
     (code: CALLBACK_CODES) => (error: any) => {
@@ -45,41 +59,50 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
     },
     [onError, onLogout]
   );
-  const getWidgets = useCallback(async () => {
-    try {
-      setWidgetsLoading(true);
-      const api = getApiType({
-        routes,
-        action: 'LIST',
-        prefix: widgetRoutesPrefix,
-      });
-      const response = await request({
-        baseUrl,
-        token,
-        method: api.method,
-        url: api.url,
-        onError: handleError(CALLBACK_CODES.GET_ALL),
-        data: {
-          all: true,
-          isActive: true,
-        },
-      });
-      if (response?.code === 'SUCCESS') {
-        let widgetsData = paginationDataGatter(response);
-        widgetsData = widgetsData.map((item: ObjectType) => {
-          return {
-            label: item['name'],
-            value: item['_id'] || item['id'],
-            code: item['code'],
-          };
+  const getWidgets = useCallback(
+    async (
+      search?: string,
+      collectionItems?: string[],
+      callback?: (data: any) => void
+    ) => {
+      try {
+        setWidgetsLoading(true);
+        const api = getApiType({
+          routes,
+          action: 'LIST',
+          prefix: widgetRoutesPrefix,
         });
-        return setWidgets(widgetsData);
+        const response = await request({
+          baseUrl,
+          token,
+          method: api.method,
+          url: api.url,
+          onError: handleError(CALLBACK_CODES.GET_ALL),
+          data: {
+            collectionItems: collectionItems || [],
+            search: search || '',
+            all: true,
+            isActive: true,
+          },
+        });
+        if (response?.code === 'SUCCESS') {
+          let widgetsData = paginationDataGatter(response);
+          widgetsData = widgetsData.map((item: ObjectType) => {
+            return {
+              label: item['name'],
+              value: item['_id'] || item['id'],
+            };
+          });
+          if (typeof callback === 'function') callback(widgetsData);
+          return setWidgets(widgetsData);
+        }
+        setWidgetsLoading(false);
+      } catch (error) {
+        setWidgetsLoading(false);
       }
-      setWidgetsLoading(false);
-    } catch (error) {
-      setWidgetsLoading(false);
-    }
-  }, [baseUrl, handleError, routes, token, widgetRoutesPrefix]);
+    },
+    [baseUrl, handleError, routes, token, widgetRoutesPrefix]
+  );
   const getPages = useCallback(
     async (search?: string) => {
       try {
@@ -98,9 +121,9 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
           data: {
             search,
             options: {
-              offset: filter.offset,
-              limit: filter.limit,
-              page: currentPage,
+              offset: offsetRef.current,
+              limit: limitRef.current,
+              page: currentPageRef.current,
             },
           },
         });
@@ -117,9 +140,9 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
     },
     [
       baseUrl,
-      currentPage,
-      filter.limit,
-      filter.offset,
+      currentPageRef,
+      limitRef,
+      offsetRef,
       handleError,
       pageRoutesPrefix,
       routes,
@@ -127,6 +150,11 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
     ]
   );
   const onPageFormSubmit = async (data: ObjectType) => {
+    if (selectedWidgets.length) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      data.widgets = selectedWidgets.map((item) => item.value);
+    }
     setLoading(true);
     const code =
       formState === 'ADD' ? CALLBACK_CODES.CREATE : CALLBACK_CODES.UPDATE;
@@ -146,6 +174,9 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
         onError: handleError(code),
       });
       if (response?.code === 'SUCCESS') {
+        if (formState === 'ADD') {
+          setCurrentPage(1);
+        }
         setLoading(false);
         onSuccess(code, response?.code, response?.message);
         getPages();
@@ -156,7 +187,6 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
       }
     } catch (error) {
       setLoading(false);
-      onError(code, INTERNAL_ERROR_CODE, (error as Error).message);
     }
   };
   const onCloseForm = () => {
@@ -214,11 +244,6 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
     setItemData(data || null);
     setFormState(state);
     if (state === 'UPDATE' && data?.widgets) {
-      setSelectedWidgets(
-        data.widgets.map((widgetId: string) =>
-          widgets.find((widget) => widget['value'] === widgetId)
-        )
-      );
       // setSelectedWidgets(widgets.filter((widget) => data.widgets.includes(widget.value)));
     } else {
       setSelectedWidgets([]);
@@ -228,6 +253,7 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
     sourceIndex: number,
     destinationIndex: number
   ) => {
+    console.log(sourceIndex, destinationIndex);
     setSelectedWidgets((listData) => {
       const temporaryData = [...listData];
       const [selectedRow] = temporaryData.splice(sourceIndex, 1);
@@ -235,12 +261,14 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
       return temporaryData;
     });
   };
-
+  const changeCurrentPage = (page: number) => {
+    setCurrentPage(page);
+    getPages(searchRef.current);
+  };
   useEffect(() => {
-    getPages();
-    getWidgets();
+    if (canList) getPages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, currentPage]);
+  }, [pageSize, canList]);
 
   return {
     list,
@@ -249,17 +277,20 @@ const usePage = ({ defaultLimit, routes, preConfirmDelete }: UsePageProps) => {
     setLoading,
 
     // Pagination
+    searchText: searchRef.current,
+    changeSearch,
     pageSize,
     totalPages,
-    currentPage,
+    currentPage: currentPageRef.current,
     totalRecords,
-    setCurrentPage,
+    setCurrentPage: changeCurrentPage,
     setPageSize,
 
     // Form
     widgets,
     itemData,
     formState,
+    getWidgets,
     onCloseForm,
     widgetsLoading,
     selectedWidgets,

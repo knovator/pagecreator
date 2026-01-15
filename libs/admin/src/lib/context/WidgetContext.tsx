@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { createContext, useContext } from 'react';
-import { PAGE_LIMITS } from '../constants/common';
+import { PAGE_LIMITS, TRANSLATION_PAIRS_WIDGET } from '../constants/common';
 import { WidgetContextType } from '../types';
 
 interface WidgetContextProviderProps
@@ -10,9 +10,12 @@ interface WidgetContextProviderProps
 const WidgetContext = createContext<WidgetContextType | null>(null);
 
 const WidgetContextProvider = ({
-  t = () => '',
   // Form
   list = [],
+  languages = [],
+  imageBaseUrl = '',
+  searchText = '',
+  changeSearch = () => {},
   formState = '',
   closeForm = () => {},
   loading = false,
@@ -48,23 +51,24 @@ const WidgetContextProvider = ({
   canDelete = false,
   loader = <span />,
   onPartialUpdateWidget = () => Promise.resolve(),
-  // Item
-  webItems = [],
-  mobileItems = [],
-  itemsLoading = false,
-  onItemFormSubmit = () => {},
+  reactSelectStyles = {},
+  imageMaxSize = 10_485_760,
+  widgetTranslations,
   // other
   children,
 }: WidgetContextProviderProps) => {
   return (
     <WidgetContext.Provider
       value={{
-        t,
         // Form
         list,
+        languages,
+        imageBaseUrl,
         closeForm,
         formState,
         loading,
+        searchText,
+        changeSearch,
         onChangeFormState,
         onWidgetFormSubmit,
         updateData,
@@ -82,6 +86,7 @@ const WidgetContextProvider = ({
         collectionData,
         formatListItem,
         formatOptionLabel,
+        reactSelectStyles,
         // Pagination
         currentPage,
         limits,
@@ -97,11 +102,11 @@ const WidgetContextProvider = ({
         data,
         canDelete,
         loader,
-        // Item
-        webItems,
-        mobileItems,
-        itemsLoading,
-        onItemFormSubmit,
+        imageMaxSize,
+        widgetTranslations: {
+          ...TRANSLATION_PAIRS_WIDGET,
+          ...(widgetTranslations || {}),
+        },
       }}
     >
       {children}

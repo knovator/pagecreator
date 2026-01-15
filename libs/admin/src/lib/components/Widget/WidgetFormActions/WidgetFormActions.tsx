@@ -6,8 +6,8 @@ import { useWidgetState } from '../../../context/WidgetContext';
 import { useProviderState } from '../../../context/ProviderContext';
 
 const WidgetFormActions = ({ formRef }: FormActionWrapperProps) => {
-  const { onError } = useProviderState();
-  const { closeForm, loading, canAdd, canUpdate, t } = useWidgetState();
+  const { onError, commonTranslations } = useProviderState();
+  const { closeForm, loading, canAdd, canUpdate, formState } = useWidgetState();
   const onSubmitClick = (
     e?: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -21,7 +21,7 @@ const WidgetFormActions = ({ formRef }: FormActionWrapperProps) => {
       return onError(
         CALLBACK_CODES.INTERNAL,
         'error',
-        `formRef is empty, make sure it's passed as 'ref' prop to the form!`
+        `formRef is empty, make sure it's passed as 'formRef' prop to the form!`
       );
     }
     // formRef is provided
@@ -35,10 +35,14 @@ const WidgetFormActions = ({ formRef }: FormActionWrapperProps) => {
   return (
     <FormActions
       loading={loading}
-      primaryLabel={t('saveButtonText')}
+      primaryLabel={
+        formState === 'ADD'
+          ? commonTranslations.create
+          : commonTranslations.update
+      }
       onPrimaryButtonClick={onSubmitClick}
       onSecondaryButtonClick={closeForm}
-      secondaryLabel={t('cancelButtonText')}
+      secondaryLabel={commonTranslations.cancel}
     />
   );
 };

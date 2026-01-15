@@ -6,6 +6,11 @@ import { IModel, IPageSchema } from '../types';
 const PageSchema = new Schema<IPageSchema>({
   name: String,
   code: String,
+  slug: String,
+  canDel: {
+    type: Boolean,
+    default: true,
+  },
   widgets: [{ type: Types.ObjectId, ref: 'Widget' }],
 });
 
@@ -14,4 +19,4 @@ PageSchema.plugin(mongoosePaginate);
 
 const Page = model('Page', PageSchema) as unknown as IModel<IPageSchema>;
 
-export default Page;
+export { Page, PageSchema };

@@ -14,6 +14,7 @@ const ImageUpload = ({
   imgId = '',
   onImageUpload,
   onImageRemove,
+  clearError,
   baseUrl,
   disabled = false,
 }: ImageUploadProps) => {
@@ -28,9 +29,9 @@ const ImageUpload = ({
     maxSize,
     onDrop: async (acceptedFiles, rejectedFiles) => {
       try {
-        onError('');
+        if (typeof clearError === 'function') clearError();
         if (acceptedFiles?.length > 0) {
-          const regex = /\.(png|jpeg|jpg|webp|svg)$/gi;
+          const regex = /\.(png|jpeg|jpg|webp|svg|gif)$/gi;
           const files = acceptedFiles.filter((file) => regex.test(file.name));
           if (files[0]) {
             const response = await onImageUpload(files[0]);
@@ -86,27 +87,23 @@ const ImageUpload = ({
     );
   };
 
-  return (
-    <>
+  if (!isEmpty(img) && isString(img) && img) {
+    return (
       <div className="khb_img-upload-wrapper-1">
         <div className="khb_img-upload-wrapper-2">
-          {!isEmpty(img) && isString(img) && img ? (
-            showImage(img)
-          ) : (
-            <div
-              {...getRootProps({
-                className,
-              })}
-            >
-              <input
-                disabled={disabled}
-                {...getInputProps()}
-                id="file-upload"
-              />
-              {text}
-            </div>
-          )}
+          <div>{showImage(img)}</div>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div {...getRootProps()} className="khb_img-upload-wrapper-1">
+        <input disabled={disabled} {...getInputProps()} id="file-upload" />
+        <label htmlFor="file-upload" className="khb_img-upload-wrapper-2">
+          <div className={className}>{text}</div>
+        </label>
       </div>
       {error && <p className="khb_input-error">{error}</p>}
     </>

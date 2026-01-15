@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { DropResult } from 'react-beautiful-dnd';
 
 import { SimpleForm } from '../../common/Form';
-import ImageUpload from '../../common/ImageUpload';
 import DNDItemsList from '../../common/DNDItemsList';
 import ItemsAccordian from './ItemsAccordian';
 
@@ -21,8 +20,26 @@ import {
   OptionType,
   SchemaType,
 } from '../../../types';
+import Tabs from './Tabs';
 
-const WidgetForm = ({ formRef }: FormProps) => {
+const constants = {
+  widgetTypeAccessor: 'widgetType',
+  itemTypeAccessor: 'itemsType',
+  collectionNameAccessor: 'collectionName',
+  collectionItemsAccessor: 'collectionItems',
+  tabsWidgetTypeValue: 'Tabs',
+  fixedCardWidgetTypeValue: 'FixedCard',
+  carouselWidgetTypeValue: 'Carousel',
+  imageItemsTypeValue: 'Image',
+  textWidgetTypeValue: 'Text',
+  htmlWidgetTypeValue: 'HTML',
+  tabsAccessor: 'tabs',
+  webItems: 'webItems',
+  mobileItems: 'mobileItems',
+  tabCollectionItemsAccessor: 'collectionItems',
+};
+
+const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   const {
     register,
     formState: { errors },
@@ -31,95 +48,86 @@ const WidgetForm = ({ formRef }: FormProps) => {
     setValue,
     control,
     watch,
+    clearErrors,
     setError,
-  } = useForm();
-  const { baseUrl, switchClass } = useProviderState();
+    getValues,
+  } = useForm({
+    shouldUnregister: false,
+  });
+  const { switchClass, commonTranslations } = useProviderState();
   const {
-    t,
     data,
     canAdd,
     canUpdate,
-    webItems,
-    mobileItems,
     formState,
     itemsTypes,
     widgetTypes,
-    onItemFormSubmit,
+    loading,
+    languages,
+    widgetTranslations,
     onWidgetFormSubmit,
-    onDeleteItem,
-    onImageRemove,
-    onImageUpload,
     getCollectionData,
     collectionData,
     collectionDataLoading,
     formatListItem,
     formatOptionLabel,
+    reactSelectStyles,
   } = useWidgetState();
   const callerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [activeTab, setActiveTab] = useState(0);
+  const [itemsEnabled, setItemsEnabled] = useState(true);
   const [webItemsVisible, setWebItemsVisible] = useState(false);
   const [mobileItemsVisible, setMobileItemsVisible] = useState(false);
-  const [itemsEnabled, setItemsEnabled] = useState(true);
-  const [showAutoPlay, setShowAutoPlay] = useState(false);
+  const [selectedWidgetType, setSelectedWidgetType] = useState<any>();
   const [selectedCollectionItems, setSelectedCollectionItems] = useState<
     OptionType[]
   >([]);
-  const [selectedItemsType, setSelectedItemsType] = useState<
+  const [tabCollectionItems, setTabCollectionItems] = useState<any[]>([]);
+  const [selectedCollectionType, setSelectedCollectionType] = useState<
     OptionType | undefined
   >();
+  const [collectionItemsUpdated, setCollectionItemsUpdated] = useState(false);
+  const [tabCollectionItemsUpdated, setTabCollectionItemsUpdated] = useState<
+    boolean[]
+  >([]);
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
-      if (data?.widgetType === 'Carousel') {
-        setShowAutoPlay(true);
-      } else {
-        setShowAutoPlay(false);
-      }
-      if (data?.itemsType === 'Image') {
-        setItemsEnabled(true);
-      } else {
+      const widgetType = widgetTypes.find(
+        (type) => type.value === data?.widgetType
+      );
+      setSelectedWidgetType(widgetType);
+      if (
+        data?.itemsType !== constants.imageItemsTypeValue ||
+        data?.widgetType === constants.textWidgetTypeValue ||
+        data?.widgetType === constants.htmlWidgetTypeValue
+      ) {
         setItemsEnabled(false);
       }
       if (
-        data?.collectionItems &&
-        data?.collectionItems.length > 0 &&
-        collectionData &&
-        collectionData.length > 0
-      ) {
-        let item;
-        setSelectedCollectionItems(
-          data?.collectionItems?.map((itemId: string) => {
-            item = collectionData.find(
-              (item) => item._id === itemId || item.id === itemId
-            );
-            return item
-              ? {
-                  label: item.name,
-                  value: item._id || item.id,
-                  ...item,
-                }
-              : {};
-          }) || []
-        );
-      } else {
-        setSelectedCollectionItems([]);
-      }
-      if (
-        data?.collectionName !== 'Image' &&
+        data?.collectionName !== constants.imageItemsTypeValue &&
         itemsTypes &&
         itemsTypes.length > 0
       ) {
-        setSelectedItemsType(
+        setSelectedCollectionType(
           itemsTypes.find((item) => item.value === data?.collectionName)
         );
       }
+      if (
+        data?.widgetType === constants.textWidgetTypeValue ||
+        data?.widgetType === constants.htmlWidgetTypeValue
+      ) {
+        setItemsEnabled(false);
+      }
     }
-  }, [data, formState, collectionData, itemsTypes]);
+  }, [data, formState, itemsTypes, widgetTypes]);
 
   useEffect(() => {
     if (formState === 'ADD') {
       setSelectedCollectionItems([]);
       setItemsEnabled(true);
+      setTabCollectionItems([]);
     }
   }, [formState]);
 
@@ -129,11 +137,84 @@ const WidgetForm = ({ formRef }: FormProps) => {
     }
   }, [data, reset]);
 
-  const onChangeSearch = (str: string) => {
+  const onChangeSearch = (
+    str?: string,
+    callback?: (options: OptionType[]) => void
+  ): any => {
+    let collectionItems: any[] = [];
+    let valueToSet = '';
+    if (formState === 'UPDATE') {
+      if (
+        data[constants.widgetTypeAccessor] === constants.tabsWidgetTypeValue
+      ) {
+        collectionItems = data[constants.tabsAccessor][activeTab]
+          ? data[constants.tabsAccessor][activeTab][
+              constants.collectionItemsAccessor
+            ]
+          : [];
+        valueToSet = `${constants.tabsAccessor}.${activeTab}.${constants.tabCollectionItemsAccessor}`;
+      } else if (
+        Array.isArray(data[constants.collectionItemsAccessor]) &&
+        data[constants.collectionItemsAccessor].length > 0
+      ) {
+        if (collectionItemsUpdated)
+          collectionItems = selectedCollectionItems.map(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            (collectionItem) => collectionItem._id
+          );
+        else collectionItems = data[constants.collectionItemsAccessor];
+        // valueToSet = constants.collectionItemsAccessor;
+      }
+    }
     if (callerRef.current) clearTimeout(callerRef.current);
+    let item: any;
 
     callerRef.current = setTimeout(() => {
-      if (selectedItemsType) getCollectionData(selectedItemsType.value, str);
+      if (selectedCollectionType)
+        getCollectionData(
+          selectedCollectionType.value,
+          str,
+          (options) => {
+            if (typeof callback === 'function')
+              callback(
+                options.map((item: ObjectType) => ({
+                  value: item['_id'] || item['id'],
+                  label: item['name'],
+                  ...item,
+                }))
+              );
+            if (formState === 'UPDATE') {
+              let selectedOptions =
+                collectionItems?.map((itemId: string) => {
+                  item = (options as any[]).find(
+                    (item) => item._id === itemId || item.id === itemId
+                  );
+                  return item
+                    ? {
+                        label: item.name,
+                        value: item._id || item.id,
+                        ...item,
+                      }
+                    : {};
+                }) || [];
+              selectedOptions = selectedOptions.filter((obj) => !!obj.value);
+              if (valueToSet) {
+                // only set tabcollection items, when they are not set
+                if (!tabCollectionItemsUpdated[activeTab]) {
+                  const updatedArr = tabCollectionItemsUpdated;
+                  updatedArr[activeTab] = true;
+                  setTabCollectionItemsUpdated(updatedArr);
+                  setValue(valueToSet, selectedOptions);
+                }
+              } else {
+                setSelectedCollectionItems(selectedOptions);
+                setCollectionItemsUpdated(true);
+              }
+            }
+          },
+          collectionItems
+        );
     }, 300);
   };
 
@@ -146,43 +227,192 @@ const WidgetForm = ({ formRef }: FormProps) => {
     event.target.value = changeToCode(event.target.value);
     return event;
   }
+  const getFirstItemTypeValue = useCallback(
+    (widgetType: string) => {
+      const derivedItemTypes =
+        widgetType === constants.tabsWidgetTypeValue
+          ? itemsTypes.filter(
+              (item) => item.label !== constants.imageItemsTypeValue
+            )
+          : itemsTypes;
+      const firstItemType = derivedItemTypes[0];
+      setValue(constants.itemTypeAccessor, firstItemType?.value);  
+      return firstItemType;
+    },
+    [itemsTypes, setValue]
+  );
+  
+
+  const getFirstWidgetTypeValue = useCallback(() => {
+    return widgetTypes[0].value;
+  }, [widgetTypes]);
 
   // Widget Form Functions
   const onWidgetFormInputChange = useCallback(
     (value: ObjectType, name: string | undefined) => {
-      if (name === 'widgetType') {
-        if (value['widgetType'] === 'Carousel') setShowAutoPlay(true);
-        else setShowAutoPlay(false);
-      } else if (name === 'itemsType') {
-        if (value['itemsType'] === 'Image') {
-          setSelectedItemsType(undefined);
+      if (name === constants.widgetTypeAccessor) {
+        const widgetType = widgetTypes.find(
+          (type) => type.value === value[name]
+        );
+        setSelectedWidgetType(widgetType);
+
+        if (
+          widgetType?.value === constants.textWidgetTypeValue ||
+          widgetType?.value === constants.htmlWidgetTypeValue
+        ) {
+          setItemsEnabled(false);
+        } else {
+          setItemsEnabled(true);
+        }
+  
+        if (
+          widgetType?.value === constants.carouselWidgetTypeValue ||
+          widgetType?.value === constants.fixedCardWidgetTypeValue
+        ) {
+          setValue(constants.itemTypeAccessor, "Image");
+        }
+  
+        if (widgetType?.value === constants.tabsWidgetTypeValue) {
+          const firstItemType = getFirstItemTypeValue(value[name]);
+          if (firstItemType) {
+            setSelectedCollectionType(firstItemType);
+          }
+          setValue(constants.itemTypeAccessor, firstItemType?.value);
+        }
+      } else if (name === constants.itemTypeAccessor) {
+        if (
+          value[constants.itemTypeAccessor] === constants.imageItemsTypeValue
+        ) {
+          setSelectedCollectionType(undefined);
           setItemsEnabled(true);
         } else {
           const selectedWType = itemsTypes.find(
-            (wType) => wType.value === value['itemsType']
+            (wType) => wType.value === value[constants.itemTypeAccessor]
           );
-          setSelectedItemsType(selectedWType);
-          getCollectionData(value['itemsType']);
+          setSelectedCollectionType(selectedWType);
           setItemsEnabled(false);
         }
-      }
+      } else if (
+        name?.includes(constants.tabsAccessor) &&
+        Array.isArray(value[constants.tabsAccessor])
+      ) {
+        setTabCollectionItems(
+          (value[constants.tabsAccessor] as unknown as any[]).map(
+            (tabItem) => tabItem[constants.tabCollectionItemsAccessor]
+          )
+        );
+      }  
     },
-    [getCollectionData, itemsTypes]
+    [getFirstItemTypeValue, itemsTypes, setValue, widgetTypes, selectedCollectionType]
   );
+  const validateTabs = (tabsData: any) => {
+    const isLanguagesProvided =
+      Array.isArray(languages) && languages.length > 0;
+    let isTabsValid = true;
+    if (Array.isArray(tabsData) && tabsData.length > 0) {
+      tabsData.forEach((tabItem: any, index: number) => {
+        if (isLanguagesProvided) {
+          languages.forEach((lang: any) => {
+            if (!tabItem.names[lang.code]) {
+              setError(`tabs.${index}.names.${lang.code}`, {
+                type: 'manual',
+                message: `${widgetTranslations.tabNameRequired} (${lang.name})`,
+              });
+              isTabsValid = false;
+            }
+          });
+        } else if (!tabItem.name) {
+          setError(`tabs.${index}.name`, {
+            type: 'manual',
+            message: widgetTranslations.tabNameRequired,
+          });
+          isTabsValid = false;
+        }
+      });
+    }
+    return isTabsValid;
+  };
   const onFormSubmit = (data: CombineObjectType) => {
     const formData = { ...data };
-    if (selectedItemsType && formState === 'ADD') {
-      formData['collectionName'] = selectedItemsType.value;
+    // setting widget type if undefined
+    if (!formData[constants.widgetTypeAccessor] && formState === 'ADD') {
+      formData[constants.widgetTypeAccessor] = getFirstWidgetTypeValue();
     }
+    // setting tabs data if widgetType tab is selected
+    const tabsData = getValues(constants.tabsAccessor);
+    if (Array.isArray(tabsData) && tabsData.length > 0) {
+      const isTabsValid = validateTabs(tabsData);
+      if (!isTabsValid) return;
+    }
+    if (
+      Array.isArray(tabsData) &&
+      (formData[constants.widgetTypeAccessor] ===
+        constants.tabsWidgetTypeValue ||
+        formState === 'UPDATE')
+    ) {
+      formData[constants.tabsAccessor] = tabsData.map((tabItem) => ({
+        name: tabItem.name,
+        names: tabItem.names,
+        collectionItems: tabItem.collectionItems.map(
+          (item: string | OptionType) =>
+            typeof item == 'string' ? item : item.value
+        ),
+      }));
+    } else formData[constants.tabsAccessor] = [];
+    // setting items type if undefined
+    if (!formData[constants.itemTypeAccessor] && formState === 'ADD') {
+      formData[constants.itemTypeAccessor] = getFirstItemTypeValue(
+        formData[constants.widgetTypeAccessor] as string
+      )?.value;
+    }
+    // setting collectionName if widgetType is FixedCard or Carousel and FormState
+    if (
+      formData[constants.itemTypeAccessor] !== constants.imageItemsTypeValue &&
+      formState === 'ADD'
+    ) {
+      formData[constants.collectionNameAccessor] = selectedCollectionType
+        ? selectedCollectionType.value
+        : getFirstItemTypeValue(
+            formData[constants.widgetTypeAccessor] as string
+          )?.value;
+    }
+    // setting colleciton items if collectionItems are there
     if (
       Array.isArray(selectedCollectionItems) &&
       selectedCollectionItems.length > 0
     ) {
-      formData['collectionItems'] = selectedCollectionItems.map(
+      formData[constants.collectionItemsAccessor] = selectedCollectionItems.map(
         (item) => item.value
       );
     }
-    onWidgetFormSubmit(formData);
+    let items = [
+      ...(getValues(constants.webItems) || []),
+      ...(getValues(constants.mobileItems) || []),
+    ];
+    items = items.map(({ _id, __v, widgetId, ...item }) => {
+      if (typeof item['imgs'] === 'object' && item['imgs']) {
+        Object.keys(item['imgs']).forEach((key) => {
+          if (item['imgs'][key] && item['imgs'][key]['_id']) {
+            item['imgs'][key] = item['imgs'][key]['_id'];
+          } else if (
+            typeof item['imgs'][key] !== 'string' ||
+            !item['imgs'][key]
+          ) {
+            delete item['imgs'][key];
+          }
+        });
+      }
+      if (item['img'] && item['img']['_id']) {
+        item['img'] = item['img']['_id'];
+      } else if (typeof item['img'] !== 'string' || !item['img']) {
+        delete item['img'];
+      }
+      return item;
+    });
+    onWidgetFormSubmit({
+      ...formData,
+      items,
+    });
   };
   const onCollectionIndexChange = (result: DropResult) => {
     const { destination, source } = result;
@@ -193,6 +423,16 @@ const WidgetForm = ({ formRef }: FormProps) => {
         temporaryData.splice(destination.index, 0, selectedRow);
         return temporaryData;
       });
+    }
+  };
+  const onTabItemsIndexChange = (index: number, result: DropResult) => {
+    const { destination, source } = result;
+    if (destination) {
+      const tabCollectionItems = getValues(`tabs.${index}.collectionItems`);
+      const temporaryData = [...tabCollectionItems];
+      const [selectedRow] = temporaryData.splice(source.index, 1);
+      temporaryData.splice(destination.index, 0, selectedRow);
+      setValue(`tabs.${index}.collectionItems`, temporaryData);
     }
   };
 
@@ -206,182 +446,218 @@ const WidgetForm = ({ formRef }: FormProps) => {
   // Schemas
   const widgetFormSchema: SchemaType[] = [
     {
-      label: `${t('widget.name')}`,
+      label: commonTranslations.name,
       required: true,
       accessor: 'name',
       type: 'text',
-      placeholder: t('widget.namePlaceholder'),
+      placeholder: commonTranslations.namePlaceholder,
       onInput: handleCapitalize,
       validations: {
-        required: t('widget.nameRequired'),
+        required: commonTranslations.nameRequired,
       },
       wrapperClassName: 'khb_grid-item-1of2 khb_padding-right-1 khb_align-top',
     },
     {
-      label: `${t('widget.code')}`,
+      label: commonTranslations.code,
       accessor: 'code',
       required: true,
       type: 'text',
       onInput: handleCode,
       editable: false,
-      placeholder: t('widget.codePlaceholder'),
+      placeholder: commonTranslations.codePlaceholder,
       validations: {
-        required: t('widget.codeRequired'),
+        required: commonTranslations.codeRequired,
       },
       wrapperClassName:
         'khb_grid-item-1of2 khb_padding-left-1 khb_align-top khb_margin-top-0',
     },
+    Array.isArray(languages) && languages.length > 0
+      ? {
+          label: commonTranslations.title,
+          accessor: 'widgetTitles',
+          required: false,
+          type:
+            customInputs && customInputs['widgetTitles'] ? undefined : 'text',
+          info: widgetTranslations.widgetTitleInfo,
+          placeholder: commonTranslations.titlePlaceholder,
+          onInput: handleCapitalize,
+          Input:
+            customInputs && customInputs['widgetTitles']
+              ? customInputs['widgetTitles']
+              : undefined,
+        }
+      : {
+          label: commonTranslations.title,
+          accessor: 'widgetTitle',
+          required: true,
+          type:
+            customInputs && customInputs['widgetTitle'] ? undefined : 'text',
+          onInput: handleCapitalize,
+          placeholder: commonTranslations.titlePlaceholder,
+          validations: {
+            required: commonTranslations.titleRequired,
+          },
+          info: widgetTranslations.widgetTitleInfo,
+          Input:
+            customInputs && customInputs['widgetTitle']
+              ? customInputs['widgetTitle']
+              : undefined,
+        },
     {
-      label: `${t('widget.widgetTitle')}`,
-      accessor: 'widgetTitle',
-      required: true,
-      type: 'text',
-      onInput: handleCapitalize,
-      placeholder: t('widget.widgetTitlePlaceholder'),
-      validations: {
-        required: t('widget.widgetTitleRequired'),
-      },
-    },
-    {
-      label: `${t('widget.itemsType')}`,
+      label: widgetTranslations.widgetType,
       required: true,
       editable: false,
-      accessor: 'itemsType',
+      accessor: constants.widgetTypeAccessor,
       type: 'select',
       validations: {
-        required: t('widget.itemsTypePlaceholder'),
-      },
-      options: itemsTypes,
-    },
-    {
-      label: `${t('widget.widgetType')}`,
-      required: true,
-      accessor: 'widgetType',
-      type: 'select',
-      validations: {
-        required: t('widget.widgetTypeRequired'),
+        required: widgetTranslations.widgetTypeRequired,
       },
       options: widgetTypes,
     },
     {
-      label: t('widget.autoPlay'),
+      label: widgetTranslations.autoPlay,
       accessor: 'autoPlay',
       type: 'checkbox',
-      show: showAutoPlay,
+      show: selectedWidgetType?.value === constants.carouselWidgetTypeValue,
       switchClass: switchClass,
     },
     {
-      label: t('widget.webPerRow'),
+      label: widgetTranslations.textContent,
+      accessor: 'textContent',
+      required: selectedWidgetType?.value === constants.textWidgetTypeValue,
+      type: customInputs && customInputs['textContent'] ? undefined : 'text',
+      placeholder: widgetTranslations.textContentPlaceholder,
+      validations: {
+        required: widgetTranslations.textContentRequired,
+      },
+      info: widgetTranslations.textContentInfo,
+      show: selectedWidgetType?.value === constants.textWidgetTypeValue,
+      Input:
+        customInputs && customInputs['textContent']
+          ? customInputs['textContent']
+          : undefined,
+    },
+    {
+      label: widgetTranslations.htmlContent,
+      accessor: 'htmlContent',
+      required: selectedWidgetType?.value === constants.htmlWidgetTypeValue,
+      type:
+        customInputs && customInputs['htmlContent'] ? undefined : 'textarea',
+      placeholder: widgetTranslations.htmlContentPlaceholder,
+      validations: {
+        required: widgetTranslations.htmlContentRequired,
+      },
+      show: selectedWidgetType?.value === constants.htmlWidgetTypeValue,
+      Input:
+        customInputs && customInputs['htmlContent']
+          ? customInputs['htmlContent']
+          : undefined,
+    },
+    {
+      label: widgetTranslations.itemsType,
+      required: true,
+      editable: false,
+      show:
+        selectedWidgetType?.value !== constants.textWidgetTypeValue &&
+        selectedWidgetType?.value !== constants.htmlWidgetTypeValue,
+      accessor: constants.itemTypeAccessor,
+      type: 'select',
+      validations: {
+        required: widgetTranslations.itemsTypePlaceholder,
+      },
+      options:
+        selectedWidgetType?.value === constants.tabsWidgetTypeValue ||
+        selectedWidgetType?.collectionsOnly
+          ? itemsTypes.filter(
+              (item) => item.label !== constants.imageItemsTypeValue
+            )
+          : selectedWidgetType?.imageOnly
+          ? itemsTypes.filter(
+              (item) => item.label === constants.imageItemsTypeValue
+            )
+          : itemsTypes,
+    },
+    {
+      label: widgetTranslations.color,
+      accessor: 'backgroundColor',
+      type: 'color',
+      className: 'khb_input-color',
+    },
+    {
+      label: widgetTranslations.webPerRow,
       accessor: 'webPerRow',
       type: 'number',
+      show:
+        selectedWidgetType?.value !== constants.textWidgetTypeValue &&
+        selectedWidgetType?.value !== constants.htmlWidgetTypeValue,
       required: true,
-      placeholder: t('widget.webPerRowPlaceholder'),
+      placeholder: widgetTranslations.webPerRowPlaceholder,
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-right-1',
       validations: {
-        required: t('widget.webPerRowRequired'),
+        required: widgetTranslations.webPerRowRequired,
+        min: {
+          value: 1,
+          message: widgetTranslations.minPerRow,
+        },
       },
     },
     {
-      label: t('widget.tabletPerRow'),
+      label: widgetTranslations.tabletPerRow,
       accessor: 'tabletPerRow',
       type: 'number',
+      show:
+        selectedWidgetType?.value !== constants.textWidgetTypeValue &&
+        selectedWidgetType?.value !== constants.htmlWidgetTypeValue,
       required: true,
-      placeholder: t('widget.tabletPerRowPlaceholder'),
+      placeholder: widgetTranslations.tabletPerRowPlaceholder,
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-left-1',
       validations: {
-        required: t('widget.tabletPerRowRequired'),
+        required: widgetTranslations.tabletPerRowRequired,
+        min: {
+          value: 1,
+          message: widgetTranslations.minPerRow,
+        },
       },
     },
     {
-      label: t('widget.mobilePerRow'),
+      label: widgetTranslations.mobilePerRow,
       accessor: 'mobilePerRow',
       type: 'number',
+      show:
+        selectedWidgetType?.value !== 'Text' &&
+        selectedWidgetType?.value !== 'HTML',
       required: true,
-      placeholder: t('widget.mobilePerRowPlaceholder'),
+      placeholder: widgetTranslations.mobilePerRowPlaceholder,
       wrapperClassName:
         'khb_grid-item-1of3 khb_padding-right-1 khb_padding-left-1',
       validations: {
-        required: t('widget.mobilePerRowRequired'),
+        required: widgetTranslations.mobilePerRowRequired,
+        min: {
+          value: 1,
+          message: widgetTranslations.minPerRow,
+        },
       },
     },
     {
-      label: selectedItemsType?.label,
-      placeholder: `Select ${selectedItemsType?.label}...`,
-      required: true,
-      accessor: 'collectionItems',
+      label: selectedCollectionType?.label,
+      placeholder: `Select ${selectedCollectionType?.label}...`,
+      accessor: constants.collectionItemsAccessor,
       type: 'ReactSelect',
-      options: collectionData.map((item: ObjectType) => ({
-        value: item['_id'] || item['id'],
-        label: item['name'],
-        ...item,
-      })),
+      options: collectionData,
       selectedOptions: selectedCollectionItems,
       isMulti: true,
       isSearchable: true,
       onChange: setSelectedCollectionItems,
-      onSearch: onChangeSearch,
+      loadOptions: onChangeSearch,
       isLoading: collectionDataLoading,
-      show: !itemsEnabled,
+      show:
+        !itemsEnabled &&
+        (selectedWidgetType?.value === constants.carouselWidgetTypeValue ||
+          selectedWidgetType?.value === constants.fixedCardWidgetTypeValue || !selectedWidgetType) && !!selectedCollectionType?.value,
       formatOptionLabel: formatOptionLabel,
-      listCode: selectedItemsType?.value,
-    },
-  ];
-  const itemFormSchema: SchemaType[] = [
-    {
-      label: `${t('item.title')}`,
-      required: true,
-      accessor: 'title',
-      type: 'text',
-      placeholder: t('item.titlePlaceholder'),
-    },
-    {
-      label: `${t('item.altText')}`,
-      accessor: 'altText',
-      type: 'text',
-      placeholder: t('item.altTextPlaceholder'),
-    },
-    {
-      label: `${t('item.link')}`,
-      required: true,
-      accessor: 'link',
-      type: 'url',
-      placeholder: t('item.linkPlaceholder'),
-    },
-    {
-      label: `${t('item.srcset')}`,
-      accessor: 'srcset',
-      type: 'srcset',
-    },
-    {
-      label: t('item.image'),
-      accessor: 'img',
-      Input: ({ field, error, setError, disabled }) => (
-        <ImageUpload
-          imgId={field.value}
-          maxSize={10_485_760}
-          onError={setError}
-          error={error}
-          setImgId={(value) => {
-            field.onChange(value);
-          }}
-          baseUrl={baseUrl}
-          disabled={disabled}
-          text={
-            <>
-              <div className="khb_img-text-wrapper">
-                <label htmlFor="file-upload" className="khb_img-text-label">
-                  <span>{t('item.uploadFile')}</span>
-                </label>
-                <p className="khb_img-text-1">{t('item.dragDrop')}</p>
-              </div>
-              <p className="khb_img-text-2">{t('item.allowedFormat')}</p>
-            </>
-          }
-          onImageUpload={onImageUpload}
-          onImageRemove={onImageRemove}
-          className="khb_img-upload-wrapper-3"
-        />
-      ),
+      listCode: selectedCollectionType?.value,
+      customStyles: reactSelectStyles || {},
+      selectKey: selectedCollectionType?.value,
     },
   ];
 
@@ -399,61 +675,97 @@ const WidgetForm = ({ formRef }: FormProps) => {
         setValue={setValue}
         control={control}
         setError={setError}
+        languages={languages}
       />
-      {!itemsEnabled && (
-        <DNDItemsList
-          items={selectedCollectionItems}
-          onDragEnd={onCollectionIndexChange}
+
+      {selectedWidgetType?.value === constants.tabsWidgetTypeValue ? (
+        <Tabs
+          clearErrors={clearErrors}
+          getValues={getValues}
+          setValue={setValue}
+          control={control}
+          languages={languages}
+          deleteTitle={widgetTranslations.tabDeleteTitle}
+          yesButtonText={commonTranslations.yes}
+          noButtonText={commonTranslations.cancel}
+          errors={errors}
+          itemsPlaceholder={`Select ${selectedCollectionType?.label}...`}
+          loadOptions={onChangeSearch}
+          isItemsLoading={collectionDataLoading}
+          formatOptionLabel={formatOptionLabel}
+          listCode={selectedCollectionType?.value || ''}
+          onCollectionItemsIndexChange={onTabItemsIndexChange}
+          tabCollectionItems={tabCollectionItems}
           formatItem={formatListItem}
-          listCode={selectedItemsType?.value}
+          customStyles={reactSelectStyles || {}}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
         />
-      )}
+      ) : null}
 
-      {itemsEnabled && (
-        <>
-          {/* Web Items */}
-          <ItemsAccordian
-            collapseId="webItems"
-            title={t('widget.webItems')}
-            id="webItems"
-            schema={itemFormSchema}
-            show={webItemsVisible}
-            itemsData={webItems}
-            toggleShow={setWebItemsVisible}
-            onDataSubmit={onItemFormSubmit}
-            itemType="Web"
-            widgetId={data?._id}
-            onDelete={onDeleteItem}
-            addText={t('addButtonText')}
-            cancelText={t('cancelButtonText')}
-            saveText={t('saveButtonText')}
-            editText={t('editButtonText')}
-            deleteText={t('deleteButtonText')}
+      {!itemsEnabled &&
+        selectedWidgetType?.value !== constants.tabsWidgetTypeValue && (
+          <DNDItemsList
+            items={selectedCollectionItems}
+            onDragEnd={onCollectionIndexChange}
+            formatItem={formatListItem}
+            listCode={selectedCollectionType?.value}
           />
+        )}
 
-          {/* Mobile Items */}
-          <ItemsAccordian
-            collapseId="mobileItems"
-            title={t('widget.mobileItems')}
-            id="mobileItems"
-            schema={itemFormSchema}
-            show={mobileItemsVisible}
-            itemsData={mobileItems}
-            toggleShow={setMobileItemsVisible}
-            onDataSubmit={onItemFormSubmit}
-            itemType="Mobile"
-            widgetId={data?._id}
-            onDelete={onDeleteItem}
-            addText={t('addButtonText')}
-            cancelText={t('cancelButtonText')}
-            saveText={t('saveButtonText')}
-            editText={t('editButtonText')}
-            deleteText={t('deleteButtonText')}
-          />
-        </>
-      )}
+      {itemsEnabled &&
+        (selectedCollectionType === undefined ||
+          selectedWidgetType.value === 'Carousel' ||
+          selectedWidgetType.value === 'FixedCard') && (
+          <>
+            {/* Web Items */}
+            <ItemsAccordian
+              languages={languages}
+              clearError={clearErrors}
+              collapseId={constants.webItems}
+              title={widgetTranslations.webItems}
+              id={constants.webItems}
+              setError={setError}
+              show={
+                webItemsVisible || !!(errors && errors?.[constants.webItems])
+              }
+              toggleShow={setWebItemsVisible}
+              itemType="Web"
+              name={constants.webItems}
+              errors={errors}
+              control={control}
+              register={register}
+              loading={loading}
+              addText={commonTranslations.add}
+              deleteText={commonTranslations.delete}
+            />
+
+            {/* Mobile Items */}
+            <ItemsAccordian
+              languages={languages}
+              clearError={clearErrors}
+              collapseId={constants.mobileItems}
+              title={widgetTranslations.mobileItems}
+              id={constants.mobileItems}
+              name={constants.mobileItems}
+              setError={setError}
+              loading={loading}
+              show={
+                mobileItemsVisible ||
+                !!(errors && errors?.[constants.mobileItems])
+              }
+              toggleShow={setMobileItemsVisible}
+              itemType="Mobile"
+              errors={errors}
+              control={control}
+              register={register}
+              addText={commonTranslations.add}
+              deleteText={commonTranslations.delete}
+            />
+          </>
+        )}
     </div>
   );
-};;
+};
 
 export default WidgetForm;

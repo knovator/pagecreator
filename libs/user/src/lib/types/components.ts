@@ -1,4 +1,4 @@
-import { Settings } from 'react-slick';
+import { SwiperProps } from 'swiper/react';
 import {
   ItemData,
   WidgetData,
@@ -19,6 +19,8 @@ export interface CardProps {
   imageAltText: string;
   onClick?: (data?: ObjectType) => void;
   srcSets?: string;
+  title: string;
+  subtitle?: string;
 }
 export interface ProductCardProps extends CardProps {
   title: string;
@@ -39,19 +41,32 @@ export interface ReviewCardProps extends UserCardProps {
   review: string;
 }
 
+type formatTabTitleFunction = (
+  title: string | Record<string, string>,
+  collectionData: any[],
+  isActive: boolean
+) => JSX.Element;
+
 export interface WidgetProps {
   widgetData: WidgetData;
   imageBaseUrl?: string;
   hideTitle?: boolean;
   formatItem?: (item: ItemData | CollectionItemType) => JSX.Element;
   onClick?: (item: ItemData | CollectionItemType) => void;
-  settings?: Settings;
+  settings?: SwiperProps;
   className?: string;
-  formatHeader?: (title: string, data: WidgetData) => string | JSX.Element;
+  formatTabTitle?: formatTabTitleFunction;
+  formatHeader?: (
+    title: Record<string, string> | string,
+    data: WidgetData
+  ) => string | JSX.Element;
   formatFooter?: (data: WidgetData) => string | JSX.Element;
+  itemsContainer?: (children: JSX.Element) => JSX.Element;
 }
 export interface ItemsTypeProps extends WidgetProps {
   formatItem: (item: CollectionItemType | ItemData) => JSX.Element;
+  formatTabTitle: formatTabTitleFunction;
+  itemsContainer?: (children: any) => JSX.Element;
 }
 
 export interface PageProps {
@@ -59,6 +74,7 @@ export interface PageProps {
   imageBaseUrl?: string;
   pageData: PageData;
   hideWidgetTitles?: boolean;
+  formatWidget?: (item: WidgetData, index: number) => JSX.Element;
   formatItem?: (
     CODE: string,
     item: ItemData | CollectionItemType

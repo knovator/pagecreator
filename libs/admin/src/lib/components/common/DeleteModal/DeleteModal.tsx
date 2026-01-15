@@ -10,11 +10,13 @@ const DeleteModal = ({
   onClose,
   itemData,
   onConfirmDelete,
-  permanentlyDelete = TRANSLATION_PAIRS_COMMON.permanentlyDelete,
-  lossOfData = TRANSLATION_PAIRS_COMMON.lossOfData,
-  pleaseType = TRANSLATION_PAIRS_COMMON.pleaseType,
-  toProceedOrCancel = TRANSLATION_PAIRS_COMMON.toProceedOrCancel,
-  confirm = TRANSLATION_PAIRS_COMMON.confirm,
+  confirmationRequired,
+  permanentlyDelete,
+  lossOfData,
+  pleaseType,
+  toProceedOrCancel,
+  confirm,
+  typeHerePlaceholder,
 }: DeleteModalProps) => {
   const [userInput, setUserInput] = useState<string>('');
   useEffect(() => {
@@ -24,34 +26,42 @@ const DeleteModal = ({
     <Modal
       open={formState === 'DELETE' && itemData ? true : false}
       onClose={onClose}
-      title="Confirmation Required"
+      title={
+        confirmationRequired || TRANSLATION_PAIRS_COMMON.confirmationRequired
+      }
     >
       <div className="khb_delete-header">
         <p>
-          {permanentlyDelete} <b>{itemData['name']}</b>
+          {permanentlyDelete || TRANSLATION_PAIRS_COMMON.permanentlyDelete}{' '}
+          <b>{itemData['name']}</b>
         </p>
       </div>
       <div className="khb_delete-content">
-        <p>{lossOfData}</p>
+        <p>{lossOfData || TRANSLATION_PAIRS_COMMON.lossOfData}</p>
         <p className="khb_delete-note">
-          {pleaseType}{' '}
+          {pleaseType || TRANSLATION_PAIRS_COMMON.pleaseType}{' '}
           <b className="text-black font-bold">{itemData['name']}</b>{' '}
-          {toProceedOrCancel}
+          {toProceedOrCancel || TRANSLATION_PAIRS_COMMON.toProceedOrCancel}
         </p>
       </div>
       <div className="khb_delete-actions">
         <Input
-          placeholder="Type Here"
+          placeholder={
+            typeHerePlaceholder || TRANSLATION_PAIRS_COMMON.typeHerePlaceholder
+          }
+          wrapperClassName="w-full"
           className="khb_delete-input"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
         />
         <div className="khb_delete-buttons">
           <Button
-            disabled={userInput !== itemData?.['name']}
+            disabled={
+              userInput.toString().trim() !== itemData?.['name']?.trim()
+            }
             onClick={onConfirmDelete}
           >
-            {confirm}
+            {confirm || TRANSLATION_PAIRS_COMMON.confirm}
           </Button>
         </div>
       </div>

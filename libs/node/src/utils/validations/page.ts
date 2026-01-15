@@ -1,24 +1,7 @@
 import joi from 'joi';
-import { Page } from '../../models';
-import { getOne } from '../../services/dbService';
-import { VALIDATION } from '../../constants';
 import { IPageSchema, IDefaultValidations } from '../../types';
 
 type PageValidation = IPageSchema & IDefaultValidations;
-
-const checkUnique = async (value: string): Promise<void> => {
-  let result;
-  try {
-    // throws error if document not found
-    result = await getOne(Page, {
-      code: value,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-  if (result) {
-    throw new Error(VALIDATION.WIDGET_EXISTS);
-  }
-};
 
 export const create = joi.object<PageValidation>({
   name: joi.string().required(),
@@ -26,7 +9,9 @@ export const create = joi.object<PageValidation>({
     .string()
     .uppercase()
     .replace(/\s+/g, '_')
-    .external(checkUnique)
+    .required(),
+  slug: joi
+    .string()
     .required(),
   widgets: joi.array().items(joi.string()).optional(),
   createdBy: joi.any().optional(),
@@ -48,7 +33,11 @@ export const list = joi.object({
   search: joi.string().allow('').replace(/\s+/g, '_').optional().default(''),
   options: joi
     .object({
-      // sort: joi.alternatives().try(joi.object(), joi.string()).optional(),
+      sort: joi
+        .alternatives()
+        .try(joi.object(), joi.string())
+        .optional()
+        .default({ _id: -1 }),
       populate: joi.array().items().optional().default([]),
       offset: joi.number().optional(),
       page: joi.number().optional(),
@@ -56,4 +45,8 @@ export const list = joi.object({
       pagination: joi.boolean().default(false),
     })
     .default({}),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });

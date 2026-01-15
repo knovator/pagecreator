@@ -5,32 +5,28 @@ import { paginationDataGatter, dataGatter, build_path } from '../helper/utils';
 import usePagination from './usePagination';
 import request, { getApiType } from '../api';
 import { Routes_Input, WidgetType, ItemsType } from '../types';
-import { FormActionTypes, ObjectType } from '../types/common';
+import { FormActionTypes, ObjectType, LanguageType } from '../types/common';
 
 interface UseWidgetProps {
+  canList?: boolean;
   defaultLimit: number;
   routes?: Routes_Input;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
-}
-interface ItemsList {
-  web: ObjectType[];
-  mobile: ObjectType[];
+  imageBaseUrl?: string;
 }
 
 const useWidget = ({
+  canList = true,
   defaultLimit,
   routes,
   preConfirmDelete,
+  imageBaseUrl,
 }: UseWidgetProps) => {
   const [list, setList] = useState<ObjectType[]>([]);
-  const [itemsList, setItemsList] = useState<ItemsList>({
-    web: [],
-    mobile: [],
-  });
-  const [itemsLoading, setItemsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [languages, setLanguages] = useState<LanguageType[]>([]);
   const [itemData, setItemData] = useState<ObjectType | null>(null);
   const [formState, setFormState] = useState<FormActionTypes>();
   const [itemsTypes, setItemsTypes] = useState<ItemsType[]>([]);
@@ -39,17 +35,18 @@ const useWidget = ({
     useState<boolean>(false);
   const [collectionData, setCollectionData] = useState<any[]>([]);
 
+  const { baseUrl, token, onError, onSuccess, onLogout, widgetRoutesPrefix } =
+    useProviderState();
   const {
-    baseUrl,
-    token,
-    onError,
-    onSuccess,
-    onLogout,
-    widgetRoutesPrefix,
-    itemsRoutesPrefix,
-  } = useProviderState();
-  const { setPageSize, pageSize, currentPage, setCurrentPage, filter } =
-    usePagination({ defaultLimit });
+    changeSearch,
+    setPageSize,
+    pageSize,
+    limitRef,
+    currentPageRef,
+    setCurrentPage,
+    offsetRef,
+    searchRef,
+  } = usePagination({ defaultLimit });
 
   const handleError = useCallback(
     (code: CALLBACK_CODES) => (error: any) => {
@@ -80,9 +77,9 @@ const useWidget = ({
           data: {
             search,
             options: {
-              offset: filter.offset,
-              limit: filter.limit,
-              page: currentPage,
+              offset: offsetRef.current,
+              limit: limitRef.current,
+              page: currentPageRef.current,
             },
           },
         });
@@ -99,84 +96,34 @@ const useWidget = ({
     },
     [
       baseUrl,
-      currentPage,
-      filter.limit,
-      filter.offset,
+      currentPageRef,
+      limitRef,
+      offsetRef,
       handleError,
       routes,
       token,
       widgetRoutesPrefix,
     ]
   );
-  const getItems = useCallback(
-    async (id: string) => {
-      try {
-        setItemsLoading(true);
-        const api = getApiType({
-          routes,
-          action: 'ITEM',
-          prefix: itemsRoutesPrefix,
-          id,
-        });
-        const response = await request({
-          baseUrl,
-          token,
-          method: api.method,
-          url: api.url,
-          onError: handleError(CALLBACK_CODES.GET_ALL),
-        });
-        if (response?.code === 'SUCCESS') {
-          setItemsLoading(false);
-          const itemsResponse: ItemsList = dataGatter(response).reduce(
-            (acc: ItemsList, itemItem: ObjectType) => {
-              if (itemItem['itemType'] === 'Web') acc.web.push(itemItem);
-              else acc.mobile.push(itemItem);
-              return acc;
-            },
-            { web: [], mobile: [] }
-          );
-          return setItemsList(itemsResponse);
-        }
-        setItemsLoading(false);
-      } catch (error) {
-        setItemsLoading(false);
-      }
-    },
-    [baseUrl, handleError, routes, itemsRoutesPrefix, token]
-  );
-  const onDeleteItem = async (id: string) => {
-    try {
-      setItemsLoading(true);
-      const api = getApiType({
-        routes,
-        action: 'DELETE',
-        prefix: itemsRoutesPrefix,
-        id,
-      });
-      const response = await request({
-        baseUrl,
-        token,
-        method: api.method,
-        url: api.url,
-        onError: handleError(CALLBACK_CODES.DELETE),
-      });
-      if (response?.code === 'SUCCESS') {
-        setItemsLoading(false);
-        onSuccess(CALLBACK_CODES.DELETE, response?.code, response?.message);
-        if (itemData) getItems(itemData['_id']);
-        return;
-      }
-      setItemsLoading(false);
-      onError(CALLBACK_CODES.DELETE, response?.code, response?.message);
-    } catch (error) {
-      setItemsLoading(false);
-      onError(
-        CALLBACK_CODES.DELETE,
-        INTERNAL_ERROR_CODE,
-        (error as Error).message
-      );
+  const getLanguagesList = useCallback(async () => {
+    const api = getApiType({
+      routes,
+      action: 'LANGUAGES',
+      prefix: widgetRoutesPrefix,
+    });
+    const response = await request({
+      baseUrl,
+      token,
+      method: api.method,
+      url: api.url,
+      onError: handleError(CALLBACK_CODES.GET_ALL),
+    });
+    if (response?.code === 'SUCCESS') {
+      setLanguages(response.data);
+      return response.data;
     }
-  };
+  }, [baseUrl, handleError, widgetRoutesPrefix, routes, token]);
+
   const onCofirmDeleteWidget = async () => {
     try {
       let proceed = true;
@@ -244,6 +191,12 @@ const useWidget = ({
         setList((oldListData) =>
           oldListData.map((item) => (item['_id'] === id ? response.data : item))
         );
+        if (response.message)
+          onSuccess(
+            CALLBACK_CODES.PARTIAL_UPDATE,
+            response?.code,
+            response?.message
+          );
       } else {
         onError(
           CALLBACK_CODES.PARTIAL_UPDATE,
@@ -301,7 +254,12 @@ const useWidget = ({
     }
     setLoading(false);
   };
-  const getCollectionData = async (collectionName: string, search?: string) => {
+  const getCollectionData = async (
+    collectionName: string,
+    search?: string,
+    callback?: (data: any) => void,
+    collectionItems?: string[]
+  ) => {
     setCollectionDataLoading(true);
     const api = getApiType({
       routes,
@@ -318,10 +276,13 @@ const useWidget = ({
       data: {
         search: search || '',
         collectionName,
+        collectionItems: collectionItems || [],
       },
     });
     if (response?.code === 'SUCCESS') {
       setCollectionDataLoading(false);
+      if (typeof callback === 'function')
+        callback(paginationDataGatter(response));
       return setCollectionData(paginationDataGatter(response));
     }
     setCollectionDataLoading(false);
@@ -347,6 +308,9 @@ const useWidget = ({
         onError: handleError(code),
       });
       if (response?.code === 'SUCCESS') {
+        if (formState === 'ADD') {
+          setCurrentPage(1);
+        }
         setLoading(false);
         onSuccess(code, response?.code, response?.message);
         getWidgets();
@@ -354,19 +318,50 @@ const useWidget = ({
       }
     } catch (error) {
       setLoading(false);
-      onError(
-        CALLBACK_CODES.UPDATE,
-        INTERNAL_ERROR_CODE,
-        (error as Error).message
-      );
     }
   };
   const onCloseForm = () => {
     setFormState(undefined);
     setItemData(null);
   };
-  const onChangeFormState = (state: FormActionTypes, data?: ObjectType) => {
-    setItemData(data || null);
+  const getAndSetWidget = async (id: string) => {
+    try {
+      setLoading(true);
+      const api = getApiType({
+        routes,
+        action: 'GET_ONE',
+        prefix: widgetRoutesPrefix,
+        id,
+      });
+      const response = await request({
+        baseUrl,
+        token,
+        url: api.url,
+        method: api.method,
+        onError: handleError(CALLBACK_CODES.GET_SINGLE),
+      });
+      if (response?.code === 'SUCCESS') {
+        setLoading(false);
+        const data = response?.data;
+        if (Array.isArray(data.items)) {
+          const items = JSON.parse(JSON.stringify(data.items));
+          data.webItems = items.filter((item: any) => item.itemType === 'Web');
+          data.mobileItems = items.filter(
+            (item: any) => item.itemType === 'Mobile'
+          );
+          delete data.items;
+        }
+        setItemData(data);
+      }
+    } catch (error) {
+      setLoading(false);
+      onError(CALLBACK_CODES.UPDATE, '', (error as Error).message);
+    }
+  };
+  const onChangeFormState = async (
+    state: FormActionTypes,
+    data?: ObjectType
+  ) => {
     setFormState(state);
     // fetch ItemsTypes & WidgetTypes if needed
     if (state === 'ADD' || state === 'UPDATE') {
@@ -375,48 +370,13 @@ const useWidget = ({
     }
     // get Item data if widget is updating
     if (state === 'UPDATE' && data) {
-      if (data['itemsType'] !== 'Image' && data['collectionName'])
-        getCollectionData(data['collectionName']);
-      else getItems(data['_id']);
+      getAndSetWidget(data['_id']);
     } else if (state === 'ADD') {
       // reset Item data if widget is adding
-      setItemsList({ web: [], mobile: [] });
-    }
-  };
-  const onItemFormSubmit = async (
-    state: FormActionTypes,
-    data: ObjectType,
-    updateId?: string
-  ) => {
-    setItemsLoading(true);
-    const code =
-      state === 'ADD' ? CALLBACK_CODES.CREATE : CALLBACK_CODES.UPDATE;
-    try {
-      const api = getApiType({
-        routes,
-        action: state === 'ADD' ? 'CREATE' : 'UPDATE',
-        prefix: itemsRoutesPrefix,
-        id: updateId,
-      });
-      const response = await request({
-        baseUrl,
-        token,
-        data,
-        url: api.url,
-        method: api.method,
-        onError: handleError(code),
-      });
-      if (response?.code === 'SUCCESS') {
-        setItemsLoading(false);
-        onSuccess(code, response?.code, response?.message);
-        if (itemData) getItems(itemData['_id']);
-      } else {
-        setItemsLoading(false);
-        onError(code, response?.code, response?.message);
-      }
-    } catch (error) {
-      setItemsLoading(false);
-      onError(code, INTERNAL_ERROR_CODE, (error as Error).message);
+      setItemData(null);
+    } else if (state === 'DELETE' && data) {
+      setItemData(data);
+      setFormState(state);
     }
   };
   // Image Upload operations
@@ -447,7 +407,10 @@ const useWidget = ({
         const responseData = response?.data[0] || response?.data;
         return {
           fileId: responseData?._id || responseData?.id,
-          fileUrl: build_path(baseUrl, responseData?.uri),
+          fileUrl: build_path(
+            imageBaseUrl ? imageBaseUrl : baseUrl,
+            responseData?.uri
+          ),
           fileUri: responseData?.uri,
         };
       } else
@@ -488,24 +451,34 @@ const useWidget = ({
       );
     }
   };
+  const changeCurrentPage = (page: number) => {
+    setCurrentPage(page);
+    getWidgets(searchRef.current);
+  };
 
   useEffect(() => {
-    getWidgets();
+    if (canList) getWidgets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageSize, currentPage]);
+  }, [canList]);
+
+  useEffect(() => {
+    getLanguagesList();
+  }, [getLanguagesList]);
 
   return {
     list,
     getWidgets,
     loading,
+    languages,
     setLoading,
 
     // Pagination
+    searchText: searchRef.current,
     pageSize,
     totalPages,
-    currentPage,
+    currentPage: currentPageRef.current,
     totalRecords,
-    setCurrentPage,
+    setCurrentPage: changeCurrentPage,
     setPageSize,
 
     // Form
@@ -513,7 +486,6 @@ const useWidget = ({
     itemData,
     onChangeFormState,
     onCloseForm,
-    onDeleteItem,
     onWidgetFormSubmit,
     onCofirmDeleteWidget,
     onPartialUpdateWidget,
@@ -521,14 +493,10 @@ const useWidget = ({
     onImageRemove,
     itemsTypes,
     widgetTypes,
+    changeSearch,
     collectionDataLoading,
     getCollectionData,
     collectionData,
-
-    // Items
-    itemsList,
-    itemsLoading,
-    onItemFormSubmit,
   };
 };
 

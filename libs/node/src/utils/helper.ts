@@ -1,4 +1,4 @@
-import { Widget } from '../models';
+import { model, Models, Schema, Types } from 'mongoose';
 import { commonExcludedFields, defaults } from './defaults';
 import {
   IWidgetData,
@@ -7,7 +7,8 @@ import {
   SrcSetItem,
 } from '../types';
 
-export async function appendCollectionData(widgetData: IWidgetSchema[]) {
+export async function appendCollectionData(widgetData: IWidgetSchema[], models: Models) {
+  const { Widget }= models;
   // reduce widget data to optimize query
   const newData: IWidgetData = widgetData.reduce(
     (acc: IWidgetData, widget: IWidgetSchema) => {
@@ -17,6 +18,7 @@ export async function appendCollectionData(widgetData: IWidgetSchema[]) {
           code: widget.code,
           collectionName: widget.collectionName,
           collectionItems: widget.collectionItems,
+          tabs: widget.tabs,
         };
       }
       return acc;
@@ -24,83 +26,214 @@ export async function appendCollectionData(widgetData: IWidgetSchema[]) {
     {}
   );
   if (Object.keys(newData).length > 0) {
-    const aggregationQuery: any = [
-      {
-        $match: {
-          _id: {
-            $in: Object.values(newData).map(
-              (item: IWidgetDataSchema) => item._id
-            ),
-          },
-        },
-      },
-      {
-        // Get only the fields that are not excluded
-        $project: {
-          _id: 1,
-          code: 1,
-        },
-      },
-    ];
-    let collectionConfig, aggregationQueryPiplelines: any[];
-    Object.keys(newData).forEach((key: string) => {
-      collectionConfig = defaults.collections.find(
-        (c) => c.collectionName === newData[key].collectionName
+    const aggregationQueryCollectionItems = buildCollectionItemsQuery(newData);
+    if (aggregationQueryCollectionItems.length > 0) {
+      // getting collection data by populating widget
+      let aggregationData: any = await Widget.aggregate(
+        aggregationQueryCollectionItems
       );
-      // Build piplelines with config
-      aggregationQueryPiplelines = [
-        {
-          $match: {
-            _id: {
-              $in: newData[key].collectionItems,
-            },
-            ...(collectionConfig?.match || {}),
-          },
-        },
-        {
-          $project: {
-            ...commonExcludedFields,
-          },
-        },
-      ];
-      // add project config if it exists
-      if (collectionConfig?.project)
-        aggregationQueryPiplelines.push({
-          $project: collectionConfig?.project,
-        });
-      // add lookup config if it exists
-      if (collectionConfig?.lookup)
-        aggregationQueryPiplelines.push({
-          $lookup: collectionConfig?.lookup,
-        });
-      // Build Aggregation Query
-      aggregationQuery.push({
-        $lookup: {
-          from: newData[key].collectionName,
-          pipeline: aggregationQueryPiplelines,
-          as: newData[key].code,
-        },
+      aggregationData = aggregationData.reduce((acc: any, aggregation: any) => {
+        acc[aggregation.code] = aggregation[aggregation.code];
+        return acc;
+      }, {});
+      // adding collection data to widgets
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      widgetData = widgetData.map((widget: IWidgetSchema) => {
+        if (aggregationData[widget.code]) {
+          return {
+            ...widget,
+            collectionItems: aggregationData[widget.code],
+          };
+        }
+        return widget;
       });
-    });
-    // getting collection data by populating widget
-    let aggregationData: any = await Widget.aggregate(aggregationQuery);
-    aggregationData = aggregationData.reduce((acc: any, aggregation: any) => {
-      acc[aggregation.code] = aggregation[aggregation.code];
-      return acc;
-    }, {});
-    // adding collection data to widgets
-    return widgetData.map((widget: IWidgetSchema) => {
-      if (aggregationData[widget.code]) {
+    }
+    const aggregationQueryTabs = buildTabCollectionItemsQuery(newData);
+    if (aggregationQueryTabs.length > 0) {
+      let aggregationDataTabs: any = await Widget.aggregate(
+        aggregationQueryTabs
+      );
+      aggregationDataTabs = aggregationDataTabs.reduce(
+        (acc: any, aggregation: any) => {
+          if (aggregation[aggregation.code])
+            acc[aggregation.code] = aggregation[aggregation.code];
+          return acc;
+        },
+        {}
+      );
+      // adding collection data to widgets
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      widgetData = widgetData.map((widget) => {
+        if (!aggregationDataTabs[widget.code]) return widget;
+        const collectionItemsObj = aggregationDataTabs[widget.code].reduce(
+          (acc: any, item: any) => {
+            acc[item._id] = item;
+            return acc;
+          },
+          {}
+        );
         return {
           ...widget,
-          collectionItems: aggregationData[widget.code],
+          tabs: widget.tabs.map((tabItem) => {
+            return {
+              name: tabItem.name,
+              names: tabItem.names,
+              collectionItems: tabItem.collectionItems
+                .map((collectionId) => collectionItemsObj[collectionId])
+                .filter(Boolean),
+            };
+          }),
         };
-      }
-      return widget;
-    });
+      });
+    }
   }
   // returning widget data as it is if they do not have dynamic collection
   return widgetData;
+}
+
+function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
+  const aggregationQuery: any = [
+    {
+      $match: {
+        _id: {
+          $in: Object.values(formattedWidgetData).map(
+            (item: IWidgetDataSchema) => item._id
+          ),
+        },
+      },
+    },
+    {
+      // Get only the fields that are not excluded
+      $project: {
+        _id: 1,
+        code: 1,
+      },
+    },
+  ];
+  let collectionConfig;
+  Object.keys(formattedWidgetData).forEach((key: string) => {
+    if (
+      formattedWidgetData[key].collectionItems &&
+      formattedWidgetData[key].collectionItems.length > 0
+    ) {
+      const aggregationQueryPiplelines: any[] = [];
+      collectionConfig = defaults.collections.find(
+        (c) => c.collectionName === formattedWidgetData[key].collectionName
+      );
+      if (
+        Array.isArray(collectionConfig?.aggregations) &&
+        collectionConfig?.aggregations.length
+      ) {
+        aggregationQueryPiplelines.push(...collectionConfig.aggregations);
+      }
+      const ids = formatCollectionItems(
+        formattedWidgetData[key].collectionItems
+      );
+      // Build piplelines with config
+      aggregationQueryPiplelines.push(
+        ...[
+          {
+            $match: {
+              _id: {
+                $in: ids,
+              },
+              ...(collectionConfig?.match || {}),
+            },
+          },
+          {
+            $project: {
+              ...commonExcludedFields,
+            },
+          },
+          { $addFields: { __order: { $indexOfArray: [ids, '$_id'] } } },
+          { $sort: { __order: 1 } },
+        ]
+      );
+      // Build Aggregation Query
+      aggregationQuery.push({
+        $lookup: {
+          from: formattedWidgetData[key].collectionName,
+          pipeline: aggregationQueryPiplelines,
+          as: formattedWidgetData[key].code,
+        },
+      });
+    }
+  });
+  return aggregationQuery;
+}
+
+function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
+  const aggregationQuery: any = [
+    {
+      $match: {
+        _id: {
+          $in: Object.values(formattedWidgetData).map(
+            (item: IWidgetDataSchema) => item._id
+          ),
+        },
+      },
+    },
+    {
+      // Get only the fields that are not excluded
+      $project: {
+        _id: 1,
+        code: 1,
+      },
+    },
+  ];
+  let collectionConfig;
+  Object.keys(formattedWidgetData).forEach((key: string) => {
+    if (
+      formattedWidgetData[key].tabs &&
+      formattedWidgetData[key].tabs.length > 0
+    ) {
+      const aggregationQueryPiplelines: any[] = [];
+      collectionConfig = defaults.collections.find(
+        (c) => c.collectionName === formattedWidgetData[key].collectionName
+      );
+      if (
+        Array.isArray(collectionConfig?.aggregations) &&
+        collectionConfig?.aggregations.length
+      ) {
+        aggregationQueryPiplelines.push(...collectionConfig.aggregations);
+      }
+      // Build piplelines with config
+      aggregationQueryPiplelines.push(
+        ...[
+          {
+            $match: {
+              _id: {
+                $in: formattedWidgetData[key].tabs.reduce(
+                  (arr: Types.ObjectId[], tabItem) => {
+                    arr.push(...formatCollectionItems(tabItem.collectionItems));
+                    return arr;
+                  },
+                  []
+                ),
+              },
+              ...(collectionConfig?.match || {}),
+            },
+          },
+          {
+            $project: {
+              ...commonExcludedFields,
+            },
+          },
+        ]
+      );
+      // Build Aggregation Query
+      aggregationQuery.push({
+        $lookup: {
+          from: formattedWidgetData[key].collectionName,
+          pipeline: aggregationQueryPiplelines,
+          as: formattedWidgetData[key].code,
+        },
+      });
+    }
+  });
+  return aggregationQuery;
 }
 
 export function buildSrcSetItem(uri: string, setItem: SrcSetItem) {
@@ -131,3 +264,22 @@ export function AddSrcSetsToItems(widgetData: IWidgetSchema) {
     });
   }
 }
+
+export const getCollectionModal = (collectionName: string, models: Models) => {
+  let collectionModal: any = models[collectionName];
+  if (!collectionModal) collectionModal = models[collectionName.charAt(0).toUpperCase() + collectionName.slice(1)]
+  if (!collectionModal) {
+    const schema = new Schema({}, { strict: false });
+    collectionModal = model(collectionName, schema, collectionName);
+  }
+  return collectionModal;
+};
+
+export const formatCollectionItems = (collectionItems: any[]) => {
+  if (Array.isArray(collectionItems) && collectionItems.length === 0) return [];
+
+  return collectionItems.map((item) => {
+    if (item instanceof Types.ObjectId) return item;
+    return new Types.ObjectId(item);
+  });
+};

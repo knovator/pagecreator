@@ -1,6 +1,7 @@
 import {
   Document,
   Model,
+  Models,
   Types,
   FilterQuery,
   QueryOptions,
@@ -9,12 +10,9 @@ import {
 import { ItemsType, WidgetTypes, ItemTypes } from '.';
 
 export type TypesType = { value: string; label: string };
-// export type CollectionItem = {
-//   title: string;
-//   collectionName: string;
-//   filters?: { [key: string]: string };
-//   searchColumns: string[];
-// };
+
+export type LanguageSchemaFieldType = { [key: string]: string };
+
 export interface iConfig {
   logger: any;
   catchAsync: (
@@ -27,7 +25,15 @@ export interface iConfig {
 export interface IPageSchema extends Document {
   name: string;
   code: string;
+  slug: string;
+  canDel: boolean;
   widgets: string[];
+}
+export interface ITabSchema extends Document {
+  name: string;
+  names: LanguageSchemaFieldType;
+  widgetId: typeof Types.ObjectId;
+  collectionItems: string[];
 }
 export interface ISrcSetSchema extends Document {
   width: number;
@@ -42,6 +48,7 @@ export interface IWidgetSchema extends Document {
   autoPlay: boolean;
   isActive: boolean;
   widgetTitle: string;
+  widgetTitles: LanguageSchemaFieldType;
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;
@@ -49,15 +56,29 @@ export interface IWidgetSchema extends Document {
   widgetType: WidgetTypes;
   collectionName: string;
   collectionItems: string[];
+  tabs: {
+    name: string;
+    names?: LanguageSchemaFieldType;
+    collectionItems: string[];
+  }[];
+  backgroundColor: string;
+  textContent: string;
+  htmlContent: string;
+  canDel: boolean;
 }
 export interface IItemSchema extends Document {
   widgetId: typeof Types.ObjectId;
   title: string;
+  titles: LanguageSchemaFieldType;
+  subtitle: string;
+  subtitles: LanguageSchemaFieldType;
   altText: string;
+  altTexts: LanguageSchemaFieldType;
   link: string;
   sequence: number;
   itemType: ItemTypes;
   img: any;
+  imgs: any;
   srcset?: SrcSetItem[];
 }
 export interface SrcSetItem {
@@ -73,8 +94,16 @@ export type CollectionItem = {
   filters?: { [key: string]: string | number | boolean };
   searchColumns?: string[];
   match?: ObjectType;
-  project?: ObjectType;
-  lookup?: ObjectType;
+  aggregations?: any[];
+  searchLimit?: number;
+};
+
+export type RedisConfig = {
+  HOST: string;
+  PORT: number;
+  PASSWORD?: string;
+  USER?: string;
+  DB?: number;
 };
 
 export interface IConfig {
@@ -83,14 +112,24 @@ export interface IConfig {
     fn: any,
     modal?: string
   ) => (req: any, res: any, next: any) => void;
+  getModals: (req: Express.Request) => Models;
   collections: CollectionItem[];
+  customWidgetTypes: {
+    label: string;
+    value: string;
+    imageOnly?: boolean;
+    collectionsOnly?: boolean;
+  }[];
+  redis?: string | RedisConfig;
+  languages?: LanguageType[];
 }
 
 export type EntityType =
   | IWidgetSchema
   | IItemSchema
   | IPageSchema
-  | ISrcSetSchema;
+  | ISrcSetSchema
+  | ITabSchema;
 export type ReturnDocument = EntityType;
 export interface IModel<T> extends Model<T> {
   paginate: (
@@ -126,5 +165,8 @@ export interface IWidgetDataSchema {
   code: string;
   collectionName: string;
   collectionItems: string[];
+  tabs: { name: string; collectionItems: string[] }[];
 }
 export type IWidgetData = { [key: string]: IWidgetDataSchema };
+
+export type LanguageType = { code: string; name: string };

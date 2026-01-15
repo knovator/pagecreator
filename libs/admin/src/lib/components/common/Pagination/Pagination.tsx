@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PaginationProps } from '../../../types';
 import { TRANSLATION_PAIRS_COMMON } from '../../../constants/common';
 import ChevronLeft from '../../../icons/chevronLeft';
@@ -15,27 +15,24 @@ const Pagination = ({
   showingText = TRANSLATION_PAIRS_COMMON.showing,
   pageText = TRANSLATION_PAIRS_COMMON.page,
   ofText = TRANSLATION_PAIRS_COMMON.of,
+  previousContent,
+  nextContent,
 }: PaginationProps) => {
-  const [localCurrentPage, setLocalCurrentPage] = useState(currentPage);
-  const updatePagination = () => {
-    let newValue: number | string | undefined = localCurrentPage;
-    if (newValue) {
+  const updatePagination = (newValue: number | string | undefined) => {
+    if (newValue && typeof newValue === 'number') {
       if (newValue <= 0) {
         newValue = 1;
       } else if (newValue > totalPages) {
         newValue = totalPages;
       }
       setCurrentPage(newValue);
-      setLocalCurrentPage(newValue);
     }
   };
   const onPaginationButtonClick = (dir: 'next' | 'previous') => {
     if (dir === 'next') {
-      setCurrentPage(currentPage + 1);
-      setLocalCurrentPage(localCurrentPage + 1);
+      updatePagination(currentPage + 1);
     } else {
-      setCurrentPage(currentPage - 1);
-      setLocalCurrentPage(localCurrentPage - 1);
+      updatePagination(currentPage - 1);
     }
   };
   return (
@@ -43,7 +40,7 @@ const Pagination = ({
       <span className="khb_pagination-total">
         {showingText}{' '}
         <span className="khb_pagination-total-showing">
-          {(currentPage - 1) * pageSize + 1}
+          {!totalRecords ? 0 : (currentPage - 1) * pageSize + 1}
         </span>{' '}
         -{' '}
         <span className="khb_pagination-total-showing">
@@ -55,10 +52,11 @@ const Pagination = ({
         <Button
           size="xs"
           type="secondary"
-          disabled={currentPage - 1 === 0}
+          className="khb_pagination-previous"
+          disabled={currentPage - 1 <= 0}
           onClick={() => onPaginationButtonClick('previous')}
         >
-          <ChevronLeft srText="Previous" />
+          {previousContent || <ChevronLeft srText="Previous" />}
         </Button>
         <div className="khb_pagination-pager">
           {pageText}{' '}
@@ -67,19 +65,20 @@ const Pagination = ({
             size="xs"
             type="number"
             id="page"
-            value={localCurrentPage}
-            onChange={(e) => setLocalCurrentPage(Number(e.target.value))}
-            onBlur={updatePagination}
+            value={currentPage}
+            onChange={(e) => updatePagination(Number(e.target.value))}
+            disabled={!totalRecords}
           />{' '}
           / {totalPages}
         </div>
         <Button
           size="xs"
           type="secondary"
-          disabled={currentPage === totalPages}
+          className="khb_pagination-next"
+          disabled={currentPage >= totalPages}
           onClick={() => onPaginationButtonClick('next')}
         >
-          <ChevronRight srText="Next" />
+          {nextContent || <ChevronRight srText="Next" />}
         </Button>
       </ul>
     </nav>

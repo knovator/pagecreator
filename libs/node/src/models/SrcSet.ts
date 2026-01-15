@@ -13,4 +13,4 @@ const SrcSetSchema = new Schema<ISrcSetSchema>({
 
 const SrcSet: Model<ISrcSetSchema> = model('SrcSet', SrcSetSchema);
 
-export default SrcSet;
+export { SrcSet, SrcSetSchema };

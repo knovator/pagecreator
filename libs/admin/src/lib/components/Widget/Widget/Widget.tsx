@@ -1,11 +1,8 @@
 import React, { useRef } from 'react';
 import useWidget from '../../../hooks/useWidget';
 import WidgetContextProvider from '../../../context/WidgetContext';
-import { createTranslation } from '../../../helper/utils';
 import {
-  TRANSLATION_PAIRS_COMMON,
   TRANSLATION_PAIRS_WIDGET,
-  TRANSLATION_PAIRS_ITEM,
   DEFAULT_PERMISSIONS,
 } from '../../../constants/common';
 import { WidgetProps } from '../../../types';
@@ -19,27 +16,35 @@ import Drawer from '../../common/Drawer';
 import DeleteModal from '../../common/DeleteModal';
 import WidgetFormActions from '../WidgetFormActions';
 import WiddgetFormWrapper from '../WidgetFormWrapper';
+import { useProviderState } from '../../../context/ProviderContext';
 
 const Widget = ({
-  t,
   routes,
   loader,
   explicitForm = false,
-  permissions = DEFAULT_PERMISSIONS,
+  imageBaseUrl,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  permissions = {},
   preConfirmDelete,
   formatListItem,
   formatOptionLabel,
+  imageMaxSize,
+  translations,
   children,
 }: WidgetProps) => {
+  const { commonTranslations } = useProviderState();
+  const derivedPermissions = Object.assign(DEFAULT_PERMISSIONS, permissions);
   const widgetFormRef = useRef<HTMLFormElement | null>(null);
-  const derivedT = createTranslation(t, {
-    ...TRANSLATION_PAIRS_COMMON,
+  const derivedT = {
     ...TRANSLATION_PAIRS_WIDGET,
-    ...TRANSLATION_PAIRS_ITEM,
-  });
+    ...(translations || {}),
+  };
   const {
     list,
     loading,
+    searchText,
+    changeSearch,
     onChangeFormState,
     formState,
     onCloseForm,
@@ -47,7 +52,6 @@ const Widget = ({
     itemData,
     getWidgets,
     onCofirmDeleteWidget,
-    onDeleteItem,
     onImageRemove,
     onImageUpload,
     onPartialUpdateWidget,
@@ -61,26 +65,27 @@ const Widget = ({
     totalRecords,
     currentPage,
     pageSize,
+    languages,
     setCurrentPage,
-    // Item
-    itemsList,
-    itemsLoading,
-    onItemFormSubmit,
   } = useWidget({
+    canList: derivedPermissions.list,
     routes,
     defaultLimit: 10,
     preConfirmDelete,
+    imageBaseUrl,
   });
   return (
     <WidgetContextProvider
       loading={loading}
       list={list}
+      languages={languages}
+      imageBaseUrl={imageBaseUrl}
       onChangeFormState={onChangeFormState}
-      t={derivedT}
+      searchText={searchText}
+      changeSearch={changeSearch}
       loader={loader}
       onWidgetFormSubmit={onWidgetFormSubmit}
       data={itemData}
-      onDeleteItem={onDeleteItem}
       getWidgets={getWidgets}
       onImageRemove={onImageRemove}
       onImageUpload={onImageUpload}
@@ -98,19 +103,16 @@ const Widget = ({
       currentPage={currentPage}
       pageSize={pageSize}
       setCurrentPage={setCurrentPage}
-      // Item
-      webItems={itemsList.web}
-      mobileItems={itemsList.mobile}
-      itemsLoading={itemsLoading}
-      onItemFormSubmit={onItemFormSubmit}
       // Permissions
-      canAdd={permissions.add}
-      canDelete={permissions.delete}
-      canList={permissions.list}
-      canUpdate={permissions.update}
-      canPartialUpdate={permissions.partialUpdate}
+      canAdd={derivedPermissions.add}
+      canDelete={derivedPermissions.delete}
+      canList={derivedPermissions.list}
+      canUpdate={derivedPermissions.update}
+      canPartialUpdate={derivedPermissions.partialUpdate}
       formState={formState}
       closeForm={onCloseForm}
+      imageMaxSize={imageMaxSize}
+      widgetTranslations={translations}
     >
       {children ? (
         children
@@ -131,9 +133,9 @@ const Widget = ({
           onClose={onCloseForm}
           title={
             formState === 'ADD'
-              ? derivedT('widget.addWidgetTitle')
+              ? derivedT.addWidgetTitle
               : formState === 'UPDATE'
-              ? derivedT('widget.updateWidgetTitle')
+              ? derivedT.updateWidgetTitle
               : ''
           }
           footerContent={<WidgetFormActions formRef={widgetFormRef} />}
@@ -147,6 +149,13 @@ const Widget = ({
           itemData={itemData}
           onClose={onCloseForm}
           onConfirmDelete={onCofirmDeleteWidget}
+          confirmationRequired={commonTranslations.confirmationRequired}
+          confirm={commonTranslations.confirm}
+          lossOfData={commonTranslations.lossOfData}
+          permanentlyDelete={commonTranslations.permanentlyDelete}
+          pleaseType={commonTranslations.pleaseType}
+          toProceedOrCancel={commonTranslations.toProceedOrCancel}
+          typeHerePlaceholder={commonTranslations.typeHerePlaceholder}
         />
       )}
     </WidgetContextProvider>

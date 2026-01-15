@@ -1,7 +1,9 @@
+import classNames from 'classnames';
 import React, { forwardRef, MutableRefObject } from 'react';
 import { Controller } from 'react-hook-form';
 import {
   CombineObjectType,
+  LanguageType,
   OptionType,
   SchemaType,
 } from '../../../types';
@@ -14,6 +16,7 @@ interface SimpleFormProps {
   isUpdating?: boolean;
   onSubmit: (data: CombineObjectType) => void;
   enable?: boolean;
+  languages?: LanguageType[];
   ref: MutableRefObject<HTMLFormElement | null>;
   register: any;
   errors: any;
@@ -36,6 +39,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
       setValue,
       control,
       setError,
+      languages,
     },
     ref
   ) => {
@@ -47,7 +51,6 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
           case 'ReactSelect':
             input = (
               <CustomReactSelect
-                options={schema.options}
                 disabled={!enable}
                 label={schema.label}
                 error={errors[schema.accessor]?.message?.toString()}
@@ -66,12 +69,14 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
                 required={schema.required}
                 isMulti={schema.isMulti}
                 isSearchable={schema.isSearchable}
-                onSearch={schema.onSearch}
                 isLoading={schema.isLoading}
                 placeholder={schema.placeholder}
                 wrapperClassName={schema.wrapperClassName}
                 formatOptionLabel={schema.formatOptionLabel}
                 listCode={schema.listCode}
+                customStyles={schema.customStyles}
+                loadOptions={schema.loadOptions}
+                selectKey={schema.selectKey}
               />
             );
             break;
@@ -122,61 +127,150 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
           case 'text':
           case 'number':
           case 'url':
+          case 'color':
           default:
-            input = (
-              <Input
-                rest={register(schema.accessor, schema.validations || {})}
-                label={schema.label}
-                error={errors[schema.accessor]?.message?.toString()}
-                type={schema.type}
-                className="w-full p-2"
-                placeholder={schema.placeholder}
-                disabled={
-                  (isUpdating &&
+            if (
+              Array.isArray(languages) &&
+              languages.length > 0 &&
+              schema.accessor === 'widgetTitles'
+            ) {
+              input = languages.map((lang) => (
+                <Input
+                  key={lang.code}
+                  rest={register(
+                    `${schema.accessor}.${lang.code}`,
+                    schema.validations || {}
+                  )}
+                  label={schema.label + ' (' + lang.name + ')'}
+                  onInput={schema.onInput}
+                  error={errors[schema.accessor]?.[lang.code]?.message}
+                  required={schema.required}
+                  type={schema.type}
+                  className="kms_w-full kms_p-2"
+                  placeholder={
+                    (schema.placeholder || '') + ' (' + lang.name + ')'
+                  }
+                  disabled={
+                    isUpdating &&
                     typeof schema.editable !== 'undefined' &&
-                    !schema.editable) ||
-                  !enable
-                }
-                required={schema.required}
-                onInput={schema.onInput}
-                wrapperClassName={schema.wrapperClassName}
-              />
-            );
-            break;
-        }
-      } else if (schema.Input) {
-        input = (
-          <div className="kms_input-wrapper">
-            <label className="kms_input-label">{schema.label}</label>
-            <Controller
-              control={control}
-              name={schema.accessor}
-              rules={schema.validations}
-              render={({ field }) =>
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                schema.Input!({
-                  field,
-                  error: errors[schema.accessor]?.message?.toString(),
-                  disabled:
+                    !schema.editable
+                  }
+                />
+              ));
+            } else
+              input = (
+                <Input
+                  rest={register(schema.accessor, schema.validations || {})}
+                  label={schema.label}
+                  error={errors[schema.accessor]?.message?.toString()}
+                  type={schema.type}
+                  className={classNames('w-full p-2', schema.className)}
+                  placeholder={schema.placeholder}
+                  disabled={
                     (isUpdating &&
                       typeof schema.editable !== 'undefined' &&
                       !schema.editable) ||
-                    !enable,
-                  setError: (msg) =>
-                    setError.call(null, schema.accessor, {
-                      type: 'custom',
-                      message: msg,
-                    }),
-                })
-              }
-            />
-          </div>
-        );
+                    !enable
+                  }
+                  required={schema.required}
+                  onInput={schema.onInput}
+                  wrapperClassName={schema.wrapperClassName}
+                  info={schema.info}
+                />
+              );
+            break;
+        }
+      } else if (schema.Input) {
+        if (
+          Array.isArray(languages) &&
+          languages.length > 0 &&
+          schema.accessor === 'widgetTitles'
+        ) {
+          input = languages.map((lang) => (
+            <div
+              key={lang.code}
+              className={classNames(
+                'khb_input-wrapper',
+                schema.wrapperClassName
+              )}
+            >
+              <label className="khb_input-label">
+                {schema.label} ({lang.name})
+                {schema.required ? (
+                  <span className="khb_input-label-required">*</span>
+                ) : null}
+              </label>
+              <Controller
+                control={control}
+                name={`${schema.accessor}.${lang.code}`}
+                rules={schema.validations}
+                render={({ field }) =>
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  schema.Input!({
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    field,
+                    error:
+                      errors[schema.accessor]?.[lang.code]?.message?.toString(),
+                    disabled:
+                      (isUpdating &&
+                        typeof schema.editable !== 'undefined' &&
+                        !schema.editable) ||
+                      !enable,
+                    setError: (msg) =>
+                      setError.call(null, schema.accessor, {
+                        type: 'custom',
+                        message: msg,
+                      }),
+                  })
+                }
+              />
+            </div>
+          ));
+        } else
+          input = (
+            <div
+              className={classNames(
+                'khb_input-wrapper',
+                schema.wrapperClassName
+              )}
+            >
+              {schema.label && (
+                <label className="khb_input-label">
+                  {schema.label}
+                  {schema.required ? (
+                    <span className="khb_input-label-required">*</span>
+                  ) : null}
+                </label>
+              )}
+              <Controller
+                control={control}
+                name={schema.accessor}
+                rules={schema.validations}
+                render={({ field }) =>
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  schema.Input!({
+                    field,
+                    error: errors[schema.accessor]?.message?.toString(),
+                    disabled:
+                      (isUpdating &&
+                        typeof schema.editable !== 'undefined' &&
+                        !schema.editable) ||
+                      !enable,
+                    setError: (msg) =>
+                      setError.call(null, schema.accessor, {
+                        type: 'custom',
+                        message: msg,
+                      }),
+                  })
+                }
+              />
+            </div>
+          );
       } else
         throw new Error(
           `Please provide Input or type prop to render input Labeled ${schema.label}`
         );
-
       return input;
     };
 

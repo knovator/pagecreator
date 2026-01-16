@@ -194,7 +194,11 @@ const PageForm = ({ formRef, onFilterClick, filterQuery }: FormProps) => {
         }}
       /> */}
 
-      <DNDItemsList onDragEnd={onDragEnd} onFilterClick={onFilterClick} items={selectedWidgets} />
+      <DNDItemsList
+        onDragEnd={onDragEnd}
+        onFilterClick={onFilterClick ? () => onFilterClick(data) : undefined}
+        items={selectedWidgets}
+      />
     </div>
   );
 };

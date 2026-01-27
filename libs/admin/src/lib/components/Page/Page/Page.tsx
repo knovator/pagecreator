@@ -27,6 +27,8 @@ const Page = ({
   // @ts-ignore
   permissions = {},
   preConfirmDelete,
+  onPrimaryButtonClick,
+  onEditClick,
 }: PageProps) => {
   const { commonTranslations } = useProviderState();
   const derivedPermissions = Object.assign(DEFAULT_PERMISSIONS, permissions);
@@ -96,11 +98,11 @@ const Page = ({
       {children ? (
         children
       ) : (
-        <>
+          <>
           <AddButton />
           <Search />
           <div className="khb_table-wrapper">
-            <Table />
+            <Table onEditClick={onEditClick} />
             <Pagination />
           </div>
         </>
@@ -116,9 +118,17 @@ const Page = ({
               ? combinedTranslations.updatePage
               : ''
           }
-          footerContent={<PageFormActions formRef={formRef} />}
+          footerContent={
+            <PageFormActions
+              formRef={formRef}
+              onPrimaryButtonClick={onPrimaryButtonClick}
+            />
+          }
         >
-          <PageForm formRef={formRef} />
+          <PageForm
+            formRef={formRef}
+            onPrimaryButtonClick={onPrimaryButtonClick}
+          />
         </Drawer>
       )}
       {itemData && (

@@ -16,7 +16,12 @@ import {
 import { CONSTANTS } from '../../../constants/common';
 import { useProviderState } from '../../../context/ProviderContext';
 
-const PageForm = ({ formRef, onFilterClick, filterQuery }: FormProps) => {
+const PageForm = ({
+  formRef,
+  onFilterClick,
+  filterQuery,
+  onPrimaryButtonClick,
+}: FormProps) => {
   const { commonTranslations } = useProviderState();
   const {
     data,
@@ -114,6 +119,14 @@ const PageForm = ({ formRef, onFilterClick, filterQuery }: FormProps) => {
       typeof filterQuery !== 'undefined'
         ? { ...formData, filterQuery }
         : formData;
+    const submitPayload =
+      Array.isArray(selectedWidgets) && selectedWidgets.length > 0
+        ? {
+            ...dataToSubmit,
+            widgets: selectedWidgets.map((item) => item.value),
+          }
+        : dataToSubmit;
+    onPrimaryButtonClick?.(undefined, submitPayload);
     return onPageFormSubmit(dataToSubmit);
   };
 
@@ -198,6 +211,7 @@ const PageForm = ({ formRef, onFilterClick, filterQuery }: FormProps) => {
         onDragEnd={onDragEnd}
         onFilterClick={onFilterClick ? () => onFilterClick(data) : undefined}
         items={selectedWidgets}
+        disableSettings={data?.canDel === false}
       />
     </div>
   );

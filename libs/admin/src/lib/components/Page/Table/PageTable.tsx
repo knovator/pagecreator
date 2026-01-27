@@ -4,13 +4,19 @@ import { usePageState } from '../../../context/PageContext';
 import { useProviderState } from '../../../context/ProviderContext';
 import { CombineObjectType, DerivedTableProps } from '../../../types';
 
-const PageTable = ({ extraActions, extraColumns }: DerivedTableProps) => {
+const PageTable = ({
+  extraActions,
+  extraColumns,
+  onEditClick,
+}: DerivedTableProps) => {
   const { commonTranslations } = useProviderState();
   const { list, onChangeFormState, loading, loader, canUpdate, canDelete } =
     usePageState();
 
-  const onUpdateClick = (item: CombineObjectType) =>
+  const onUpdateClick = (item: CombineObjectType) => {
+    onEditClick?.(item);
     onChangeFormState('UPDATE', item);
+  };
   const onDeleteClick = (item: CombineObjectType) =>
     onChangeFormState('DELETE', item);
 

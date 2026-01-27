@@ -14,6 +14,7 @@ const DNDItemsList = ({
   formatItem,
   listCode,
   onFilterClick,
+  disableSettings = false,
 }: DNDItemsListProps) => {
   return (
     <DragDropContextWrapper onDragEnd={onDragEnd}>
@@ -51,6 +52,16 @@ const DNDItemsList = ({
                                 type="button"
                                 className="khb_DND-item-settings"
                                 onClick={onFilterClick}
+                                disabled={
+                                  disableSettings ||
+                                  (item as { canDel?: boolean }).canDel ===
+                                    false
+                                }
+                                aria-disabled={
+                                  disableSettings ||
+                                  (item as { canDel?: boolean }).canDel ===
+                                    false
+                                }
                                 aria-label="Open filter settings"
                               >
                                 <Settings className="khb_DND-item-settings-icon" />

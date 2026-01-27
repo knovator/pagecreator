@@ -23,6 +23,7 @@ export interface DNDItemsListProps {
   listCode?: string;
   formatItem?: (code: string, data: any) => JSX.Element;
   onFilterClick?: (item?: any) => void;
+  disableSettings?: boolean;
 }
 export interface DrawerProps {
   children?: React.ReactNode;
@@ -146,6 +147,10 @@ export interface FormProps {
   filterQuery?: string;
   formRef: MutableRefObject<HTMLFormElement | null>;
   customInputs?: Record<string, (props: InputRendererProps) => JSX.Element>;
+  onPrimaryButtonClick?: (
+    e?: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    data?: any
+  ) => void;
 }
 export interface InputRendererProps {
   field: import('react-hook-form').ControllerRenderProps;
@@ -228,6 +233,7 @@ export interface DerivedTableProps {
       Cell: (item: any) => JSX.Element;
     }
   ];
+  onEditClick?: (item: any) => void;
 }
 
 export interface FormWrapperProps {
@@ -239,6 +245,10 @@ export interface FormWrapperProps {
 }
 export interface FormActionWrapperProps {
   formRef: MutableRefObject<HTMLFormElement | null>;
+  onPrimaryButtonClick?: (
+    e?: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    data?: any
+  ) => void;
 }
 
 export interface SchemaType extends ReactSelectProps {
@@ -288,6 +298,10 @@ export interface PageProps {
   permissions?: PermissionsObj;
   translations?: PageTranslationPairs;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
+  onPrimaryButtonClick?: (
+    e?: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
+  onEditClick?: (data: any) => void;
 }
 export interface PaginationProps {
   totalPages: number;

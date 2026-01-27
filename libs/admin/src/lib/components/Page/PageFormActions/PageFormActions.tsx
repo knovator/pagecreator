@@ -5,12 +5,16 @@ import { CALLBACK_CODES } from '../../../constants/common';
 import { usePageState } from '../../../context/PageContext';
 import { useProviderState } from '../../../context/ProviderContext';
 
-const PageFormActions = ({ formRef }: FormActionWrapperProps) => {
+const PageFormActions = ({
+  formRef,
+  onPrimaryButtonClick,
+}: FormActionWrapperProps) => {
   const { onError, commonTranslations } = useProviderState();
   const { closeForm, loading, canAdd, canUpdate, formState } = usePageState();
   const onSubmitClick = (
     e?: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
+    onPrimaryButtonClick?.(e);
     if (!formRef) {
       return onError(
         CALLBACK_CODES.INTERNAL,

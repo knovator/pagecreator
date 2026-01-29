@@ -254,7 +254,6 @@ const usePage = ({
     sourceIndex: number,
     destinationIndex: number
   ) => {
-    console.log(sourceIndex, destinationIndex);
     setSelectedWidgets((listData) => {
       const temporaryData = [...listData];
       const [selectedRow] = temporaryData.splice(sourceIndex, 1);

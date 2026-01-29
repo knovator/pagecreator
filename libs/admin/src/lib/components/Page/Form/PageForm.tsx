@@ -116,14 +116,18 @@ const PageForm = ({
 
   const handlePageSubmit = (formData: Record<string, unknown>) => {
     const dataToSubmit =
-      typeof filterQuery !== 'undefined'
-        ? { ...formData, filterQuery }
-        : formData;
+    typeof filterQuery !== 'undefined'
+    ? { ...formData, filterQuery }
+    : formData;
     const submitPayload =
       Array.isArray(selectedWidgets) && selectedWidgets.length > 0
         ? {
             ...dataToSubmit,
-            widgets: selectedWidgets.map((item) => item.value),
+            widgets: selectedWidgets.map((item) => ({
+              _id: item.value,
+              label: item.label,
+              code: item.code,
+            })),
           }
         : dataToSubmit;
     onPrimaryButtonClick?.(undefined, submitPayload);

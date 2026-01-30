@@ -1,10 +1,18 @@
 import React from 'react';
-import Button from '../Button';
 import Pencil from '../../../icons/pencil';
 import Trash from '../../../icons/trash';
 import { ObjectType, TableDataItemFormat, TableProps } from '../../../types';
 
-const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
+const Table = ({
+  data,
+  dataKeys,
+  actions,
+  loader,
+  loading,
+  extraActions,
+  actionsLabel,
+  extraColumns,
+}: TableProps) => {
   const cellItemRenderer = (
     item: ObjectType,
     dataKey: TableDataItemFormat,
@@ -35,22 +43,32 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
         {loading && loader ? (
           <div className="khb_table-height">{loader}</div>
         ) : (
-          <table className="khb_table">
-            <thead className="khb_table-thead">
+          <table
+            className={`khb_table ${data.length > 0 ? '' : 'empty-table'}`}
+          >
+            <thead className="khb_thead">
               <tr>
                 {dataKeys.map((key, i) => (
                   <th scope="col" className="khb_table-heading" key={i}>
                     {key.label}
                   </th>
                 ))}
-                {actions && (actions?.edit || actions?.delete) && (
+                {Array.isArray(extraColumns)
+                  ? extraColumns.map((action) => (
+                      <th scope="col" className="khb_table-heading">
+                        {action.label}
+                      </th>
+                    ))
+                  : null}
+                {(actions && (actions?.edit || actions?.delete)) ||
+                typeof extraActions === 'function' ? (
                   <th scope="col" className="khb_table-heading">
-                    Actions
+                    {actionsLabel}
                   </th>
-                )}
+                ) : null}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="khb_tbody">
               {data.length > 0 ? (
                 data.map((item: ObjectType, i: number) => (
                   <tr
@@ -58,28 +76,49 @@ const Table = ({ data, dataKeys, actions, loader, loading }: TableProps) => {
                     key={item['id'] || item['_id'] || i}
                   >
                     {dataKeys.map((key, j) => cellItemRenderer(item, key, j))}
-                    {actions && (
+                    {Array.isArray(extraColumns)
+                      ? extraColumns.map((column) => (
+                          <td className="khb_table-row-data" key={i}>
+                            {column.Cell(item)}
+                          </td>
+                        ))
+                      : null}
+                    {(actions && (actions?.edit || actions?.delete)) ||
+                    typeof extraActions === 'function' ? (
                       <td className="khb_table-row-actions">
-                        {actions.edit && (
-                          <Button size="xs" onClick={() => actions.edit!(item)}>
-                            <Pencil />
-                          </Button>
-                        )}
-                        {actions.delete && (
-                          <Button
-                            size="xs"
-                            type="danger"
-                            onClick={() => actions.delete!(item)}
+                        {actions &&
+                        actions.edit &&
+                        typeof actions.edit === 'function' ? (
+                          <button
+                            className="khb_actions-update"
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            onClick={() => actions.edit(item)}
                           >
-                            <Trash />
-                          </Button>
-                        )}
+                            <Pencil />
+                          </button>
+                        ) : null}
+                        {actions &&
+                          actions.delete &&
+                          typeof actions.delete === 'function' &&  !!item['canDel'] !== false &&  (
+                            <button
+                              className="khb_actions-delete"
+                              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                              // @ts-ignore
+                              onClick={() => actions.delete!(item)}
+                            >
+                              <Trash />
+                            </button>
+                          )}
+                        {typeof extraActions === 'function'
+                          ? extraActions(item)
+                          : null}
                       </td>
-                    )}
+                    ) : null}
                   </tr>
                 ))
               ) : (
-                <tr>
+                <tr className="empty-row">
                   <td colSpan={(dataKeys?.length || 0) + 1}>No data found</td>
                 </tr>
               )}

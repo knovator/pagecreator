@@ -21,7 +21,7 @@ export async function update<T extends EntityType>(
   Modal: Model<T>,
   query: FilterQuery<EntityType>,
   data: Partial<T>
-): Promise<ReturnDocument | undefined> {
+): Promise<T | undefined> {
   await getOne(Modal, query);
   const result = await Modal.findOneAndUpdate(query, data, { new: true });
   return result || undefined;
@@ -30,9 +30,10 @@ export async function update<T extends EntityType>(
 export async function remove<T extends EntityType>(
   Modal: Model<T>,
   query: FilterQuery<EntityType>
-): Promise<ReturnDocument> {
+): Promise<T | undefined> {
   const modalInstance = await getOne(Modal, query);
-  return await modalInstance.remove();
+  await modalInstance.remove();
+  return modalInstance;
 }
 // delete-all
 export async function deleteAll<T extends EntityType>(Modal: Model<T>, query: FilterQuery<T>) {
@@ -79,4 +80,23 @@ export async function getOne<T extends EntityType>(
 // bulk-insert
 export async function bulkInsert<T extends EntityType>(Modal: Model<T>, docs: T[]): Promise<ReturnDocument[]> {
   return await Modal.insertMany(docs);
+}
+
+export async function checkUnique<T extends EntityType>({
+Modal,
+uniqueField,
+errorMessage,
+value
+}: {
+  Modal: Model<T>,
+  uniqueField: keyof T,
+  value: any,
+  errorMessage: string
+}): Promise<void> {
+  const query: FilterQuery<T> = { [uniqueField]: value } as FilterQuery<T>;
+  let result;
+  try {
+    result = await getOne(Modal, query);
+  } catch (error) {}
+  if(result) throw new Error(errorMessage)
 }

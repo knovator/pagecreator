@@ -1,24 +1,25 @@
 import React from 'react';
 import classNames from 'classnames';
-import ReactSelect from 'react-select';
+import ReactSelect from 'react-select/async';
 import { ReactSelectProps } from '../../../types';
 
 const CustomReactSelect = ({
   onChange,
   label,
   error,
-  options = [],
   className,
   isMulti,
   selectedOptions = [],
   required,
   isLoading,
   isSearchable,
-  onSearch,
+  loadOptions,
   placeholder,
   wrapperClassName,
   formatOptionLabel,
   listCode,
+  customStyles,
+  selectKey,
 }: ReactSelectProps) => {
   return (
     <div className={wrapperClassName}>
@@ -31,6 +32,7 @@ const CustomReactSelect = ({
         </label>
       )}
       <ReactSelect
+        key={selectKey}
         data-testid={`input-select-${label}`}
         value={selectedOptions}
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -38,18 +40,17 @@ const CustomReactSelect = ({
         onChange={onChange}
         className={classNames(className)}
         isMulti={isMulti}
-        options={options}
+        defaultOptions
         isSearchable={isSearchable}
         isLoading={isLoading}
-        onKeyDown={(e) =>
-          onSearch && onSearch((e.target as HTMLInputElement).value)
-        }
+        loadOptions={loadOptions}
         placeholder={placeholder}
         formatOptionLabel={
           formatOptionLabel
             ? (option) => formatOptionLabel(listCode!, option)
             : undefined
         }
+        styles={customStyles}
       />
       {error && <p className="khb_input-error ">{error}</p>}
     </div>

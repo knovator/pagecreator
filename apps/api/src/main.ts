@@ -8,11 +8,12 @@ import FileUploadRoute from './routes/fileuploadRoute';
 import { resize } from '@knovator/image-resizer';
 import {
   setConfig,
-  ItemRoutes,
   PageRoutes,
   WidgetRoutes,
   UserRoutes,
+  handleUpdateData,
 } from '@knovator/pagecreator-node';
+import mongoose from 'mongoose';
 
 const app = express();
 app.use(cors());
@@ -26,8 +27,27 @@ setConfig({
     {
       title: 'Notifications',
       collectionName: 'notifications',
-      filters: { isDeleted: false, isActive: true },
       searchColumns: ['name', 'code'],
+    },
+    {
+      title: 'Project Assessments',
+      collectionName: 'project_assessment',
+      searchColumns: ['assessmentNm', 'projectNm'],
+    },
+  ],
+  // redis: {
+  //   HOST: 'localhost',
+  //   PORT: 6379,
+  //   DB: 1,
+  // },
+  languages: [
+    {
+      name: 'English',
+      code: 'en',
+    },
+    {
+      name: 'Hindi',
+      code: 'hi',
     },
   ],
 });
@@ -35,10 +55,14 @@ app.get('/status', (_req, res) => {
   res.send('All Okay');
 });
 app.use('/widgets', WidgetRoutes);
-app.use('/items', ItemRoutes);
 app.use('/media', FileUploadRoute);
 app.use('/pages', PageRoutes);
 app.use('/users', UserRoutes);
+app.get('/delete', (req, res) => {
+  if (typeof req.query.id === 'string')
+    handleUpdateData('notifications', req.query.id, mongoose.models);
+  res.send('All Okay');
+});
 app.use(resize(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, './public')));
 

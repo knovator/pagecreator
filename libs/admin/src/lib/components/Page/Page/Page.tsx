@@ -1,10 +1,8 @@
 import React, { useRef } from 'react';
 import usePage from '../../../hooks/usePage';
-import { createTranslation } from '../../../helper/utils';
 import PageContextProvider from '../../../context/PageContext';
 import {
   DEFAULT_PERMISSIONS,
-  TRANSLATION_PAIRS_COMMON,
   TRANSLATION_PAIRS_PAGE,
 } from '../../../constants/common';
 import { PageProps } from '../../../types';
@@ -14,23 +12,29 @@ import Search from '../Search';
 import PageForm from '../Form';
 import AddButton from '../AddButton';
 import Pagination from '../Pagination';
-import DeleteModal from '../../common/DeleteModal';
 import Drawer from '../../common/Drawer';
+import DeleteModal from '../../common/DeleteModal';
 import PageFormActions from '../PageFormActions';
 import PageFormWrapper from '../PageFormWrapper';
+import { useProviderState } from '../../../context/ProviderContext';
 
 const Page = ({
-  t,
   loader,
+  translations,
   explicitForm = false,
   children,
-  permissions = DEFAULT_PERMISSIONS,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  permissions = {},
+  preConfirmDelete,
 }: PageProps) => {
+  const { commonTranslations } = useProviderState();
+  const derivedPermissions = Object.assign(DEFAULT_PERMISSIONS, permissions);
   const formRef = useRef<HTMLFormElement | null>(null);
-  const derivedT = createTranslation(t, {
-    ...TRANSLATION_PAIRS_COMMON,
+  const combinedTranslations = {
     ...TRANSLATION_PAIRS_PAGE,
-  });
+    ...translations,
+  };
   const {
     list,
     widgets,
@@ -40,8 +44,11 @@ const Page = ({
     currentPage,
     pageSize,
     itemData,
+    searchText,
+    changeSearch,
     setCurrentPage,
     formState,
+    getWidgets,
     onChangeFormState,
     onPageFormSubmit,
     onCloseForm,
@@ -52,13 +59,16 @@ const Page = ({
     getPages,
   } = usePage({
     defaultLimit: 10,
+    preConfirmDelete,
+    canList: derivedPermissions.list,
   });
 
   return (
     <PageContextProvider
-      t={derivedT}
       loader={loader}
       list={list}
+      searchText={searchText}
+      changeSearch={changeSearch}
       widgets={widgets}
       data={itemData}
       loading={loading}
@@ -67,6 +77,7 @@ const Page = ({
       currentPage={currentPage}
       onChangeFormState={onChangeFormState}
       pageSize={pageSize}
+      getWidgets={getWidgets}
       setCurrentPage={setCurrentPage}
       onPageFormSubmit={onPageFormSubmit}
       selectedWidgets={selectedWidgets}
@@ -76,10 +87,11 @@ const Page = ({
       formState={formState}
       closeForm={onCloseForm}
       // permissions
-      canAdd={permissions?.add}
-      canDelete={permissions?.delete}
-      canUpdate={permissions?.update}
-      canList={permissions?.list}
+      canAdd={derivedPermissions.add}
+      canDelete={derivedPermissions.delete}
+      canUpdate={derivedPermissions.update}
+      canList={derivedPermissions.list}
+      pageTranslations={translations}
     >
       {children ? (
         children
@@ -99,9 +111,9 @@ const Page = ({
           onClose={onCloseForm}
           title={
             formState === 'ADD'
-              ? derivedT('page.addPageTitle')
+              ? combinedTranslations.addPage
               : formState === 'UPDATE'
-              ? derivedT('page.updatePageTitle')
+              ? combinedTranslations.updatePage
               : ''
           }
           footerContent={<PageFormActions formRef={formRef} />}
@@ -115,6 +127,13 @@ const Page = ({
           itemData={itemData}
           onClose={onCloseForm}
           onConfirmDelete={onCofirmDeletePage}
+          confirmationRequired={commonTranslations.confirmationRequired}
+          confirm={commonTranslations.confirm}
+          lossOfData={commonTranslations.lossOfData}
+          permanentlyDelete={commonTranslations.permanentlyDelete}
+          pleaseType={commonTranslations.pleaseType}
+          toProceedOrCancel={commonTranslations.toProceedOrCancel}
+          typeHerePlaceholder={commonTranslations.typeHerePlaceholder}
         />
       )}
     </PageContextProvider>

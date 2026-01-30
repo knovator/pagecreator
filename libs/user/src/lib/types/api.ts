@@ -29,6 +29,11 @@ export interface PageData {
   code: string;
   widgets: WidgetData[];
 }
+export interface TabData {
+  name: string;
+  names: Record<string, string>;
+  collectionItems: any[];
+}
 export interface WidgetData {
   _id: string;
   name: string;
@@ -36,17 +41,21 @@ export interface WidgetData {
   autoPlay: boolean;
   isActive: boolean;
   widgetTitle: string;
+  widgetTitles?: Record<string, string>;
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;
   itemsType: 'Image' | string;
-  widgetType: 'FixedCard' | 'Carousel';
+  widgetType: 'FixedCard' | 'Carousel' | 'Tabs';
   items: ItemData[];
+  tabs: TabData[];
   collectionItems: CollectionItemType[];
+  backgroundColor: string;
 }
 export interface ItemData {
   _id: string;
   title: string;
+  subtitle?: string;
   altText: string;
   link: string;
   itemType: 'Web' | 'Mobile';

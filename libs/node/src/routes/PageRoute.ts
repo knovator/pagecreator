@@ -27,5 +27,4 @@ routes
 routes
   .delete(`/:id`, pageController.deletePage)
   .descriptor(`${descriptorPrefix}page.delete`);
-
 export default routes;

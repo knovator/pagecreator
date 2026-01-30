@@ -6,8 +6,8 @@ import { usePageState } from '../../../context/PageContext';
 import { useProviderState } from '../../../context/ProviderContext';
 
 const PageFormActions = ({ formRef }: FormActionWrapperProps) => {
-  const { onError } = useProviderState();
-  const { closeForm, loading, canAdd, canUpdate, t } = usePageState();
+  const { onError, commonTranslations } = useProviderState();
+  const { closeForm, loading, canAdd, canUpdate, formState } = usePageState();
   const onSubmitClick = (
     e?: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -35,10 +35,14 @@ const PageFormActions = ({ formRef }: FormActionWrapperProps) => {
   return (
     <FormActions
       loading={loading}
-      primaryLabel={t('saveButtonText')}
+      primaryLabel={
+        formState === 'ADD'
+          ? commonTranslations.create
+          : commonTranslations.update
+      }
       onPrimaryButtonClick={onSubmitClick}
       onSecondaryButtonClick={closeForm}
-      secondaryLabel={t('cancelButtonText')}
+      secondaryLabel={commonTranslations.cancel}
     />
   );
 };

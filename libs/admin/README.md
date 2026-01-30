@@ -91,7 +91,7 @@
 
 ### Prerequisites
 
-We can use `@knovator/pagecreator-admin` in React/Next application, we can create one using following commands
+Create one reactjs/nextjs application if you don't have one,
 * Project
   ```sh
   npx create-react-app my-app
@@ -104,8 +104,7 @@ We can use `@knovator/pagecreator-admin` in React/Next application, we can creat
 
 ### Installation
 
-
-1. Install NPM packages
+1. Add pagecreator package
    ```sh
    npm install @knovator/pagecreator-admin
    # or
@@ -121,7 +120,7 @@ We can use `@knovator/pagecreator-admin` in React/Next application, we can creat
 
 ### Provider
 
-`@knovator/pagecreator-admin` uses **Context API**, to support communication between components. So, `Widget`/`Page` components should be wrapped by Provider.
+In order to support communication between components `@knovator/pagecreator-admin` uses **Context API**. So, `Widget`/`Page` components should be wrapped by Provider.
 ```jsx
 import { Provider } from '@knovator/pagecreator-admin';
 

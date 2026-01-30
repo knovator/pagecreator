@@ -1,9 +1,7 @@
 import joi from 'joi';
-import { Widget } from '../../models';
 import { defaults } from '../defaults';
-import { VALIDATION } from '../../constants';
-import { getOne } from '../../services/dbService';
 import {
+  ItemTypes,
   ItemsType,
   WidgetTypes,
   IWidgetSchema,
@@ -13,28 +11,38 @@ import {
 
 type ItemValidation = IWidgetSchema & IDefaultValidations;
 
-const checkUnique = async (value: string) => {
-  let result;
-  try {
-    // throws error if document found
-    result = await getOne(Widget, {
-      code: value,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-  if (result) {
-    throw new Error(VALIDATION.WIDGET_EXISTS);
-  }
-};
+const srcset = joi.object().keys({
+  screenSize: joi.number().required(),
+  width: joi.number().required(),
+  height: joi.number().required(),
+});
+
+const item = joi.object({
+  title: joi.string().optional(),
+  titles: joi.object().optional(),
+  subtitle: joi.string().optional().allow(''),
+  subtitles: joi.object().optional(),
+  altText: joi.string().optional().allow(''),
+  altTexts: joi.object().optional(),
+  link: joi.string().optional().allow(''),
+  sequence: joi.number().optional(),
+  srcset: joi.array().items(srcset),
+  img: joi.string().allow(null).optional(),
+  imgs: joi.object().optional(),
+  itemType: joi
+    .string()
+    .valid(...Object.values(ItemTypes))
+    .default(ItemTypes.Web),
+});
 
 export const create = joi.object<ItemValidation>({
   name: joi.string().required(),
-  widgetTitle: joi.string().required(),
+  widgetTitle: joi.string().optional(),
+  widgetTitles: joi.object().optional(),
   code: joi
     .string()
     .uppercase()
     .replace(/\s+/g, '_')
-    .external(checkUnique)
     .required(),
   isActive: joi.boolean().default(true).optional(),
   autoPlay: joi.boolean().default(false).optional(),
@@ -43,6 +51,21 @@ export const create = joi.object<ItemValidation>({
   tabletPerRow: joi.number().allow(null).optional(),
   collectionName: joi.string().optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
+  tabs: joi
+    .array()
+    .items(
+      joi.object({
+        name: joi.string().optional(),
+        names: joi.object().optional(),
+        collectionItems: joi.array().items(joi.string()).optional(),
+      })
+    )
+    .optional(),
+  items: joi.array().items(item).optional(),
+  backgroundColor: joi
+    .string()
+    .regex(/^#[A-Fa-f0-9]{6}/)
+    .optional(),
   itemsType: joi
     .string()
     .custom((value) => {
@@ -59,49 +82,74 @@ export const create = joi.object<ItemValidation>({
     })
     .optional()
     .default(ItemsType.Image),
-  widgetType: joi
-    .string()
-    .valid(...Object.values(WidgetTypes))
-    .optional()
-    .default(WidgetTypes.FixedCard),
+  widgetType: joi.string().optional().default(WidgetTypes.FixedCard),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),
   deletedBy: joi.any().optional(),
   deletedAt: joi.any().optional(),
+  textContent: joi.string().optional(),
+  htmlContent: joi.string().optional()
 });
 
 export const update = joi.object<ItemValidation>({
   name: joi.string().required(),
-  widgetTitle: joi.string().required(),
+  widgetTitle: joi.string().optional(),
+  widgetTitles: joi.object().optional(),
   isActive: joi.boolean().optional(),
   webPerRow: joi.number().allow(null).optional(),
   mobilePerRow: joi.number().allow(null).optional(),
   tabletPerRow: joi.number().allow(null).optional(),
   autoPlay: joi.boolean().default(false).optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
-  widgetType: joi
-    .string()
-    .valid(...Object.values(WidgetTypes))
+  tabs: joi
+    .array()
+    .items(
+      joi.object({
+        name: joi.string().optional(),
+        names: joi.object().optional(),
+        collectionItems: joi.array().items(joi.string()).optional(),
+      })
+    )
     .optional(),
+  items: joi.array().items(item).optional(),
+  backgroundColor: joi
+    .string()
+    .regex(/^#[A-Fa-f0-9]{6}/)
+    .optional(),
+  widgetType: joi.string().optional(),
   createdBy: joi.any().optional(),
   updatedBy: joi.any().optional(),
   deletedBy: joi.any().optional(),
   deletedAt: joi.any().optional(),
+  textContent: joi.string().optional(),
+  htmlContent: joi.string().optional()
+
 });
 
 export const list = joi.object({
   search: joi.string().allow('').optional().default(''),
   options: joi
     .object({
-      // sort: joi.alternatives().try(joi.object(), joi.string()).optional(),
+      sort: joi
+        .alternatives()
+        .try(joi.object(), joi.string())
+        .optional()
+        .default({ _id: -1 }),
       // populate: joi.array().items().optional(),
       offset: joi.number().optional(),
       page: joi.number().optional(),
       limit: joi.number().optional(),
     })
-    .default({}),
+    .default({
+      sort: { _id: -1 },
+    }),
+  collectionItems: joi.array().optional().default([]),
   isActive: joi.boolean().optional(),
   all: joi.boolean().default(false),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });
 
 export const partialUpdate = joi.object({
@@ -115,4 +163,9 @@ export const partialUpdate = joi.object({
 export const getCollectionData = joi.object({
   collectionName: joi.string().required(),
   search: joi.string().allow('').optional().default(''),
+  collectionItems: joi.array().optional().default([]),
+  createdBy: joi.any().optional(),
+  updatedBy: joi.any().optional(),
+  deletedBy: joi.any().optional(),
+  deletedAt: joi.any().optional(),
 });

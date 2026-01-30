@@ -4,7 +4,10 @@
     "outDir": "../../dist/out-tsc",
     "types": [
       "node"
-    ]
+    ],
+    "composite": true,
+    "declaration": true,
+    "jsx": "react"
   },
   "files": [
     "../../node_modules/@nrwl/react/typings/cssmodule.d.ts",

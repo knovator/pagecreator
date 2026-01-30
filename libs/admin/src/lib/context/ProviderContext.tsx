@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { createContext, useContext } from 'react';
+import { TRANSLATION_PAIRS_COMMON } from '../constants/common';
 import { ProviderContextProviderProps, ProviderContextType } from '../types';
 
 const ProviderContext = createContext<ProviderContextType | null>(null);
@@ -8,11 +9,11 @@ const Provider = ({
   children,
   baseUrl,
   token,
+  translations,
   onError = () => {},
   onSuccess = () => {},
   onLogout = () => {},
   switchClass = 'khb_switch',
-  itemsRoutesPrefix = 'items',
   widgetRoutesPrefix = 'widgets',
   pageRoutesPrefix = 'pages',
 }: ProviderContextProviderProps) => {
@@ -25,9 +26,12 @@ const Provider = ({
         onSuccess,
         onLogout,
         switchClass,
-        itemsRoutesPrefix,
         widgetRoutesPrefix,
         pageRoutesPrefix,
+        commonTranslations: {
+          ...TRANSLATION_PAIRS_COMMON,
+          ...(translations || {}),
+        },
       }}
     >
       {children}

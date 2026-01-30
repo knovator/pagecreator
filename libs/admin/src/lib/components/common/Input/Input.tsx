@@ -16,6 +16,7 @@ const Input = ({
   onInput,
   onBlur,
   value,
+  info,
   onChange,
   wrapperClassName,
 }: InputProps) => {
@@ -42,6 +43,7 @@ const Input = ({
         onBlur={onBlur}
       />
       {error && <p className="khb_input-error ">{error}</p>}
+      {info && <p className="khb_input-info">{info}</p>}
     </div>
   );
 };

@@ -92,9 +92,13 @@ export interface SrcSetItem {
 export type CollectionItem = {
   title: string;
   collectionName: string;
-  filters?: { [key: string]: string | number | boolean };
+  filters?: { [key: string]: string | number | boolean | ObjectType };
+  /** Dynamic filters function - receives request object and returns filters */
+  getFilters?: (req: any) => { [key: string]: any };
   searchColumns?: string[];
   match?: ObjectType;
+  /** Dynamic match function - receives request object and returns match query for aggregation */
+  getMatch?: (req: any) => ObjectType;
   aggregations?: any[];
   searchLimit?: number;
 };

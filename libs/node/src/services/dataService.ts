@@ -6,14 +6,23 @@ import {
 } from '../utils/helper';
 import { setRedisValue, deleteRedisValue } from '../utils/redis';
 import { defaults, commonExcludedFields } from '../utils/defaults';
-import { IPageSchema, IWidgetSchema } from '../types';
+import { IPageSchema, IWidgetSchema, IRequest } from '../types';
+
+// Helper to filter out undefined/null values from query fields
+const filterDefinedFields = (obj: Record<string, unknown> = {}): Record<string, unknown> => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, value]) => value !== undefined && value !== null)
+  );
+};
 
 const getAggregationQuery = ({
   collectionName,
   ids,
+  req,
 }: {
   collectionName: string;
   ids: string[];
+  req?: IRequest;
 }) => {
   const collectionConfig = defaults.collections.find(
     (c) => c.collectionName === collectionName
@@ -32,6 +41,7 @@ const getAggregationQuery = ({
           $in: ids,
         },
         ...(collectionConfig?.match || {}),
+        ...filterDefinedFields(req?.defaultQueryFields),
       },
     },
     { $addFields: { __order: { $indexOfArray: [ids, '$_id'] } } },
@@ -40,11 +50,16 @@ const getAggregationQuery = ({
   return aggregateQueryItem;
 };
 
-export const getWidgetDataDB = async (code: string, models: Models) => {
+export const getWidgetDataDB = async (
+  code: string,
+  models: Models,
+  req?: IRequest
+) => {
   const { Widget } = models;
   const widgetDataArr = (await Widget.aggregate([
     {
       $match: {
+        ...filterDefinedFields(req?.defaultQueryFields),
         isDeleted: false,
         isActive: true,
         code,
@@ -183,6 +198,7 @@ export const getWidgetDataDB = async (code: string, models: Models) => {
     const aggregateQueryItem = getAggregationQuery({
       collectionName: widgetData.collectionName,
       ids: widgetData.collectionItems,
+      req,
     });
     const collectionModal: any = getCollectionModal(widgetData.collectionName, models);
     const collectionItems = await collectionModal.aggregate(aggregateQueryItem);
@@ -203,6 +219,7 @@ export const getWidgetDataDB = async (code: string, models: Models) => {
     const aggregateQueryItem = getAggregationQuery({
       collectionName: widgetData.collectionName,
       ids: tabCollectionItemIds,
+      req,
     });
 
     const collectionModal: any = getCollectionModal(widgetData.collectionName, models);
@@ -255,11 +272,16 @@ export const updateWidgetPagesData = async (
   }
 };
 
-export const getPageDataDB = async (code: string, models: Models) => {
+export const getPageDataDB = async (
+  code: string,
+  models: Models,
+  req?: IRequest
+) => {
   const { Page } = models;
   const pageData: any = (await Page.aggregate([
     {
       $match: {
+        ...filterDefinedFields(req?.defaultQueryFields),
         isDeleted: false,
         code: code,
       },
@@ -412,7 +434,11 @@ export const getPageDataDB = async (code: string, models: Models) => {
   if (!pageData.length) {
     return null;
   }
-  pageData[0].widgetsData = await appendCollectionData(pageData[0].widgetsData, models);
+  pageData[0].widgetsData = await appendCollectionData(
+    pageData[0].widgetsData,
+    models,
+    req
+  );
   if (
     Array.isArray(pageData[0].widgetsData) &&
     pageData[0].widgetsData.length > 0

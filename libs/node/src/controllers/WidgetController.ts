@@ -34,6 +34,13 @@ const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Widget');
 };
 
+// Helper to filter out undefined/null values from query fields
+const filterDefinedFields = (obj: Record<string, unknown> = {}): Record<string, unknown> => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, value]) => value !== undefined && value !== null)
+  );
+};
+
 const getModals = (req: IRequest) => defaults.getModals(req);
 
 const deleteItems = async (widgetId: string, models: Models) => {
@@ -374,6 +381,9 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     limit = Math.max(collectionItems.length, limit);
   // setting up mongoose model
   const TempModel = getCollectionModal(collectionName, models);
+  // Base filters to apply at the START of the pipeline (for multi-tenant support)
+  const baseFilters: any = filterDefinedFields(req.defaultQueryFields);
+  
   // fetching data
   let query: any = collectionItem.filters || {};
   const orOptions: any = [];
@@ -414,6 +424,10 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     };
   }
   const collectionData = await TempModel.aggregate([
+    // FIRST: Apply base filters (multi-tenant context)
+    {
+      $match: baseFilters,
+    },
     ...(Array.isArray(collectionItem.aggregations)
       ? collectionItem.aggregations
       : []),

@@ -1,13 +1,18 @@
 import { model, Models, Schema, Types } from 'mongoose';
 import { commonExcludedFields, defaults } from './defaults';
 import {
+  IRequest,
   IWidgetData,
   IWidgetDataSchema,
   IWidgetSchema,
   SrcSetItem,
 } from '../types';
 
-export async function appendCollectionData(widgetData: IWidgetSchema[], models: Models) {
+export async function appendCollectionData(
+  widgetData: IWidgetSchema[],
+  models: Models,
+  req?: IRequest
+) {
   const { Widget }= models;
   // reduce widget data to optimize query
   const newData: IWidgetData = widgetData.reduce(
@@ -26,7 +31,10 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
     {}
   );
   if (Object.keys(newData).length > 0) {
-    const aggregationQueryCollectionItems = buildCollectionItemsQuery(newData);
+    const aggregationQueryCollectionItems = buildCollectionItemsQuery(
+      newData,
+      req
+    );
     if (aggregationQueryCollectionItems.length > 0) {
       // getting collection data by populating widget
       let aggregationData: any = await Widget.aggregate(
@@ -49,7 +57,7 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
         return widget;
       });
     }
-    const aggregationQueryTabs = buildTabCollectionItemsQuery(newData);
+    const aggregationQueryTabs = buildTabCollectionItemsQuery(newData, req);
     if (aggregationQueryTabs.length > 0) {
       let aggregationDataTabs: any = await Widget.aggregate(
         aggregationQueryTabs
@@ -93,7 +101,10 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
   return widgetData;
 }
 
-function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
+function buildCollectionItemsQuery(
+  formattedWidgetData: IWidgetData,
+  req?: IRequest
+) {
   const aggregationQuery: any = [
     {
       $match: {
@@ -140,6 +151,7 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
                 $in: ids,
               },
               ...(collectionConfig?.match || {}),
+              ...(req?.defaultQueryFields || {}),
             },
           },
           {
@@ -164,7 +176,10 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
   return aggregationQuery;
 }
 
-function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
+function buildTabCollectionItemsQuery(
+  formattedWidgetData: IWidgetData,
+  req?: IRequest
+) {
   const aggregationQuery: any = [
     {
       $match: {
@@ -214,6 +229,7 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
                 ),
               },
               ...(collectionConfig?.match || {}),
+              ...(req?.defaultQueryFields || {}),
             },
           },
           {

@@ -6,6 +6,7 @@ export interface IRequest extends Request {
   };
   defaultQueryFields?: {
     clientId?: string;
+    clientDomainName?: string;
   };
   defaultStoreFields?: {
     clientId?: string;

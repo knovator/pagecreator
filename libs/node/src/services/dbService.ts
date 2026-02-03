@@ -86,20 +86,27 @@ export async function bulkInsert<T>(
 }
 
 export async function checkUnique<T extends EntityType>({
-Modal,
-uniqueField,
-errorMessage,
-value
+  Modal,
+  uniqueField,
+  errorMessage,
+  value,
+  query: additionalQuery
 }: {
   Modal: Model<T>,
   uniqueField: keyof T,
   value: any,
-  errorMessage: string
+  errorMessage: string,
+  query?: Record<string, any>
 }): Promise<void> {
-  const query: FilterQuery<T> = { [uniqueField]: value } as FilterQuery<T>;
+  const query: FilterQuery<T> = { 
+    [uniqueField]: value,
+    ...additionalQuery 
+  } as FilterQuery<T>;
   let result;
   try {
     result = await getOne(Modal, query);
-  } catch (error) {}
+  } catch (error) {
+    // eslint-disable-next-line no-empty
+  }
   if(result) throw new Error(errorMessage)
 }

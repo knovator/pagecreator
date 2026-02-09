@@ -133,8 +133,9 @@ export interface ReactSelectProps {
   customStyles?: any;
   loadOptions?: (
     value?: string,
-    callback?: (options: OptionType[]) => void
-  ) => Promise<OptionType[]>;
+    callback?: (options: OptionType[]) => void,
+    collectionName?: string
+  ) => Promise<OptionType[]> | void;
   selectKey?: string;
 }
 export interface CustomInputType {
@@ -259,17 +260,17 @@ export interface SchemaType extends ReactSelectProps {
   editable?: boolean;
   onInput?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?:
-    | 'text'
-    | 'number'
-    | 'select'
-    | 'checkbox'
-    | 'textarea'
-    | 'file'
-    | 'url'
-    | 'ReactSelect'
-    // | 'srcset'
-    | 'color'
-    | 'html';
+  | 'text'
+  | 'number'
+  | 'select'
+  | 'checkbox'
+  | 'textarea'
+  | 'file'
+  | 'url'
+  | 'ReactSelect'
+  // | 'srcset'
+  | 'color'
+  | 'html';
   options?: { value: string; label: string }[];
   selectedOptions?: { value: string; label: string }[];
   isMulti?: boolean;
@@ -368,8 +369,9 @@ export interface TabsProps {
   languages?: LanguageType[];
   loadOptions?: (
     value?: string,
-    callback?: (options: OptionType[]) => void
-  ) => Promise<OptionType[]>;
+    callback?: (options: OptionType[]) => void,
+    collectionName?: string
+  ) => Promise<OptionType[]> | void;
 }
 
 export interface ImageUploadProps {

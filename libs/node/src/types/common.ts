@@ -26,6 +26,7 @@ export interface IPageSchema extends Document {
   name: string;
   code: string;
   slug: string;
+  isActive: boolean;
   canDel: boolean;
   widgets: string[];
   filterQuery: string;

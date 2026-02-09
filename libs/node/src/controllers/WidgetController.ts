@@ -72,7 +72,7 @@ export const createWidget = catchAsync(
     const models = getModals(req);
     const data = req.body;
     let items = [];
-   
+
     await checkUnique({
       Modal: models['Widget'],
       uniqueField: 'code',
@@ -88,8 +88,34 @@ export const createWidget = catchAsync(
     if (items.length > 0) {
       await createItems(items, widget._id, models);
     }
+
+    const widgetData = widget.toJSON ? widget.toJSON() : widget;
+
+    // Update Redis cache for the new widget
+    updateRedisWidget(widgetData.code, models);
+
+    // Populate collectionItems if it's a 'pages' collection widget
+    if (
+      widgetData.collectionName === 'pages' &&
+      Array.isArray(widgetData.collectionItems) &&
+      widgetData.collectionItems.length > 0
+    ) {
+      const { Page } = models;
+      const pages = await Page.find(
+        { _id: { $in: widgetData.collectionItems } },
+        'name code slug _id filterQuery'
+      ).lean();
+
+      // Preserve order
+      widgetData.collectionItems = widgetData.collectionItems
+        .map((id: any) =>
+          pages.find((p: any) => p._id.toString() === id.toString())
+        )
+        .filter((p: any) => !!p);
+    }
+
     res.message = req?.i18n?.t('widget.create');
-    return createdDocumentResponse(widget, res);
+    return createdDocumentResponse(widgetData, res);
   }
 );
 
@@ -103,14 +129,37 @@ export const updateWidget = catchAsync(
       items = JSON.parse(JSON.stringify(data.items));
       delete data.items;
     }
-    const updatedWidget = await update(models['Widget'], { _id }, data);
+    let updatedWidget = await update(models['Widget'], { _id }, data);
     if (items.length > 0 && updatedWidget) {
       await deleteItems(_id, models);
       await createItems(items, updatedWidget._id, models);
     }
     if (updatedWidget) {
+      if (updatedWidget.toJSON) {
+        updatedWidget = updatedWidget.toJSON();
+      }
       updateRedisWidget(updatedWidget.code, models);
       updateWidgetPagesData([updatedWidget.id], models);
+
+      // Populate collectionItems if it's a 'pages' collection widget
+      if (
+        updatedWidget.collectionName === 'pages' &&
+        Array.isArray(updatedWidget.collectionItems) &&
+        updatedWidget.collectionItems.length > 0
+      ) {
+        const { Page } = models;
+        const pages = await Page.find(
+          { _id: { $in: updatedWidget.collectionItems } },
+          'name code slug _id filterQuery'
+        ).lean();
+
+        // Preserve order
+        updatedWidget.collectionItems = updatedWidget.collectionItems
+          .map((id: any) =>
+            pages.find((p: any) => p._id.toString() === id.toString())
+          )
+          .filter((p: any) => !!p);
+      }
     }
     res.message = req?.i18n?.t('widget.update');
     return successResponse(updatedWidget, res);
@@ -167,6 +216,33 @@ export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const notifications = await list(Widget, query, customOptions);
+
+  // Populate collectionItems for 'pages' collection
+  if (Array.isArray(notifications.docs) && notifications.docs.length > 0) {
+    const { Page } = getModals(req);
+    await Promise.all(
+      notifications.docs.map(async (widget: any) => {
+        if (
+          widget.collectionName === 'pages' &&
+          Array.isArray(widget.collectionItems) &&
+          widget.collectionItems.length > 0
+        ) {
+          const pages = await Page.find(
+            { _id: { $in: widget.collectionItems } },
+            'name code slug _id filterQuery'
+          ).lean();
+
+          // Preserve order of collectionItems
+          widget.collectionItems = widget.collectionItems
+            .map((id: any) =>
+              pages.find((p: any) => p._id.toString() === id.toString())
+            )
+            .filter((p: any) => !!p);
+        }
+      })
+    );
+  }
+
   res.message = req?.i18n?.t('widget.getAll');
   return successResponse(notifications, res);
 });
@@ -192,51 +268,17 @@ export const getSingleWidget = catchAsync(
       },
       ...(defaults.languages && defaults.languages?.length > 0
         ? defaults.languages.reduce((arr: any[], lng) => {
-            arr.push(
-              {
-                $lookup: {
-                  from: 'file',
-                  let: { imgsId: { $toObjectId: `$imgs.${lng.code}` } },
-                  as: `imgs.${lng.code}`,
-                  pipeline: [
-                    {
-                      $match: {
-                        $expr: {
-                          $eq: ['$_id', '$$imgsId'],
-                        },
-                      },
-                    },
-                    {
-                      $project: {
-                        ...commonExcludedFields,
-                        width: 0,
-                        module: 0,
-                        height: 0,
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                $unwind: {
-                  path: `$imgs.${lng.code}`,
-                  preserveNullAndEmptyArrays: true,
-                },
-              }
-            );
-            return arr;
-          }, [])
-        : [
+          arr.push(
             {
               $lookup: {
                 from: 'file',
-                let: { imgId: '$img' },
-                as: 'img',
+                let: { imgsId: { $toObjectId: `$imgs.${lng.code}` } },
+                as: `imgs.${lng.code}`,
                 pipeline: [
                   {
                     $match: {
                       $expr: {
-                        $eq: ['$_id', '$$imgId'],
+                        $eq: ['$_id', '$$imgsId'],
                       },
                     },
                   },
@@ -253,11 +295,45 @@ export const getSingleWidget = catchAsync(
             },
             {
               $unwind: {
-                path: '$img',
+                path: `$imgs.${lng.code}`,
                 preserveNullAndEmptyArrays: true,
               },
+            }
+          );
+          return arr;
+        }, [])
+        : [
+          {
+            $lookup: {
+              from: 'file',
+              let: { imgId: '$img' },
+              as: 'img',
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$_id', '$$imgId'],
+                    },
+                  },
+                },
+                {
+                  $project: {
+                    ...commonExcludedFields,
+                    width: 0,
+                    module: 0,
+                    height: 0,
+                  },
+                },
+              ],
             },
-          ]),
+          },
+          {
+            $unwind: {
+              path: '$img',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        ]),
       {
         $lookup: {
           from: 'srcsets',
@@ -309,6 +385,10 @@ export const getItemsTypes = catchAsync(
         value: Object.keys(ItemsType)[0],
         label: Object.values(ItemsType)[0],
       },
+      {
+        value: 'pages',
+        label: 'Pages',
+      },
     ];
     defaults.collections.forEach((item: CollectionItem) => {
       itemsTypes.push({
@@ -341,6 +421,50 @@ export const getWidgetTypes = catchAsync(
 export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse) => {
   const models = getModals(req);
   const { search, collectionName, collectionItems } = req.body;
+
+  // Handle built-in "pages" collection
+  if (collectionName === 'pages') {
+    const { Page } = models;
+    let limit = 10;
+    if (Array.isArray(collectionItems))
+      limit = Math.max(collectionItems.length, limit);
+
+    const orOptions: any = [];
+    let addFieldOptions: any = {};
+
+    if (search) {
+      orOptions.push({ name: { $regex: search, $options: 'i' } });
+      orOptions.push({ slug: { $regex: search, $options: 'i' } });
+    } else {
+      orOptions.push({});
+    }
+
+    if (Array.isArray(collectionItems) && collectionItems.length) {
+      addFieldOptions = {
+        __order: {
+          $indexOfArray: [collectionItems, { $toString: '$_id' }],
+        },
+      };
+      orOptions.push({ _id: { $in: formatCollectionItems(collectionItems) } });
+    }
+
+    const query: any = {
+      isDeleted: false,
+      $or: orOptions,
+    };
+
+    const collectionData = await Page.aggregate([
+      { $match: query },
+      { $addFields: addFieldOptions },
+      { $sort: { __order: -1 } },
+      { $limit: limit },
+      { $project: { _id: 1, name: 1, slug: 1, code: 1, filterQuery: 1 } },
+    ]);
+
+    res.message = req?.i18n?.t('widget.getCollectionData');
+    return successResponse({ docs: collectionData }, res);
+  }
+
   const collectionItem: CollectionItem | undefined = defaults.collections.find(
     (collection) => collection.collectionName === collectionName
   );

@@ -33,6 +33,8 @@ const constants = {
   imageItemsTypeValue: 'Image',
   textWidgetTypeValue: 'Text',
   htmlWidgetTypeValue: 'HTML',
+  linksWidgetTypeValue: 'Links',
+  pagesItemsTypeValue: 'pages',
   tabsAccessor: 'tabs',
   webItems: 'webItems',
   mobileItems: 'mobileItems',
@@ -51,8 +53,11 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     clearErrors,
     setError,
     getValues,
-  } = useForm({
+  } = useForm<any>({
     shouldUnregister: false,
+    defaultValues: {
+      backgroundColor: '#ffffff',
+    },
   });
   const { switchClass, commonTranslations } = useProviderState();
   const {
@@ -116,7 +121,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       }
       if (
         data?.widgetType === constants.textWidgetTypeValue ||
-        data?.widgetType === constants.htmlWidgetTypeValue
+        data?.widgetType === constants.htmlWidgetTypeValue ||
+        data?.widgetType === constants.linksWidgetTypeValue
       ) {
         setItemsEnabled(false);
       }
@@ -139,7 +145,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
 
   const onChangeSearch = (
     str?: string,
-    callback?: (options: OptionType[]) => void
+    callback?: (options: OptionType[]) => void,
+    collectionName?: string
   ): any => {
     let collectionItems: any[] = [];
     let valueToSet = '';
@@ -149,8 +156,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       ) {
         collectionItems = data[constants.tabsAccessor][activeTab]
           ? data[constants.tabsAccessor][activeTab][
-              constants.collectionItemsAccessor
-            ]
+          constants.collectionItemsAccessor
+          ]
           : [];
         valueToSet = `${constants.tabsAccessor}.${activeTab}.${constants.tabCollectionItemsAccessor}`;
       } else if (
@@ -170,18 +177,21 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     if (callerRef.current) clearTimeout(callerRef.current);
     let item: any;
 
+    // Use passed collectionName or fall back to selectedCollectionType
+    const collectionToUse = collectionName || selectedCollectionType?.value;
+
     callerRef.current = setTimeout(() => {
-      if (selectedCollectionType)
+      if (collectionToUse)
         getCollectionData(
-          selectedCollectionType.value,
+          collectionToUse,
           str,
           (options) => {
             if (typeof callback === 'function')
               callback(
                 options.map((item: ObjectType) => ({
-                  value: item['_id'] || item['id'],
-                  label: item['name'],
                   ...item,
+                  value: item['_id'] || item['id'],
+                  label: item['name'] || item['title'],
                 }))
               );
             if (formState === 'UPDATE') {
@@ -192,10 +202,10 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
                   );
                   return item
                     ? {
-                        label: item.name,
-                        value: item._id || item.id,
-                        ...item,
-                      }
+                      ...item,
+                      value: item._id || item.id,
+                      label: item.name || item.title,
+                    }
                     : {};
                 }) || [];
               selectedOptions = selectedOptions.filter((obj) => !!obj.value);
@@ -232,16 +242,16 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       const derivedItemTypes =
         widgetType === constants.tabsWidgetTypeValue
           ? itemsTypes.filter(
-              (item) => item.label !== constants.imageItemsTypeValue
-            )
+            (item) => item.label !== constants.imageItemsTypeValue
+          )
           : itemsTypes;
       const firstItemType = derivedItemTypes[0];
-      setValue(constants.itemTypeAccessor, firstItemType?.value);  
+      setValue(constants.itemTypeAccessor, firstItemType?.value);
       return firstItemType;
     },
     [itemsTypes, setValue]
   );
-  
+
 
   const getFirstWidgetTypeValue = useCallback(() => {
     return widgetTypes[0].value;
@@ -261,17 +271,25 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
           widgetType?.value === constants.htmlWidgetTypeValue
         ) {
           setItemsEnabled(false);
+        } else if (widgetType?.value === constants.linksWidgetTypeValue) {
+          setItemsEnabled(false);
+          setValue(constants.itemTypeAccessor, constants.pagesItemsTypeValue);
+          setValue(constants.collectionNameAccessor, constants.pagesItemsTypeValue);
+          const pagesOption = itemsTypes.find(
+            (item) => item.value === constants.pagesItemsTypeValue
+          );
+          if (pagesOption) setSelectedCollectionType(pagesOption);
         } else {
           setItemsEnabled(true);
         }
-  
+
         if (
           widgetType?.value === constants.carouselWidgetTypeValue ||
           widgetType?.value === constants.fixedCardWidgetTypeValue
         ) {
           setValue(constants.itemTypeAccessor, "Image");
         }
-  
+
         if (widgetType?.value === constants.tabsWidgetTypeValue) {
           const firstItemType = getFirstItemTypeValue(value[name]);
           if (firstItemType) {
@@ -301,7 +319,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             (tabItem) => tabItem[constants.tabCollectionItemsAccessor]
           )
         );
-      }  
+      }
     },
     [getFirstItemTypeValue, itemsTypes, setValue, widgetTypes, selectedCollectionType]
   );
@@ -365,16 +383,21 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         formData[constants.widgetTypeAccessor] as string
       )?.value;
     }
+    // Force collectionName and itemsType for Links widget
+    if (formData[constants.widgetTypeAccessor] === constants.linksWidgetTypeValue) {
+      formData[constants.collectionNameAccessor] = constants.pagesItemsTypeValue;
+      formData[constants.itemTypeAccessor] = constants.pagesItemsTypeValue;
+    }
     // setting collectionName if widgetType is FixedCard or Carousel and FormState
-    if (
+    else if (
       formData[constants.itemTypeAccessor] !== constants.imageItemsTypeValue &&
       formState === 'ADD'
     ) {
       formData[constants.collectionNameAccessor] = selectedCollectionType
         ? selectedCollectionType.value
         : getFirstItemTypeValue(
-            formData[constants.widgetTypeAccessor] as string
-          )?.value;
+          formData[constants.widgetTypeAccessor] as string
+        )?.value;
     }
     // setting colleciton items if collectionItems are there
     if (
@@ -473,36 +496,36 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     },
     Array.isArray(languages) && languages.length > 0
       ? {
-          label: commonTranslations.title,
-          accessor: 'widgetTitles',
-          required: false,
-          type:
-            customInputs && customInputs['widgetTitles'] ? undefined : 'text',
-          info: widgetTranslations.widgetTitleInfo,
-          placeholder: commonTranslations.titlePlaceholder,
-          onInput: handleCapitalize,
-          Input:
-            customInputs && customInputs['widgetTitles']
-              ? customInputs['widgetTitles']
-              : undefined,
-        }
+        label: commonTranslations.title,
+        accessor: 'widgetTitles',
+        required: false,
+        type:
+          customInputs && customInputs['widgetTitles'] ? undefined : 'text',
+        info: widgetTranslations.widgetTitleInfo,
+        placeholder: commonTranslations.titlePlaceholder,
+        onInput: handleCapitalize,
+        Input:
+          customInputs && customInputs['widgetTitles']
+            ? customInputs['widgetTitles']
+            : undefined,
+      }
       : {
-          label: commonTranslations.title,
-          accessor: 'widgetTitle',
-          required: true,
-          type:
-            customInputs && customInputs['widgetTitle'] ? undefined : 'text',
-          onInput: handleCapitalize,
-          placeholder: commonTranslations.titlePlaceholder,
-          validations: {
-            required: commonTranslations.titleRequired,
-          },
-          info: widgetTranslations.widgetTitleInfo,
-          Input:
-            customInputs && customInputs['widgetTitle']
-              ? customInputs['widgetTitle']
-              : undefined,
+        label: commonTranslations.title,
+        accessor: 'widgetTitle',
+        required: true,
+        type:
+          customInputs && customInputs['widgetTitle'] ? undefined : 'text',
+        onInput: handleCapitalize,
+        placeholder: commonTranslations.titlePlaceholder,
+        validations: {
+          required: commonTranslations.titleRequired,
         },
+        info: widgetTranslations.widgetTitleInfo,
+        Input:
+          customInputs && customInputs['widgetTitle']
+            ? customInputs['widgetTitle']
+            : undefined,
+      },
     {
       label: widgetTranslations.widgetType,
       required: true,
@@ -566,23 +589,26 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         required: widgetTranslations.itemsTypePlaceholder,
       },
       options:
-        selectedWidgetType?.value === constants.tabsWidgetTypeValue ||
-        selectedWidgetType?.collectionsOnly
+        selectedWidgetType?.value === constants.linksWidgetTypeValue
           ? itemsTypes.filter(
-              (item) => item.label !== constants.imageItemsTypeValue
+            (item) => item.value === constants.pagesItemsTypeValue
+          )
+          : selectedWidgetType?.value === constants.tabsWidgetTypeValue ||
+            selectedWidgetType?.collectionsOnly
+            ? itemsTypes.filter(
+              (item) =>
+                item.label !== constants.imageItemsTypeValue &&
+                item.value !== constants.pagesItemsTypeValue
             )
-          : selectedWidgetType?.imageOnly
-          ? itemsTypes.filter(
-              (item) => item.label === constants.imageItemsTypeValue
-            )
-          : itemsTypes,
+            : selectedWidgetType?.imageOnly
+              ? itemsTypes.filter(
+                (item) => item.label === constants.imageItemsTypeValue
+              )
+              : itemsTypes.filter(
+                (item) => item.value !== constants.pagesItemsTypeValue
+              ),
     },
-    {
-      label: widgetTranslations.color,
-      accessor: 'backgroundColor',
-      type: 'color',
-      className: 'khb_input-color',
-    },
+
     {
       label: widgetTranslations.webPerRow,
       accessor: 'webPerRow',
@@ -653,11 +679,19 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       show:
         !itemsEnabled &&
         (selectedWidgetType?.value === constants.carouselWidgetTypeValue ||
-          selectedWidgetType?.value === constants.fixedCardWidgetTypeValue || !selectedWidgetType) && !!selectedCollectionType?.value,
+          selectedWidgetType?.value === constants.fixedCardWidgetTypeValue ||
+          selectedWidgetType?.value === constants.linksWidgetTypeValue ||
+          !selectedWidgetType) && !!selectedCollectionType?.value,
       formatOptionLabel: formatOptionLabel,
       listCode: selectedCollectionType?.value,
       customStyles: reactSelectStyles || {},
       selectKey: selectedCollectionType?.value,
+    },
+    {
+      label: widgetTranslations.color,
+      accessor: 'backgroundColor',
+      type: 'color',
+      className: 'khb_input-color',
     },
   ];
 

@@ -46,9 +46,9 @@ const CustomReactSelect = ({
         loadOptions={loadOptions}
         placeholder={placeholder}
         formatOptionLabel={
-          formatOptionLabel
+          formatOptionLabel && listCode !== 'pages' && listCode !== 'blog'
             ? (option: { [key: string]: any }) =>
-                formatOptionLabel(listCode!, option)
+              formatOptionLabel(listCode!, option)
             : undefined
         }
         styles={customStyles}

@@ -3,6 +3,7 @@ import {
   AddSrcSetsToItems,
   appendCollectionData,
   getCollectionModal,
+  formatCollectionItems,
 } from '../utils/helper';
 import { setRedisValue, deleteRedisValue } from '../utils/redis';
 import { defaults, commonExcludedFields } from '../utils/defaults';
@@ -13,8 +14,27 @@ const getAggregationQuery = ({
   ids,
 }: {
   collectionName: string;
-  ids: string[];
+  ids: any[];
 }) => {
+  // Handle built-in "pages" collection
+  if (collectionName === 'pages') {
+    return [
+      {
+        $match: {
+          _id: { $in: ids },
+          isDeleted: false,
+          $or: [
+            { isActive: true },
+            { isActive: { $exists: false } }  // Include pages without isActive field
+          ],
+        },
+      },
+      { $project: { _id: 1, name: 1, slug: 1, code: 1, filterQuery: 1 } },
+      { $addFields: { __order: { $indexOfArray: [ids, '$_id'] } } },
+      { $sort: { __order: 1 } },
+    ];
+  }
+
   const collectionConfig = defaults.collections.find(
     (c) => c.collectionName === collectionName
   );
@@ -53,7 +73,9 @@ export const getWidgetDataDB = async (code: string, models: Models) => {
     {
       // Get only the fields that are not excluded
       $project: {
-        ...commonExcludedFields,
+        __v: 0,
+        isDeleted: 0,
+        deletedAt: 0,
       },
     },
     {
@@ -72,44 +94,12 @@ export const getWidgetDataDB = async (code: string, models: Models) => {
           },
           ...(defaults.languages && defaults.languages?.length > 0
             ? defaults.languages.reduce((arr: any[], lng) => {
-                arr.push(
-                  {
-                    $lookup: {
-                      from: 'file',
-                      let: { img: { $toObjectId: `$imgs.${lng.code}` } },
-                      as: `images.${lng.code}`,
-                      pipeline: [
-                        {
-                          $match: {
-                            $expr: {
-                              $eq: ['$_id', '$$img'],
-                            },
-                          },
-                        },
-                        {
-                          $project: {
-                            _id: 1,
-                            uri: 1,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                  {
-                    $unwind: {
-                      path: `$images.${lng.code}`,
-                      preserveNullAndEmptyArrays: true,
-                    },
-                  }
-                );
-                return arr;
-              }, [])
-            : [
+              arr.push(
                 {
                   $lookup: {
                     from: 'file',
-                    let: { img: '$img' },
-                    as: 'image',
+                    let: { img: { $toObjectId: `$imgs.${lng.code}` } },
+                    as: `images.${lng.code}`,
                     pipeline: [
                       {
                         $match: {
@@ -129,11 +119,43 @@ export const getWidgetDataDB = async (code: string, models: Models) => {
                 },
                 {
                   $unwind: {
-                    path: '$image',
+                    path: `$images.${lng.code}`,
                     preserveNullAndEmptyArrays: true,
                   },
+                }
+              );
+              return arr;
+            }, [])
+            : [
+              {
+                $lookup: {
+                  from: 'file',
+                  let: { img: '$img' },
+                  as: 'image',
+                  pipeline: [
+                    {
+                      $match: {
+                        $expr: {
+                          $eq: ['$_id', '$$img'],
+                        },
+                      },
+                    },
+                    {
+                      $project: {
+                        _id: 1,
+                        uri: 1,
+                      },
+                    },
+                  ],
                 },
-              ]),
+              },
+              {
+                $unwind: {
+                  path: '$image',
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
+            ]),
           {
             $project: {
               sequence: 0,
@@ -182,7 +204,7 @@ export const getWidgetDataDB = async (code: string, models: Models) => {
   ) {
     const aggregateQueryItem = getAggregationQuery({
       collectionName: widgetData.collectionName,
-      ids: widgetData.collectionItems,
+      ids: formatCollectionItems(widgetData.collectionItems),
     });
     const collectionModal: any = getCollectionModal(widgetData.collectionName, models);
     const collectionItems = await collectionModal.aggregate(aggregateQueryItem);
@@ -202,7 +224,7 @@ export const getWidgetDataDB = async (code: string, models: Models) => {
     );
     const aggregateQueryItem = getAggregationQuery({
       collectionName: widgetData.collectionName,
-      ids: tabCollectionItemIds,
+      ids: formatCollectionItems(tabCollectionItemIds),
     });
 
     const collectionModal: any = getCollectionModal(widgetData.collectionName, models);
@@ -307,44 +329,12 @@ export const getPageDataDB = async (code: string, models: Models) => {
                 },
                 ...(defaults.languages && defaults.languages?.length > 0
                   ? defaults.languages.reduce((arr: any[], lng) => {
-                      arr.push(
-                        {
-                          $lookup: {
-                            from: 'file',
-                            let: { img: { $toObjectId: `$imgs.${lng.code}` } },
-                            as: `images.${lng.code}`,
-                            pipeline: [
-                              {
-                                $match: {
-                                  $expr: {
-                                    $eq: ['$_id', '$$img'],
-                                  },
-                                },
-                              },
-                              {
-                                $project: {
-                                  _id: 1,
-                                  uri: 1,
-                                },
-                              },
-                            ],
-                          },
-                        },
-                        {
-                          $unwind: {
-                            path: `$images.${lng.code}`,
-                            preserveNullAndEmptyArrays: true,
-                          },
-                        }
-                      );
-                      return arr;
-                    }, [])
-                  : [
+                    arr.push(
                       {
                         $lookup: {
                           from: 'file',
-                          let: { img: '$img' },
-                          as: 'image',
+                          let: { img: { $toObjectId: `$imgs.${lng.code}` } },
+                          as: `images.${lng.code}`,
                           pipeline: [
                             {
                               $match: {
@@ -364,11 +354,43 @@ export const getPageDataDB = async (code: string, models: Models) => {
                       },
                       {
                         $unwind: {
-                          path: '$image',
+                          path: `$images.${lng.code}`,
                           preserveNullAndEmptyArrays: true,
                         },
+                      }
+                    );
+                    return arr;
+                  }, [])
+                  : [
+                    {
+                      $lookup: {
+                        from: 'file',
+                        let: { img: '$img' },
+                        as: 'image',
+                        pipeline: [
+                          {
+                            $match: {
+                              $expr: {
+                                $eq: ['$_id', '$$img'],
+                              },
+                            },
+                          },
+                          {
+                            $project: {
+                              _id: 1,
+                              uri: 1,
+                            },
+                          },
+                        ],
                       },
-                    ]),
+                    },
+                    {
+                      $unwind: {
+                        path: '$image',
+                        preserveNullAndEmptyArrays: true,
+                      },
+                    },
+                  ]),
                 {
                   $project: {
                     sequence: 0,

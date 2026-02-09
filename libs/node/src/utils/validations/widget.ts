@@ -69,7 +69,7 @@ export const create = joi.object<ItemValidation>({
   itemsType: joi
     .string()
     .custom((value) => {
-      if (Object.keys(ItemsType).includes(value)) {
+      if ((Object.values(ItemsType) as string[]).includes(value)) {
         return value;
       }
       const collectionIndex = defaults.collections.findIndex(

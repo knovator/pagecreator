@@ -27,27 +27,27 @@ const DNDItemsList = ({
           >
             {items
               ? items.map((item, index) => (
-                  <DraggableWrapper
-                    key={item.value}
-                    draggableId={item.value}
-                    index={index}
-                  >
-                    {(provided: any) => (
-                      <div
-                        className="khb_DND-item"
-                        key={item.value}
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        {typeof formatItem === 'function' && listCode ? (
-                          formatItem(listCode, item)
-                        ) : (
-                          <div className="khb_DND-item-content">
-                            <p className="khb_DND-item-text">{item.label}</p>
-                            {((item as { code?: string }).code ===
-                              'BROWSE_JOBS' ||
-                              item.value === 'BROWSE_JOBS') && (
+                <DraggableWrapper
+                  key={item.value}
+                  draggableId={item.value}
+                  index={index}
+                >
+                  {(provided: any) => (
+                    <div
+                      className="khb_DND-item"
+                      key={item.value}
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      {typeof formatItem === 'function' && listCode && listCode !== 'pages' && listCode !== 'blog' ? (
+                        formatItem(listCode, item)
+                      ) : (
+                        <div className="khb_DND-item-content">
+                          <p className="khb_DND-item-text">{item.label}</p>
+                          {((item as { code?: string }).code ===
+                            'BROWSE_JOBS' ||
+                            item.value === 'BROWSE_JOBS') && (
                               <button
                                 type="button"
                                 className="khb_DND-item-settings"
@@ -55,24 +55,24 @@ const DNDItemsList = ({
                                 disabled={
                                   disableSettings ||
                                   (item as { canDel?: boolean }).canDel ===
-                                    false
+                                  false
                                 }
                                 aria-disabled={
                                   disableSettings ||
                                   (item as { canDel?: boolean }).canDel ===
-                                    false
+                                  false
                                 }
                                 aria-label="Open filter settings"
                               >
                                 <Settings className="khb_DND-item-settings-icon" />
                               </button>
                             )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </DraggableWrapper>
-                ))
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </DraggableWrapper>
+              ))
               : null}
             {droppableProvided.placeholder}
           </div>

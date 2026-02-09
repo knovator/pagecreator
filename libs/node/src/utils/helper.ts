@@ -8,7 +8,7 @@ import {
 } from '../types';
 
 export async function appendCollectionData(widgetData: IWidgetSchema[], models: Models) {
-  const { Widget }= models;
+  const { Widget } = models;
   // reduce widget data to optimize query
   const newData: IWidgetData = widgetData.reduce(
     (acc: IWidgetData, widget: IWidgetSchema) => {
@@ -118,6 +118,36 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       formattedWidgetData[key].collectionItems &&
       formattedWidgetData[key].collectionItems.length > 0
     ) {
+      const ids = formatCollectionItems(
+        formattedWidgetData[key].collectionItems
+      );
+
+      // Handle built-in "pages" collection
+      if (formattedWidgetData[key].collectionName === 'pages') {
+        aggregationQuery.push({
+          $lookup: {
+            from: 'pages',
+            pipeline: [
+              {
+                $match: {
+                  _id: { $in: ids },
+                  isDeleted: false,
+                  $or: [
+                    { isActive: true },
+                    { isActive: { $exists: false } }  // Include pages without isActive field
+                  ],
+                },
+              },
+              { $project: { _id: 1, name: 1, slug: 1, code: 1, filterQuery: 1 } },
+              { $addFields: { __order: { $indexOfArray: [ids, '$_id'] } } },
+              { $sort: { __order: 1 } },
+            ],
+            as: formattedWidgetData[key].code,
+          },
+        });
+        return;
+      }
+
       const aggregationQueryPiplelines: any[] = [];
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
@@ -128,9 +158,6 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       ) {
         aggregationQueryPiplelines.push(...collectionConfig.aggregations);
       }
-      const ids = formatCollectionItems(
-        formattedWidgetData[key].collectionItems
-      );
       // Build piplelines with config
       aggregationQueryPiplelines.push(
         ...[
@@ -189,6 +216,38 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       formattedWidgetData[key].tabs &&
       formattedWidgetData[key].tabs.length > 0
     ) {
+      const tabIds = formattedWidgetData[key].tabs.reduce(
+        (arr: Types.ObjectId[], tabItem) => {
+          arr.push(...formatCollectionItems(tabItem.collectionItems));
+          return arr;
+        },
+        []
+      );
+
+      // Handle built-in "pages" collection
+      if (formattedWidgetData[key].collectionName === 'pages') {
+        aggregationQuery.push({
+          $lookup: {
+            from: 'pages',
+            pipeline: [
+              {
+                $match: {
+                  _id: { $in: tabIds },
+                  isDeleted: false,
+                  $or: [
+                    { isActive: true },
+                    { isActive: { $exists: false } }  // Include pages without isActive field
+                  ],
+                },
+              },
+              { $project: { _id: 1, name: 1, slug: 1, code: 1, filterQuery: 1 } },
+            ],
+            as: formattedWidgetData[key].code,
+          },
+        });
+        return;
+      }
+
       const aggregationQueryPiplelines: any[] = [];
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
@@ -205,13 +264,7 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
           {
             $match: {
               _id: {
-                $in: formattedWidgetData[key].tabs.reduce(
-                  (arr: Types.ObjectId[], tabItem) => {
-                    arr.push(...formatCollectionItems(tabItem.collectionItems));
-                    return arr;
-                  },
-                  []
-                ),
+                $in: tabIds,
               },
               ...(collectionConfig?.match || {}),
             },

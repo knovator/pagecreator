@@ -126,6 +126,7 @@ export interface ReactSelectProps {
   selectedOptions?: { value: string; label: string }[];
   isLoading?: boolean;
   isSearchable?: boolean;
+  isClearable?: boolean;
   placeholder?: string;
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
   listCode?: string;

@@ -16,5 +16,5 @@ const blogSchema = new Schema(
 );
 
 blogSchema.plugin(mongoosePaginate);
-const Blog = model('blogs', blogSchema);
+const Blog = model('blog', blogSchema);
 export default Blog;

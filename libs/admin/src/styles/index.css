@@ -131,7 +131,7 @@
     @apply text-sm p-2;
 }
 .khb_input-base {
-    @apply text-base p-2.5;
+    @apply text-base p-1.5;
 }
 .khb_input-label {
     @apply block mb-1 text-sm font-medium text-gray-900;

@@ -51,6 +51,8 @@ export const create = joi.object<ItemValidation>({
   tabletPerRow: joi.number().allow(null).optional(),
   collectionName: joi.string().optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
+  blogCategory: joi.string().allow(null, '').optional(),
+  blogLimit: joi.number().allow(null, '').optional(),
   tabs: joi
     .array()
     .items(
@@ -101,6 +103,8 @@ export const update = joi.object<ItemValidation>({
   tabletPerRow: joi.number().allow(null).optional(),
   autoPlay: joi.boolean().default(false).optional(),
   collectionItems: joi.array().items(joi.string()).optional(),
+  blogCategory: joi.string().allow(null, '').optional(),
+  blogLimit: joi.number().allow(null, '').optional(),
   tabs: joi
     .array()
     .items(

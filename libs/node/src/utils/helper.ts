@@ -319,11 +319,25 @@ export function AddSrcSetsToItems(widgetData: IWidgetSchema) {
 }
 
 export const getCollectionModal = (collectionName: string, models: Models) => {
-  let collectionModal: any = models[collectionName];
-  if (!collectionModal) collectionModal = models[collectionName.charAt(0).toUpperCase() + collectionName.slice(1)]
-  if (!collectionModal) {
-    const schema = new Schema({}, { strict: false });
-    collectionModal = model(collectionName, schema, collectionName);
+  // console.log('collectionName: ', collectionName);
+  let collectionModal: any;
+  if (models && models[collectionName]) {
+    collectionModal = models[collectionName];
+  } else if (
+    models &&
+    models[collectionName.charAt(0).toUpperCase() + collectionName.slice(1)]
+  ) {
+    collectionModal =
+      models[collectionName.charAt(0).toUpperCase() + collectionName.slice(1)];
+  } else {
+    try {
+      collectionModal = model(collectionName);
+    } catch (error) {
+      if (!collectionModal) {
+        const schema = new Schema({}, { strict: false });
+        collectionModal = model(collectionName, schema, collectionName);
+      }
+    }
   }
   return collectionModal;
 };

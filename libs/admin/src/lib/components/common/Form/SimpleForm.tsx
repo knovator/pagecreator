@@ -51,24 +51,31 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
           case 'ReactSelect':
             input = (
               <CustomReactSelect
-                disabled={!enable}
+                disabled={
+                  (isUpdating &&
+                    typeof schema.editable !== 'undefined' &&
+                    !schema.editable) ||
+                  !enable ||
+                  schema.disabled
+                }
                 label={schema.label}
                 error={errors[schema.accessor]?.message?.toString()}
                 onChange={(value: OptionType | OptionType[] | null) => {
-                  if (value) {
-                    setValue(
-                      schema.accessor,
-                      Array.isArray(value)
-                        ? value.map((item) => item.value)
-                        : value.value
-                    );
-                    if (schema.onChange) schema.onChange(value);
-                  }
+                  // Handle clear (null value) and selection
+                  const fieldValue = value
+                    ? Array.isArray(value)
+                      ? value.map((item) => item.value)
+                      : value.value
+                    : null;
+
+                  setValue(schema.accessor, fieldValue);
+                  if (schema.onChange) schema.onChange(value);
                 }}
                 selectedOptions={schema.selectedOptions}
                 required={schema.required}
                 isMulti={schema.isMulti}
                 isSearchable={schema.isSearchable}
+                isClearable={schema.isClearable}
                 isLoading={schema.isLoading}
                 placeholder={schema.placeholder}
                 wrapperClassName={schema.wrapperClassName}

@@ -29,6 +29,8 @@ const WidgetSchema = new Schema<IWidgetSchema>({
   collectionName: String,
   backgroundColor: String,
   collectionItems: [{ type: Types.ObjectId, refPath: 'collectionName' }],
+  blogCategory: String,
+  blogLimit: Number,
   itemsType: {
     type: String,
     default: ItemsType.Image,

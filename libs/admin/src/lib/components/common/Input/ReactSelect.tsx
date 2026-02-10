@@ -13,6 +13,7 @@ const CustomReactSelect = ({
   required,
   isLoading,
   isSearchable,
+  isClearable,
   loadOptions,
   placeholder,
   wrapperClassName,
@@ -20,6 +21,7 @@ const CustomReactSelect = ({
   listCode,
   customStyles,
   selectKey,
+  disabled,
 }: ReactSelectProps) => {
   return (
     <div className={wrapperClassName}>
@@ -40,9 +42,11 @@ const CustomReactSelect = ({
         onChange={onChange}
         className={classNames(className)}
         isMulti={isMulti}
+        isClearable={isClearable}
         defaultOptions
         isSearchable={isSearchable}
         isLoading={isLoading}
+        isDisabled={disabled}
         loadOptions={loadOptions}
         placeholder={placeholder}
         formatOptionLabel={

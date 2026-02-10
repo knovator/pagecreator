@@ -542,3 +542,31 @@ export const getLanguages = catchAsync(async (req: any, res: any) => {
     res
   );
 });
+
+export const getBlogCategories = catchAsync(async (req: IRequest, res: IResponse) => {
+  const models = getModals(req);
+  const collectionModal = getCollectionModal('blogCategory', models);
+
+  // Fetch blog categories from the blogcategory collection
+  const categories = await collectionModal.aggregate([
+    {
+      $match: {
+        isActive: true,
+        isDeleted: { $ne: true },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: '$nm',  // Map 'nm' field to 'name' for admin UI
+        slug: 1,
+      },
+    },
+    {
+      $sort: { name: 1 },
+    },
+  ]);
+
+  res.message = req?.i18n?.t('widget.getBlogCategories') || 'Blog categories fetched successfully';
+  return successResponse({ docs: categories }, res);
+});

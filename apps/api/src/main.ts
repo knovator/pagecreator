@@ -1,6 +1,7 @@
 import './db/db';
 import './models/notification';
 import Blog from './models/blog';
+import BlogCategory from './models/blogCategory';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -37,7 +38,7 @@ setConfig({
     },
     {
       title: 'Blogs',
-      collectionName: 'blogs',
+      collectionName: 'blog',
       searchColumns: ['title', 'name', 'slug'],
       match: { isPublished: true, isActive: true },
     },
@@ -160,9 +161,54 @@ async function seedBlogs() {
   }
 }
 
+// Seed blog categories
+async function seedBlogCategories() {
+  try {
+    const count = await BlogCategory.countDocuments();
+    if (count === 0) {
+      await BlogCategory.insertMany([
+        {
+          _id: new mongoose.Types.ObjectId('68c92a0426291fe3408a8141'),
+          nm: 'Technology',
+          slug: 'technology',
+          description: 'Articles about technology, programming, and software development',
+          isActive: true,
+          isDeleted: false,
+          createdBy: new mongoose.Types.ObjectId('68c2d1d8ffb1adbf30004ded'),
+          updatedBy: [new mongoose.Types.ObjectId('68c2d1d8ffb1adbf30004ded')],
+        },
+        {
+          _id: new mongoose.Types.ObjectId('68c92a0426291fe3408a8142'),
+          nm: 'Database',
+          slug: 'database',
+          description: 'Database design, optimization, and best practices',
+          isActive: true,
+          isDeleted: false,
+          createdBy: new mongoose.Types.ObjectId('68c2d1d8ffb1adbf30004ded'),
+          updatedBy: [new mongoose.Types.ObjectId('68c2d1d8ffb1adbf30004ded')],
+        },
+        {
+          _id: new mongoose.Types.ObjectId('68c92a0426291fe3408a8143'),
+          nm: 'Design',
+          slug: 'design',
+          description: 'UI/UX design, CSS, and frontend development',
+          isActive: true,
+          isDeleted: false,
+          createdBy: new mongoose.Types.ObjectId('68c2d1d8ffb1adbf30004ded'),
+          updatedBy: [new mongoose.Types.ObjectId('68c2d1d8ffb1adbf30004ded')],
+        },
+      ]);
+      console.log('Blog categories seeded successfully');
+    }
+  } catch (err) {
+    console.error('Error seeding blog categories:', err);
+  }
+}
+
 const port = process.env.port || 3333;
-const server = app.listen(port, () => {
+const server = app.listen(port, async () => {
   console.log('Listening at http://localhost:' + port);
-  seedBlogs();
+  await seedBlogCategories();
+  await seedBlogs();
 });
 server.on('error', console.error);

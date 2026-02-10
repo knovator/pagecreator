@@ -8,6 +8,7 @@ import ItemsAccordian from './ItemsAccordian';
 
 import { useWidgetState } from '../../../context/WidgetContext';
 import { useProviderState } from '../../../context/ProviderContext';
+import request from '../../../api';
 import {
   capitalizeFirstLetter,
   changeToCode,
@@ -59,7 +60,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       backgroundColor: '#ffffff',
     },
   });
-  const { switchClass, commonTranslations } = useProviderState();
+  const { switchClass, commonTranslations, baseUrl, token, widgetRoutesPrefix } = useProviderState();
   const {
     data,
     canAdd,
@@ -96,6 +97,10 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   const [tabCollectionItemsUpdated, setTabCollectionItemsUpdated] = useState<
     boolean[]
   >([]);
+  const [blogCategory, setBlogCategory] = useState<OptionType | null>(null);
+  const [blogLimit, setBlogLimit] = useState<number>(10);
+  const [blogCategories, setBlogCategories] = useState<OptionType[]>([]);
+  const [blogCategoriesLoading, setBlogCategoriesLoading] = useState(false);
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
@@ -142,6 +147,131 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       reset(data);
     }
   }, [data, reset]);
+
+  // Watch itemsType for blog category feature
+  const currentItemsType = watch(constants.itemTypeAccessor);
+
+  // Fetch blog categories when itemsType is 'blogs'
+  useEffect(() => {
+    if (currentItemsType === 'blog' && blogCategories.length === 0) {
+      const fetchBlogCategories = async () => {
+        try {
+          setBlogCategoriesLoading(true);
+          const response = await request({
+            baseUrl,
+            token,
+            method: 'GET',
+            url: `${widgetRoutesPrefix}/blog-categories`,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onError: (error: any) => console.error('Error fetching blog categories:', error),
+          });
+          if (response?.code === 'SUCCESS' && Array.isArray(response.data?.docs)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const categories = response.data.docs.map((cat: any) => ({
+              value: cat._id || cat.id,
+              label: cat.name || cat.nm || cat.label,
+              slug: cat.slug,
+            }));
+            setBlogCategories(categories);
+          }
+        } catch (error) {
+          console.error('Error fetching blog categories:', error);
+        } finally {
+          setBlogCategoriesLoading(false);
+        }
+      };
+      fetchBlogCategories();
+    }
+  }, [currentItemsType, baseUrl, token, widgetRoutesPrefix, blogCategories.length]);
+
+  // Set blog category and limit when editing a widget
+  useEffect(() => {
+    if (formState === 'UPDATE' && data && currentItemsType === 'blog' && blogCategories.length > 0) {
+      // Set blog category if it exists in the data
+      if (data.blogCategory && !blogCategory) {
+        const savedCategory = blogCategories.find(cat => cat.value === data.blogCategory);
+        if (savedCategory) {
+          setBlogCategory(savedCategory);
+        }
+      }
+      // Set blog limit if it exists in the data
+      if (data.blogLimit && blogLimit === 10) {
+        setBlogLimit(data.blogLimit);
+      }
+    }
+  }, [formState, data, currentItemsType, blogCategories, blogCategory, blogLimit]);
+
+  // Auto-fetch blogs when category or limit changes
+  useEffect(() => {
+    if (currentItemsType === 'blog') {
+      if (blogCategory && blogLimit > 0) {
+        // Fetch blogs when category is selected
+        const fetchBlogsByCategory = async () => {
+          try {
+            setCollectionItemsUpdated(false);
+            const response = await request({
+              baseUrl,
+              token,
+              method: 'POST',
+              url: `${widgetRoutesPrefix}/collection-data`,
+              data: {
+                search: '',
+                collectionName: 'blog',
+                collectionItems: [],
+              },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onError: (error: any) => console.error('Error fetching blogs:', error),
+            });
+            if (response?.code === 'SUCCESS' && Array.isArray(response.data?.docs)) {
+              // Filter blogs by selected category
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const filteredBlogs = response.data.docs
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .filter((blog: any) =>
+                  Array.isArray(blog.category) &&
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  blog.category.some((cat: any) => cat.id === blogCategory.value)
+                )
+                .slice(0, blogLimit)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map((blog: any) => ({
+                  ...blog,
+                  value: blog._id,
+                  label: blog.name || blog.title,
+                }));
+              setSelectedCollectionItems(filteredBlogs);
+              setCollectionItemsUpdated(true);
+            }
+          } catch (error) {
+            console.error('Error fetching blogs:', error);
+          }
+        };
+        fetchBlogsByCategory();
+      } else if (!blogCategory) {
+        // Clear selected blogs when category is cleared
+        setSelectedCollectionItems([]);
+        setCollectionItemsUpdated(true);
+      }
+    }
+  }, [blogCategory, blogLimit, currentItemsType, baseUrl, token, widgetRoutesPrefix]);
+
+  // Reset blog category and limit when itemsType changes away from 'blogs'
+  useEffect(() => {
+    if (currentItemsType !== 'blog') {
+      setBlogCategory(null);
+      setBlogLimit(10);
+      setBlogCategories([]);
+    }
+  }, [currentItemsType]);
+
+  // Watch blogLimit form value and update state
+  const watchedBlogLimit = watch('blogLimit');
+  useEffect(() => {
+    if (watchedBlogLimit && currentItemsType === 'blog') {
+      const limit = parseInt(watchedBlogLimit) || 10;
+      setBlogLimit(limit);
+    }
+  }, [watchedBlogLimit, currentItemsType]);
 
   const onChangeSearch = (
     str?: string,
@@ -598,7 +728,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             ? itemsTypes.filter(
               (item) =>
                 item.label !== constants.imageItemsTypeValue &&
-                item.value !== constants.pagesItemsTypeValue
+                item.value !== constants.pagesItemsTypeValue &&
+                item.value !== 'blog'
             )
             : selectedWidgetType?.imageOnly
               ? itemsTypes.filter(
@@ -607,6 +738,66 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
               : itemsTypes.filter(
                 (item) => item.value !== constants.pagesItemsTypeValue
               ),
+    },
+    {
+      label: 'Blog Category',
+      accessor: 'blogCategory',
+      type: 'ReactSelect',
+      selectedOptions: blogCategory ? [blogCategory] : [],
+      isMulti: false,
+      isSearchable: true,
+      isClearable: true,
+      onChange: (selected: OptionType | OptionType[] | null) => {
+        setBlogCategory(Array.isArray(selected) ? selected[0] : selected);
+      },
+      loadOptions: (searchStr?: string, callback?: (options: OptionType[]) => void) => {
+        // Filter categories based on search string
+        if (!callback) return;
+        const filtered = searchStr
+          ? blogCategories.filter(cat =>
+            cat.label.toLowerCase().includes(searchStr.toLowerCase())
+          )
+          : blogCategories;
+        callback(filtered);
+      },
+      isLoading: blogCategoriesLoading,
+      show:
+        currentItemsType === 'blog' &&
+        !itemsEnabled &&
+        (selectedWidgetType?.value === constants.carouselWidgetTypeValue ||
+          selectedWidgetType?.value === constants.fixedCardWidgetTypeValue ||
+          !selectedWidgetType) &&
+        !!selectedCollectionType?.value,
+      placeholder: 'Select blog category...',
+      wrapperClassName: 'khb_grid-item-1of2 khb_padding-right-1',
+      customStyles: reactSelectStyles || {},
+      selectKey: `blog-category-select-${blogCategories.length}`,
+    },
+    {
+      label: 'No. of Blogs',
+      accessor: 'blogLimit',
+      type: 'select',
+      options: [
+        { value: '', label: 'Select number of blogs' },
+        { value: '1', label: '1' },
+        { value: '2', label: '2' },
+        { value: '3', label: '3' },
+        { value: '4', label: '4' },
+        { value: '5', label: '5' },
+        { value: '6', label: '6' },
+      ],
+      show:
+        currentItemsType === 'blog' &&
+        !itemsEnabled &&
+        (selectedWidgetType?.value === constants.carouselWidgetTypeValue ||
+          selectedWidgetType?.value === constants.fixedCardWidgetTypeValue ||
+          !selectedWidgetType) &&
+        !!selectedCollectionType?.value,
+      wrapperClassName: 'khb_grid-item-1of2 khb_padding-left-1',
+      required: true,
+      validations: {
+        required: 'Number of blogs is required',
+      },
     },
 
     {
@@ -676,6 +867,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       onChange: setSelectedCollectionItems,
       loadOptions: onChangeSearch,
       isLoading: collectionDataLoading,
+      disabled: currentItemsType === 'blog' && !!blogCategory,
       show:
         !itemsEnabled &&
         (selectedWidgetType?.value === constants.carouselWidgetTypeValue ||

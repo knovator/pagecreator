@@ -58,6 +58,8 @@ export interface IWidgetSchema extends Document {
   widgetType: WidgetTypes;
   collectionName: string;
   collectionItems: string[];
+  blogCategory?: string;
+  blogLimit?: number;
   tabs: {
     name: string;
     names?: LanguageSchemaFieldType;

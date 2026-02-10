@@ -26,6 +26,85 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
     {}
   );
   if (Object.keys(newData).length > 0) {
+    // Fetch latest blogs for widgets with category/limit configuration
+    const blogWidgetsData: any = {};
+    for (const widget of widgetData) {
+      if (widget.collectionName && (widget.blogCategory || widget.blogLimit)) {
+        try {
+          const collectionConfig = defaults.collections.find(
+            (c) => c.collectionName === widget.collectionName
+          );
+          const aggregateQueryItem: any[] = [];
+
+          // Add custom aggregations from config
+          if (
+            Array.isArray(collectionConfig?.aggregations) &&
+            collectionConfig?.aggregations.length
+          ) {
+            aggregateQueryItem.push(...collectionConfig.aggregations);
+          }
+
+          // Build match conditions
+          const matchConditions: any = {
+            ...(collectionConfig?.match || {}),
+          };
+
+          // Add category filter if provided
+          if (widget.blogCategory) {
+            const categoryObjectId = new Types.ObjectId(widget.blogCategory);
+            const categoryString = widget.blogCategory.toString();
+
+            // Handle multiple category field structures:
+            // - Array of ObjectIds (unpopulated)
+            // - Populated objects with _id field
+            // - Populated objects with id field (ObjectId or string)
+            matchConditions.$or = [
+              { category: { $in: [categoryObjectId] } },
+              { 'category._id': categoryObjectId },
+              { 'category.id': categoryObjectId },
+              { 'category.id': categoryString },
+            ];
+          }
+
+          // Add match, sort, and limit stages
+          aggregateQueryItem.push({
+            $match: matchConditions,
+          });
+
+          aggregateQueryItem.push({
+            $sort: { createdAt: -1 },
+          });
+
+          if (widget.blogLimit && widget.blogLimit > 0) {
+            aggregateQueryItem.push({
+              $limit: widget.blogLimit,
+            });
+          }
+
+          // Fetch data from collection
+          const collectionModal: any = getCollectionModal(widget.collectionName, models);
+          const collectionItems = await collectionModal.aggregate(aggregateQueryItem);
+
+          blogWidgetsData[widget.code] = collectionItems;
+        } catch (error) {
+          blogWidgetsData[widget.code] = [];
+        }
+      }
+    }
+
+    // Apply blog widgets data
+    if (Object.keys(blogWidgetsData).length > 0) {
+      widgetData = widgetData.map((widget: IWidgetSchema) => {
+        if (blogWidgetsData[widget.code]) {
+          return {
+            ...widget,
+            collectionItems: blogWidgetsData[widget.code],
+          };
+        }
+        return widget;
+      }) as any;
+    }
+
     const aggregationQueryCollectionItems = buildCollectionItemsQuery(newData);
     if (aggregationQueryCollectionItems.length > 0) {
       // getting collection data by populating widget
@@ -40,6 +119,10 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       widgetData = widgetData.map((widget: IWidgetSchema) => {
+        // Skip widgets already processed by blog section
+        if (widget.blogCategory || widget.blogLimit) {
+          return widget;
+        }
         if (aggregationData[widget.code]) {
           return {
             ...widget,
@@ -319,7 +402,6 @@ export function AddSrcSetsToItems(widgetData: IWidgetSchema) {
 }
 
 export const getCollectionModal = (collectionName: string, models: Models) => {
-  // console.log('collectionName: ', collectionName);
   let collectionModal: any;
   if (models && models[collectionName]) {
     collectionModal = models[collectionName];

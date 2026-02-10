@@ -5,12 +5,13 @@ import { CALLBACK_CODES } from '../../../constants/common';
 import { useWidgetState } from '../../../context/WidgetContext';
 import { useProviderState } from '../../../context/ProviderContext';
 
-const WidgetFormActions = ({ formRef }: FormActionWrapperProps) => {
+const WidgetFormActions = ({ formRef, onPrimaryButtonClick }: FormActionWrapperProps) => {
   const { onError, commonTranslations } = useProviderState();
   const { closeForm, loading, canAdd, canUpdate, formState } = useWidgetState();
   const onSubmitClick = (
     e?: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
+    onPrimaryButtonClick?.(e);
     if (!formRef) {
       return onError(
         CALLBACK_CODES.INTERNAL,

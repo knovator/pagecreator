@@ -42,7 +42,7 @@ const constants = {
   tabCollectionItemsAccessor: 'collectionItems',
 };
 
-const WidgetForm = ({ formRef, customInputs }: FormProps) => {
+const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) => {
   const {
     register,
     formState: { errors },
@@ -98,9 +98,11 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     boolean[]
   >([]);
   const [blogCategory, setBlogCategory] = useState<OptionType | null>(null);
-  const [blogLimit, setBlogLimit] = useState<number>(10);
+  const [blogLimit, setBlogLimit] = useState<number | undefined>(undefined);
   const [blogCategories, setBlogCategories] = useState<OptionType[]>([]);
   const [blogCategoriesLoading, setBlogCategoriesLoading] = useState(false);
+  const pagesLoadedRef = useRef(false);
+  const blogCategoryInitialized = useRef(false);
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
@@ -186,83 +188,47 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
 
   // Set blog category and limit when editing a widget
   useEffect(() => {
-    if (formState === 'UPDATE' && data && currentItemsType === 'blog' && blogCategories.length > 0) {
+    if (formState === 'UPDATE' && data && currentItemsType === 'blog' && blogCategories.length > 0 && !blogCategoryInitialized.current) {
       // Set blog category if it exists in the data
-      if (data.blogCategory && !blogCategory) {
+      if (data.blogCategory) {
         const savedCategory = blogCategories.find(cat => cat.value === data.blogCategory);
         if (savedCategory) {
           setBlogCategory(savedCategory);
+          blogCategoryInitialized.current = true;
         }
       }
       // Set blog limit if it exists in the data
-      if (data.blogLimit && blogLimit === 10) {
+      if (data.blogLimit) {
         setBlogLimit(data.blogLimit);
       }
     }
-  }, [formState, data, currentItemsType, blogCategories, blogCategory, blogLimit]);
+  }, [formState, data, currentItemsType, blogCategories]);
 
-  // Auto-fetch blogs when category or limit changes
+  // Clear collectionItems when using blog category/limit (server will handle fetching latest blogs)
   useEffect(() => {
     if (currentItemsType === 'blog') {
-      if (blogCategory && blogLimit > 0) {
-        // Fetch blogs when category is selected
-        const fetchBlogsByCategory = async () => {
-          try {
-            setCollectionItemsUpdated(false);
-            const response = await request({
-              baseUrl,
-              token,
-              method: 'POST',
-              url: `${widgetRoutesPrefix}/collection-data`,
-              data: {
-                search: '',
-                collectionName: 'blog',
-                collectionItems: [],
-              },
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onError: (error: any) => console.error('Error fetching blogs:', error),
-            });
-            if (response?.code === 'SUCCESS' && Array.isArray(response.data?.docs)) {
-              // Filter blogs by selected category
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const filteredBlogs = response.data.docs
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .filter((blog: any) =>
-                  Array.isArray(blog.category) &&
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  blog.category.some((cat: any) => cat.id === blogCategory.value)
-                )
-                .slice(0, blogLimit)
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .map((blog: any) => ({
-                  ...blog,
-                  value: blog._id,
-                  label: blog.name || blog.title,
-                }));
-              setSelectedCollectionItems(filteredBlogs);
-              setCollectionItemsUpdated(true);
-            }
-          } catch (error) {
-            console.error('Error fetching blogs:', error);
-          }
-        };
-        fetchBlogsByCategory();
-      } else if (!blogCategory) {
-        // Clear selected blogs when category is cleared
+      if (blogCategory || (blogLimit && blogLimit > 0)) {
+        // Clear selected collection items since server will fetch latest blogs based on category/limit
         setSelectedCollectionItems([]);
         setCollectionItemsUpdated(true);
       }
     }
-  }, [blogCategory, blogLimit, currentItemsType, baseUrl, token, widgetRoutesPrefix]);
+  }, [blogCategory, blogLimit, currentItemsType]);
 
   // Reset blog category and limit when itemsType changes away from 'blogs'
   useEffect(() => {
     if (currentItemsType !== 'blog') {
       setBlogCategory(null);
-      setBlogLimit(10);
+      setBlogLimit(undefined);
       setBlogCategories([]);
+      blogCategoryInitialized.current = false;
     }
   }, [currentItemsType]);
+
+  // Reset initialization flag when opening a different widget or changing form state
+  useEffect(() => {
+    blogCategoryInitialized.current = false;
+  }, [data?._id, formState]);
 
   // Watch blogLimit form value and update state
   const watchedBlogLimit = watch('blogLimit');
@@ -272,6 +238,23 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       setBlogLimit(limit);
     }
   }, [watchedBlogLimit, currentItemsType]);
+
+  // Load pages data when Links widget type is selected
+  useEffect(() => {
+    if (
+      selectedWidgetType?.value === constants.linksWidgetTypeValue &&
+      selectedCollectionType?.value === constants.pagesItemsTypeValue &&
+      !pagesLoadedRef.current
+    ) {
+      // Trigger initial load of pages
+      pagesLoadedRef.current = true;
+      getCollectionData(constants.pagesItemsTypeValue, '');
+    }
+    // Reset ref when widget type changes away from Links
+    if (selectedWidgetType?.value !== constants.linksWidgetTypeValue) {
+      pagesLoadedRef.current = false;
+    }
+  }, [selectedWidgetType, selectedCollectionType, getCollectionData]);
 
   const onChangeSearch = (
     str?: string,
@@ -562,10 +545,15 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       }
       return item;
     });
-    onWidgetFormSubmit({
+    const submitPayload = {
       ...formData,
       items,
-    });
+      // Include blog category and limit if set
+      ...(blogCategory && { blogCategory: blogCategory.value }),
+      ...(blogLimit && { blogLimit }),
+    };
+    onPrimaryButtonClick?.(undefined, submitPayload);
+    onWidgetFormSubmit(submitPayload);
   };
   const onCollectionIndexChange = (result: DropResult) => {
     const { destination, source } = result;
@@ -870,6 +858,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       disabled: currentItemsType === 'blog' && !!blogCategory,
       show:
         !itemsEnabled &&
+        currentItemsType !== 'blog' &&
         (selectedWidgetType?.value === constants.carouselWidgetTypeValue ||
           selectedWidgetType?.value === constants.fixedCardWidgetTypeValue ||
           selectedWidgetType?.value === constants.linksWidgetTypeValue ||

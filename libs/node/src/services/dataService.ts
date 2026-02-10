@@ -1,4 +1,4 @@
-import { AggregateOptions, Models } from 'mongoose';
+import { AggregateOptions, Models, Types } from 'mongoose';
 import {
   AddSrcSetsToItems,
   appendCollectionData,
@@ -57,6 +57,74 @@ const getAggregationQuery = ({
     { $addFields: { __order: { $indexOfArray: [ids, '$_id'] } } },
     { $sort: { __order: 1 } }
   );
+  return aggregateQueryItem;
+};
+
+const getLatestBlogsQuery = ({
+  collectionName,
+  category,
+  limit,
+}: {
+  collectionName: string;
+  category?: any;
+  limit?: number;
+}) => {
+  const collectionConfig = defaults.collections.find(
+    (c) => c.collectionName === collectionName
+  );
+  const aggregateQueryItem: AggregateOptions[] = [];
+
+  // Add custom aggregations from config
+  if (
+    Array.isArray(collectionConfig?.aggregations) &&
+    collectionConfig?.aggregations.length
+  ) {
+    aggregateQueryItem.push(...collectionConfig.aggregations);
+  }
+
+  // Build match conditions
+  const matchConditions: any = {
+    ...(collectionConfig?.match || {}),
+  };
+
+  // Add category filter if provided
+  if (category) {
+    try {
+      const categoryObjectId = new Types.ObjectId(category);
+      const categoryString = category.toString();
+
+      // Handle multiple category field structures:
+      // - Array of ObjectIds (unpopulated)
+      // - Populated objects with _id field
+      // - Populated objects with id field (ObjectId or string)
+      matchConditions.$or = [
+        { category: { $in: [categoryObjectId] } },
+        { 'category._id': categoryObjectId },
+        { 'category.id': categoryObjectId },
+        { 'category.id': categoryString },
+      ];
+    } catch (error) {
+      // Fallback to simple match if ObjectId conversion fails
+      matchConditions.category = category;
+    }
+  }
+
+  aggregateQueryItem.push({
+    $match: matchConditions,
+  });
+
+  // Sort by createdAt descending (latest first)
+  aggregateQueryItem.push({
+    $sort: { createdAt: -1 },
+  });
+
+  // Apply limit if provided
+  if (limit && limit > 0) {
+    aggregateQueryItem.push({
+      $limit: limit,
+    });
+  }
+
   return aggregateQueryItem;
 };
 
@@ -197,7 +265,23 @@ export const getWidgetDataDB = async (code: string, models: Models) => {
   }
   const widgetData = widgetDataArr[0];
 
+  // Fetch latest blogs by category/limit if configured
   if (
+    widgetData.collectionName &&
+    (widgetData.blogLimit || widgetData.blogCategory)
+  ) {
+    const aggregateQueryItem = getLatestBlogsQuery({
+      collectionName: widgetData.collectionName,
+      category: widgetData.blogCategory,
+      limit: widgetData.blogLimit,
+    });
+
+    const collectionModal: any = getCollectionModal(widgetData.collectionName, models);
+    const collectionItems = await collectionModal.aggregate(aggregateQueryItem);
+    widgetData.collectionItems = collectionItems;
+  }
+  // Otherwise, fetch specific collection items if they exist
+  else if (
     widgetData.collectionName &&
     widgetData.collectionItems &&
     widgetData.collectionItems.length > 0

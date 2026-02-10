@@ -226,6 +226,10 @@ export interface WidgetProps {
   imageBaseUrl?: string;
   imageMaxSize?: number;
   translations?: WidgetTranslationPairs;
+  onPrimaryButtonClick?: (
+    e?: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    data?: any
+  ) => void;
 }
 export interface DerivedTableProps {
   extraActions?: (item: any) => JSX.Element;

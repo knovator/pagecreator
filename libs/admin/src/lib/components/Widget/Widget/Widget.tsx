@@ -32,6 +32,7 @@ const Widget = ({
   imageMaxSize,
   translations,
   children,
+  onPrimaryButtonClick,
 }: WidgetProps) => {
   const { commonTranslations } = useProviderState();
   const derivedPermissions = Object.assign(DEFAULT_PERMISSIONS, permissions);
@@ -138,9 +139,17 @@ const Widget = ({
               ? derivedT.updateWidgetTitle
               : ''
           }
-          footerContent={<WidgetFormActions formRef={widgetFormRef} />}
+          footerContent={
+            <WidgetFormActions
+              formRef={widgetFormRef}
+              onPrimaryButtonClick={onPrimaryButtonClick}
+            />
+          }
         >
-          <WidgetForm formRef={widgetFormRef} />
+          <WidgetForm
+            formRef={widgetFormRef}
+            onPrimaryButtonClick={onPrimaryButtonClick}
+          />
         </Drawer>
       )}
       {itemData && (

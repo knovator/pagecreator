@@ -545,6 +545,14 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
       }
       return item;
     });
+    // Clean up fields based on widget type
+    if (formData['widgetType'] !== constants.htmlWidgetTypeValue) {
+      delete formData['htmlContent'];
+    }
+    if (formData['widgetType'] !== constants.textWidgetTypeValue) {
+      delete formData['textContent'];
+    }
+
     const submitPayload = {
       ...formData,
       items,
@@ -689,6 +697,7 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
         required: widgetTranslations.htmlContentRequired,
       },
       show: selectedWidgetType?.value === constants.htmlWidgetTypeValue,
+      wrapperClassName: 'khb_html-content-field',
       Input:
         customInputs && customInputs['htmlContent']
           ? customInputs['htmlContent']

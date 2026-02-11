@@ -429,6 +429,9 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     if (Array.isArray(collectionItems))
       limit = Math.max(collectionItems.length, limit);
 
+    // Return all pages (with or without search) for Links widget dropdown
+    limit = 1000;
+
     const orOptions: any = [];
     let addFieldOptions: any = {};
 

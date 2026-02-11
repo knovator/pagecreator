@@ -267,7 +267,7 @@ export const getWidgetDataDB = async (code: string, models: Models) => {
 
   // Fetch latest blogs by category/limit if configured
   if (
-    widgetData.collectionName &&
+    widgetData.collectionName === 'blog' &&
     (widgetData.blogLimit || widgetData.blogCategory)
   ) {
     const aggregateQueryItem = getLatestBlogsQuery({

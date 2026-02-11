@@ -29,7 +29,7 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
     // Fetch latest blogs for widgets with category/limit configuration
     const blogWidgetsData: any = {};
     for (const widget of widgetData) {
-      if (widget.collectionName && (widget.blogCategory || widget.blogLimit)) {
+      if (widget.collectionName === 'blog' && (widget.blogCategory || widget.blogLimit)) {
         try {
           const collectionConfig = defaults.collections.find(
             (c) => c.collectionName === widget.collectionName
@@ -120,7 +120,7 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
       // @ts-ignore
       widgetData = widgetData.map((widget: IWidgetSchema) => {
         // Skip widgets already processed by blog section
-        if (widget.blogCategory || widget.blogLimit) {
+        if (blogWidgetsData[widget.code]) {
           return widget;
         }
         if (aggregationData[widget.code]) {

@@ -41,7 +41,10 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
   const slug = req.body.slug;
   const { Page } = models;
   if (slug) {
-    const page = await Page.findOne({ slug });
+    const page = await Page.findOne({
+      slug,
+      ...req.defaultQueryFields
+    });
     if (!page) {
       res.message = req?.i18n?.t('user.pageNotFound');
       return recordNotFound(res);

@@ -50,40 +50,48 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
         switch (schema.type) {
           case 'ReactSelect':
             input = (
-              <CustomReactSelect
-                disabled={
-                  (isUpdating &&
-                    typeof schema.editable !== 'undefined' &&
-                    !schema.editable) ||
-                  !enable ||
-                  schema.disabled
-                }
-                label={schema.label}
-                error={errors[schema.accessor]?.message?.toString()}
-                onChange={(value: OptionType | OptionType[] | null) => {
-                  // Handle clear (null value) and selection
-                  const fieldValue = value
-                    ? Array.isArray(value)
-                      ? value.map((item) => item.value)
-                      : value.value
-                    : null;
+              <Controller
+                control={control}
+                name={schema.accessor}
+                rules={schema.validations}
+                render={({ field }) => (
+                  <CustomReactSelect
+                    disabled={
+                      (isUpdating &&
+                        typeof schema.editable !== 'undefined' &&
+                        !schema.editable) ||
+                      !enable ||
+                      schema.disabled
+                    }
+                    label={schema.label}
+                    error={errors[schema.accessor]?.message?.toString()}
+                    onChange={(value: OptionType | OptionType[] | null) => {
+                      // Handle clear (null value) and selection
+                      const fieldValue = value
+                        ? Array.isArray(value)
+                          ? value.map((item) => item.value)
+                          : value.value
+                        : null;
 
-                  setValue(schema.accessor, fieldValue);
-                  if (schema.onChange) schema.onChange(value);
-                }}
-                selectedOptions={schema.selectedOptions}
-                required={schema.required}
-                isMulti={schema.isMulti}
-                isSearchable={schema.isSearchable}
-                isClearable={schema.isClearable}
-                isLoading={schema.isLoading}
-                placeholder={schema.placeholder}
-                wrapperClassName={schema.wrapperClassName}
-                formatOptionLabel={schema.formatOptionLabel}
-                listCode={schema.listCode}
-                customStyles={schema.customStyles}
-                loadOptions={schema.loadOptions}
-                selectKey={schema.selectKey}
+                      field.onChange(fieldValue);
+                      setValue(schema.accessor, fieldValue, { shouldValidate: true });
+                      if (schema.onChange) schema.onChange(value);
+                    }}
+                    selectedOptions={schema.selectedOptions}
+                    required={schema.required}
+                    isMulti={schema.isMulti}
+                    isSearchable={schema.isSearchable}
+                    isClearable={schema.isClearable}
+                    isLoading={schema.isLoading}
+                    placeholder={schema.placeholder}
+                    wrapperClassName={schema.wrapperClassName}
+                    formatOptionLabel={schema.formatOptionLabel}
+                    listCode={schema.listCode}
+                    customStyles={schema.customStyles}
+                    loadOptions={schema.loadOptions}
+                    selectKey={schema.selectKey}
+                  />
+                )}
               />
             );
             break;

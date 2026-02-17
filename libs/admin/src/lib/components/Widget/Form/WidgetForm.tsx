@@ -469,6 +469,25 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
     if (!formData[constants.widgetTypeAccessor] && formState === 'ADD') {
       formData[constants.widgetTypeAccessor] = getFirstWidgetTypeValue();
     }
+
+    // Validate blogLimit is required when itemsType is 'blog'
+    const widgetTypeValue = formData[constants.widgetTypeAccessor] || selectedWidgetType?.value;
+    if (
+      currentItemsType === 'blog' &&
+      !itemsEnabled &&
+      (widgetTypeValue === constants.carouselWidgetTypeValue ||
+        widgetTypeValue === constants.fixedCardWidgetTypeValue) &&
+      !!selectedCollectionType?.value
+    ) {
+      if (!formData['blogLimit'] || formData['blogLimit'] === '') {
+        setError('blogLimit', {
+          type: 'manual',
+          message: 'Number of blogs is required',
+        });
+        return;
+      }
+    }
+
     // setting tabs data if widgetType tab is selected
     const tabsData = getValues(constants.tabsAccessor);
     if (Array.isArray(tabsData) && tabsData.length > 0) {
@@ -546,10 +565,11 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
       return item;
     });
     // Clean up fields based on widget type
-    if (formData['widgetType'] !== constants.htmlWidgetTypeValue) {
+    const currentWidgetType = formData['widgetType'] || selectedWidgetType?.value;
+    if (currentWidgetType !== constants.htmlWidgetTypeValue) {
       delete formData['htmlContent'];
     }
-    if (formData['widgetType'] !== constants.textWidgetTypeValue) {
+    if (currentWidgetType !== constants.textWidgetTypeValue) {
       delete formData['textContent'];
     }
 
@@ -766,23 +786,45 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
           !selectedWidgetType) &&
         !!selectedCollectionType?.value,
       placeholder: 'Select blog category...',
-      wrapperClassName: 'khb_grid-item-1of2 khb_padding-right-1',
       customStyles: reactSelectStyles || {},
       selectKey: `blog-category-select-${blogCategories.length}`,
     },
     {
       label: 'No. of Blogs',
       accessor: 'blogLimit',
-      type: 'select',
-      options: [
-        { value: '', label: 'Select number of blogs' },
-        { value: '1', label: '1' },
-        { value: '2', label: '2' },
-        { value: '3', label: '3' },
-        { value: '4', label: '4' },
-        { value: '5', label: '5' },
-        { value: '6', label: '6' },
-      ],
+      type: 'ReactSelect',
+      selectedOptions: blogLimit ? [{ value: blogLimit.toString(), label: blogLimit.toString() }] : [],
+      isMulti: false,
+      isSearchable: false,
+      required: true,
+      isClearable: false,
+      onChange: (selected: OptionType | OptionType[] | null) => {
+        const selectedValue = Array.isArray(selected) ? selected[0] : selected;
+        if (selectedValue) {
+          setBlogLimit(parseInt(selectedValue.value));
+          setValue('blogLimit', selectedValue.value);
+          // Clear any existing error when a value is selected
+          clearErrors('blogLimit');
+        } else {
+          // Set error if cleared
+          setError('blogLimit', {
+            type: 'manual',
+            message: 'Number of blogs is required',
+          });
+        }
+      },
+      loadOptions: (_searchStr?: string, callback?: (options: OptionType[]) => void) => {
+        if (!callback) return;
+        const options = [
+          { value: '1', label: '1' },
+          { value: '2', label: '2' },
+          { value: '3', label: '3' },
+          { value: '4', label: '4' },
+          { value: '5', label: '5' },
+          { value: '6', label: '6' },
+        ];
+        callback(options);
+      },
       show:
         currentItemsType === 'blog' &&
         !itemsEnabled &&
@@ -790,8 +832,9 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
           selectedWidgetType?.value === constants.fixedCardWidgetTypeValue ||
           !selectedWidgetType) &&
         !!selectedCollectionType?.value,
-      wrapperClassName: 'khb_grid-item-1of2 khb_padding-left-1',
-      required: true,
+      placeholder: 'Select number of blogs',
+      customStyles: reactSelectStyles || {},
+      selectKey: `blog-limit-select-${blogLimit}`,
       validations: {
         required: 'Number of blogs is required',
       },

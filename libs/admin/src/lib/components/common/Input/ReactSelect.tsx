@@ -3,6 +3,9 @@ import classNames from 'classnames';
 import ReactSelect from 'react-select/async';
 import { ReactSelectProps } from '../../../types';
 
+type StyleFunction = (provided: Record<string, unknown>, state: unknown) => Record<string, unknown>;
+type StylesConfig = Record<string, StyleFunction>;
+
 const CustomReactSelect = ({
   onChange,
   label,
@@ -23,6 +26,40 @@ const CustomReactSelect = ({
   selectKey,
   disabled,
 }: ReactSelectProps) => {
+  // Default styles with text-sm for placeholder and selected values
+  const defaultStyles: Partial<StylesConfig> = {
+    placeholder: (provided: Record<string, unknown>) => ({
+      ...provided,
+      fontSize: '0.875rem', // text-sm (14px)
+    }),
+    singleValue: (provided: Record<string, unknown>) => ({
+      ...provided,
+      fontSize: '0.875rem', // text-sm (14px)
+    }),
+    multiValue: (provided: Record<string, unknown>) => ({
+      ...provided,
+      fontSize: '0.875rem', // text-sm (14px)
+    }),
+    input: (provided: Record<string, unknown>) => ({
+      ...provided,
+      fontSize: '0.875rem', // text-sm (14px)
+    }),
+  };
+
+  // Merge custom styles with default styles
+  const mergedStyles = customStyles
+    ? Object.keys(defaultStyles).reduce((acc: Record<string, StyleFunction>, key: string) => {
+        acc[key] = (provided: Record<string, unknown>, state: unknown) => {
+          const defaultStyle = (defaultStyles as Record<string, StyleFunction>)[key](provided, state);
+          const customStyle = customStyles[key as keyof typeof customStyles]
+            ? (customStyles[key as keyof typeof customStyles] as StyleFunction)(provided, state)
+            : {};
+          return { ...defaultStyle, ...customStyle };
+        };
+        return acc;
+      }, {})
+    : defaultStyles;
+
   return (
     <div className={wrapperClassName}>
       {label && (
@@ -55,7 +92,7 @@ const CustomReactSelect = ({
               formatOptionLabel(listCode!, option)
             : undefined
         }
-        styles={customStyles}
+        styles={mergedStyles}
       />
       {error && <p className="khb_input-error ">{error}</p>}
     </div>

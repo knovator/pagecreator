@@ -34,6 +34,13 @@ const catchAsync = (fn: any) => {
   return defaults.catchAsync(fn, 'Widget');
 };
 
+// Helper to filter out undefined/null values from query fields
+const filterDefinedFields = (obj: Record<string, unknown> = {}): Record<string, unknown> => {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, value]) => value !== undefined && value !== null)
+  );
+};
+
 const getModals = (req: IRequest) => defaults.getModals(req);
 
 const deleteItems = async (widgetId: string, models: Models) => {
@@ -70,13 +77,17 @@ const createItems = async (
 export const createWidget = catchAsync(
   async (req: IRequest, res: IResponse) => {
     const models = getModals(req);
-    const data = req.body;
+    const data = {
+      ...req.body,
+      ...req.defaultStoreFields,
+    };
     let items = [];
 
     await checkUnique({
       Modal: models['Widget'],
       uniqueField: 'code',
       value: data.code,
+      query: req.defaultQueryFields,
       errorMessage: VALIDATION.WIDGET_EXISTS
     });
 
@@ -124,12 +135,16 @@ export const updateWidget = catchAsync(
     const models = getModals(req);
     const data = req.body;
     const _id = req.params['id'];
+    const query = {
+      _id,
+      ...req.defaultQueryFields,
+    };
     let items = [];
     if ('items' in data) {
       items = JSON.parse(JSON.stringify(data.items));
       delete data.items;
     }
-    let updatedWidget = await update(models['Widget'], { _id }, data);
+    let updatedWidget = await update(models['Widget'], query, data);
     if (items.length > 0 && updatedWidget) {
       await deleteItems(_id, models);
       await createItems(items, updatedWidget._id, models);
@@ -171,7 +186,11 @@ export const deleteWidget = catchAsync(
     const models = getModals(req);
     await deleteItems(req.params['id'], models);
     const _id = new Types.ObjectId(req.params['id']);
-    const deletedWidget = await remove(models['Widget'], { _id });
+    const query = {
+      _id,
+      ...req.defaultQueryFields,
+    };
+    const deletedWidget = await remove(models['Widget'], query);
     if (deletedWidget) {
       updateRedisWidget(deletedWidget.code, models);
       updateWidgetPagesData([deletedWidget.id], models);
@@ -209,6 +228,7 @@ export const getWidgets = catchAsync(async (req: IRequest, res: IResponse) => {
     orOptions.push({ _id: { $in: collectionItems } });
   }
   const query = {
+    ...req.defaultQueryFields,
     isDeleted: false,
     isActive: { $in: isActive === null ? [true, false] : [isActive] },
     $or: orOptions,
@@ -251,8 +271,13 @@ export const getSingleWidget = catchAsync(
   async (req: IRequest, res: IResponse) => {
     const { Widget, Item } = getModals(req);
     const _id = req.params['id'];
+    const query = {
+      _id,
+      ...req.defaultQueryFields,
+      isDeleted: true,
+    };
     const widget = await (
-      await getOne(Widget, { _id, isDeleted: true })
+      await getOne(Widget, query)
     ).toJSON();
     widget['items'] = await Item.aggregate([
       {
@@ -368,7 +393,11 @@ export const partialUpdateWidget = catchAsync(
     const models = getModals(req);
     const data = req.body;
     const _id = req.params['id'];
-    const updatedWidget = await update(models['Widget'], { _id }, data);
+    const query = {
+      _id,
+      ...req.defaultQueryFields,
+    };
+    const updatedWidget = await update(models['Widget'], query, data);
     if (updatedWidget) {
       updateRedisWidget(updatedWidget.code, models);
       updateWidgetPagesData([updatedWidget.id], models);
@@ -479,6 +508,9 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     limit = Math.max(collectionItems.length, limit);
   // setting up mongoose model
   const TempModel = getCollectionModal(collectionName, models);
+  // Base filters to apply at the START of the pipeline (for multi-tenant support)
+  const baseFilters: any = filterDefinedFields(req.defaultQueryFields);
+
   // fetching data
   let query: any = collectionItem.filters || {};
   const orOptions: any = [];
@@ -519,6 +551,10 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     };
   }
   const collectionData = await TempModel.aggregate([
+    // FIRST: Apply base filters (multi-tenant context)
+    {
+      $match: baseFilters,
+    },
     ...(Array.isArray(collectionItem.aggregations)
       ? collectionItem.aggregations
       : []),

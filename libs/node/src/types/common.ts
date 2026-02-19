@@ -26,6 +26,7 @@ export interface IPageSchema extends Document {
   name: string;
   code: string;
   slug: string;
+  isActive: boolean;
   canDel: boolean;
   widgets: string[];
   filterQuery: string;
@@ -57,6 +58,8 @@ export interface IWidgetSchema extends Document {
   widgetType: WidgetTypes;
   collectionName: string;
   collectionItems: string[];
+  blogCategory?: string;
+  blogLimit?: number;
   tabs: {
     name: string;
     names?: LanguageSchemaFieldType;

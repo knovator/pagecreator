@@ -8,7 +8,7 @@ import {
 } from '../types';
 
 export async function appendCollectionData(widgetData: IWidgetSchema[], models: Models) {
-  const { Widget }= models;
+  const { Widget } = models;
   // reduce widget data to optimize query
   const newData: IWidgetData = widgetData.reduce(
     (acc: IWidgetData, widget: IWidgetSchema) => {
@@ -26,6 +26,85 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
     {}
   );
   if (Object.keys(newData).length > 0) {
+    // Fetch latest blogs for widgets with category/limit configuration
+    const blogWidgetsData: any = {};
+    for (const widget of widgetData) {
+      if (widget.collectionName === 'blog' && (widget.blogCategory || widget.blogLimit)) {
+        try {
+          const collectionConfig = defaults.collections.find(
+            (c) => c.collectionName === widget.collectionName
+          );
+          const aggregateQueryItem: any[] = [];
+
+          // Add custom aggregations from config
+          if (
+            Array.isArray(collectionConfig?.aggregations) &&
+            collectionConfig?.aggregations.length
+          ) {
+            aggregateQueryItem.push(...collectionConfig.aggregations);
+          }
+
+          // Build match conditions
+          const matchConditions: any = {
+            ...(collectionConfig?.match || {}),
+          };
+
+          // Add category filter if provided
+          if (widget.blogCategory) {
+            const categoryObjectId = new Types.ObjectId(widget.blogCategory);
+            const categoryString = widget.blogCategory.toString();
+
+            // Handle multiple category field structures:
+            // - Array of ObjectIds (unpopulated)
+            // - Populated objects with _id field
+            // - Populated objects with id field (ObjectId or string)
+            matchConditions.$or = [
+              { category: { $in: [categoryObjectId] } },
+              { 'category._id': categoryObjectId },
+              { 'category.id': categoryObjectId },
+              { 'category.id': categoryString },
+            ];
+          }
+
+          // Add match, sort, and limit stages
+          aggregateQueryItem.push({
+            $match: matchConditions,
+          });
+
+          aggregateQueryItem.push({
+            $sort: { createdAt: -1 },
+          });
+
+          if (widget.blogLimit && widget.blogLimit > 0) {
+            aggregateQueryItem.push({
+              $limit: widget.blogLimit,
+            });
+          }
+
+          // Fetch data from collection
+          const collectionModal: any = getCollectionModal(widget.collectionName, models);
+          const collectionItems = await collectionModal.aggregate(aggregateQueryItem);
+
+          blogWidgetsData[widget.code] = collectionItems;
+        } catch (error) {
+          blogWidgetsData[widget.code] = [];
+        }
+      }
+    }
+
+    // Apply blog widgets data
+    if (Object.keys(blogWidgetsData).length > 0) {
+      widgetData = widgetData.map((widget: IWidgetSchema) => {
+        if (blogWidgetsData[widget.code]) {
+          return {
+            ...widget,
+            collectionItems: blogWidgetsData[widget.code],
+          };
+        }
+        return widget;
+      }) as any;
+    }
+
     const aggregationQueryCollectionItems = buildCollectionItemsQuery(newData);
     if (aggregationQueryCollectionItems.length > 0) {
       // getting collection data by populating widget
@@ -40,6 +119,10 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       widgetData = widgetData.map((widget: IWidgetSchema) => {
+        // Skip widgets already processed by blog section
+        if (blogWidgetsData[widget.code]) {
+          return widget;
+        }
         if (aggregationData[widget.code]) {
           return {
             ...widget,
@@ -118,6 +201,36 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       formattedWidgetData[key].collectionItems &&
       formattedWidgetData[key].collectionItems.length > 0
     ) {
+      const ids = formatCollectionItems(
+        formattedWidgetData[key].collectionItems
+      );
+
+      // Handle built-in "pages" collection
+      if (formattedWidgetData[key].collectionName === 'pages') {
+        aggregationQuery.push({
+          $lookup: {
+            from: 'pages',
+            pipeline: [
+              {
+                $match: {
+                  _id: { $in: ids },
+                  isDeleted: false,
+                  $or: [
+                    { isActive: true },
+                    { isActive: { $exists: false } }  // Include pages without isActive field
+                  ],
+                },
+              },
+              { $project: { _id: 1, name: 1, slug: 1, code: 1, filterQuery: 1 } },
+              { $addFields: { __order: { $indexOfArray: [ids, '$_id'] } } },
+              { $sort: { __order: 1 } },
+            ],
+            as: formattedWidgetData[key].code,
+          },
+        });
+        return;
+      }
+
       const aggregationQueryPiplelines: any[] = [];
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
@@ -128,9 +241,6 @@ function buildCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       ) {
         aggregationQueryPiplelines.push(...collectionConfig.aggregations);
       }
-      const ids = formatCollectionItems(
-        formattedWidgetData[key].collectionItems
-      );
       // Build piplelines with config
       aggregationQueryPiplelines.push(
         ...[
@@ -189,6 +299,38 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
       formattedWidgetData[key].tabs &&
       formattedWidgetData[key].tabs.length > 0
     ) {
+      const tabIds = formattedWidgetData[key].tabs.reduce(
+        (arr: Types.ObjectId[], tabItem) => {
+          arr.push(...formatCollectionItems(tabItem.collectionItems));
+          return arr;
+        },
+        []
+      );
+
+      // Handle built-in "pages" collection
+      if (formattedWidgetData[key].collectionName === 'pages') {
+        aggregationQuery.push({
+          $lookup: {
+            from: 'pages',
+            pipeline: [
+              {
+                $match: {
+                  _id: { $in: tabIds },
+                  isDeleted: false,
+                  $or: [
+                    { isActive: true },
+                    { isActive: { $exists: false } }  // Include pages without isActive field
+                  ],
+                },
+              },
+              { $project: { _id: 1, name: 1, slug: 1, code: 1, filterQuery: 1 } },
+            ],
+            as: formattedWidgetData[key].code,
+          },
+        });
+        return;
+      }
+
       const aggregationQueryPiplelines: any[] = [];
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
@@ -205,13 +347,7 @@ function buildTabCollectionItemsQuery(formattedWidgetData: IWidgetData) {
           {
             $match: {
               _id: {
-                $in: formattedWidgetData[key].tabs.reduce(
-                  (arr: Types.ObjectId[], tabItem) => {
-                    arr.push(...formatCollectionItems(tabItem.collectionItems));
-                    return arr;
-                  },
-                  []
-                ),
+                $in: tabIds,
               },
               ...(collectionConfig?.match || {}),
             },
@@ -266,11 +402,24 @@ export function AddSrcSetsToItems(widgetData: IWidgetSchema) {
 }
 
 export const getCollectionModal = (collectionName: string, models: Models) => {
-  let collectionModal: any = models[collectionName];
-  if (!collectionModal) collectionModal = models[collectionName.charAt(0).toUpperCase() + collectionName.slice(1)]
-  if (!collectionModal) {
-    const schema = new Schema({}, { strict: false });
-    collectionModal = model(collectionName, schema, collectionName);
+  let collectionModal: any;
+  if (models && models[collectionName]) {
+    collectionModal = models[collectionName];
+  } else if (
+    models &&
+    models[collectionName.charAt(0).toUpperCase() + collectionName.slice(1)]
+  ) {
+    collectionModal =
+      models[collectionName.charAt(0).toUpperCase() + collectionName.slice(1)];
+  } else {
+    try {
+      collectionModal = model(collectionName);
+    } catch (error) {
+      if (!collectionModal) {
+        const schema = new Schema({}, { strict: false });
+        collectionModal = model(collectionName, schema, collectionName);
+      }
+    }
   }
   return collectionModal;
 };

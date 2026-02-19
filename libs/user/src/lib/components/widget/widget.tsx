@@ -6,6 +6,7 @@ import Banner from '../common/Card/banner/banner';
 import CollectionItem from '../common/collection-item/collection-item';
 import { buildSrcSets } from '../../utils/helper';
 import TabWidget from './tab-widget/tab-widget';
+import LinksWidget from './links-widget/links-widget';
 
 export function Widget({
   widgetData,
@@ -21,8 +22,11 @@ export function Widget({
   itemsContainer,
 }: WidgetProps) {
   const formatItems = (item: ItemData | CollectionItemType): JSX.Element => {
+    // If user provides a custom formatItem function, use it
     if (typeof formatItem === 'function' && formatItem) return formatItem(item);
-    else if (widgetData.itemsType === 'Image')
+
+    // Default rendering for Image type items
+    if (widgetData.itemsType === 'Image')
       return (
         <Banner
           key={item._id}
@@ -42,14 +46,15 @@ export function Widget({
           subtitle={item.subtitle}
         />
       );
-    else
-      return (
-        <CollectionItem
-          key={item._id}
-          onClick={() => onClick && onClick(item)}
-          {...item}
-        />
-      );
+
+    // Default fallback for collection items - renders basic info
+    return (
+      <CollectionItem
+        key={item._id}
+        onClick={() => onClick && onClick(item)}
+        {...item}
+      />
+    );
   };
   const formatTabTitles = (
     title: string | Record<string, string>,
@@ -100,6 +105,14 @@ export function Widget({
             widgetData={widgetData}
             className={className}
             itemsContainer={itemsContainer}
+          />
+        ) : widgetData.widgetType === 'Links' ? (
+          <LinksWidget
+            widgetData={widgetData}
+            formatItem={formatItems}
+            className={className}
+            itemsContainer={itemsContainer}
+            formatTabTitle={formatTabTitles}
           />
         ) : (
           <FixedWidget

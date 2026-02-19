@@ -22,7 +22,7 @@ const getAggregationQuery = ({
   req,
 }: {
   collectionName: string;
-  ids: string[];
+  ids: object[];
   req?: IRequest;
 }) => {
   // Handle built-in "pages" collection

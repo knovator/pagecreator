@@ -1,6 +1,6 @@
 export type FormActionTypes = 'ADD' | 'UPDATE' | 'DELETE' | null | '';
 export type TFunc = (key: string) => string;
-export type OptionType = { label: string; value: string };
+export type OptionType = { label: string; value: string; code?: string };
 export interface PermissionsObj {
   list: boolean;
   add: boolean;

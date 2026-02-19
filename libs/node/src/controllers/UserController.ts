@@ -20,7 +20,7 @@ export const getWidgetData = catchAsync(
     if (widgetData && fresh !== 'true') {
       return successResponse(widgetData, res);
     }
-    widgetData = await getWidgetDataDB(code, models);
+    widgetData = await getWidgetDataDB(code, models, req);
 
     if (!widgetData) {
       res.message = req?.i18n?.t('user.widgetNotFound');
@@ -41,7 +41,10 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
   const slug = req.body.slug;
   const { Page } = models;
   if (slug) {
-    const page = await Page.findOne({ slug });
+    const page = await Page.findOne({
+      slug,
+      ...req.defaultQueryFields
+    });
     if (!page) {
       res.message = req?.i18n?.t('user.pageNotFound');
       return recordNotFound(res);
@@ -53,7 +56,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
     return successResponse(pageData, res);
   }
   try {
-    pageData = await getPageDataDB(code, models);
+    pageData = await getPageDataDB(code, models, req);
     console.log(code);
   } catch (error) {
     console.log(error);

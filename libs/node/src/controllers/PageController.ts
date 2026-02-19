@@ -16,12 +16,16 @@ const getModals = (req: IRequest) => defaults.getModals(req);
 
 export const createPage = catchAsync(async (req: IRequest, res: IResponse) => {
   const { Page } = getModals(req);
-  const data = req.body;
+  const data = {
+    ...req.body,
+    ...req.defaultStoreFields,
+  };
 
   await checkUnique({
     Modal: Page,
     uniqueField: 'code',
     value: data.code,
+    query: req.defaultQueryFields,
     errorMessage: VALIDATION.WIDGET_EXISTS
   });
  
@@ -29,6 +33,7 @@ export const createPage = catchAsync(async (req: IRequest, res: IResponse) => {
     Modal: Page,
     uniqueField: 'slug',
     value: data.slug,
+    query: req.defaultQueryFields,
     errorMessage: VALIDATION.SLUG_EXISTS
   });
   const page = await create(Page, data);
@@ -40,7 +45,11 @@ export const updatePage = catchAsync(async (req: IRequest, res: IResponse) => {
   const models = getModals(req);
   const data = req.body;
   const _id = req.params['id'];
-  const updatedPage = await update(models['Page'], { _id }, data);
+  const query = {
+    _id,
+    ...req.defaultQueryFields,
+  };
+  const updatedPage = await update(models['Page'], query, data);
   res.message = req?.i18n?.t('page.update');
   if (updatedPage) updateRedisPage(updatedPage.code, models); // update redis
   return successResponse(updatedPage, res);
@@ -49,9 +58,13 @@ export const updatePage = catchAsync(async (req: IRequest, res: IResponse) => {
 export const deletePage = catchAsync(async (req: IRequest, res: IResponse) => {
   const { Page } = getModals(req);
   const _id = new Types.ObjectId(req.params['id']);
-  const createdPage = await remove(Page, { _id });
+  const query = {
+    _id,
+    ...req.defaultQueryFields,
+  };
+  const deletedPage = await remove(Page, query);
   res.message = req?.i18n?.t('page.delete');
-  return successResponse(createdPage, res);
+  return successResponse(deletedPage, res);
 });
 
 export const getPages = catchAsync(async (req: IRequest, res: IResponse) => {
@@ -64,6 +77,7 @@ export const getPages = catchAsync(async (req: IRequest, res: IResponse) => {
     ...(page && limit ? { page, limit } : {}),
   };
   const query = {
+    ...req.defaultQueryFields,
     isDeleted: false,
     $or: [
       {

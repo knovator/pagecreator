@@ -26,8 +26,10 @@ export interface IPageSchema extends Document {
   name: string;
   code: string;
   slug: string;
+  isActive: boolean;
   canDel: boolean;
   widgets: string[];
+  filterQuery: string;
 }
 export interface ITabSchema extends Document {
   name: string;
@@ -56,6 +58,8 @@ export interface IWidgetSchema extends Document {
   widgetType: WidgetTypes;
   collectionName: string;
   collectionItems: string[];
+  blogCategory?: string;
+  blogLimit?: number;
   tabs: {
     name: string;
     names?: LanguageSchemaFieldType;
@@ -91,9 +95,13 @@ export interface SrcSetItem {
 export type CollectionItem = {
   title: string;
   collectionName: string;
-  filters?: { [key: string]: string | number | boolean };
+  filters?: { [key: string]: string | number | boolean | ObjectType };
+  /** Dynamic filters function - receives request object and returns filters */
+  getFilters?: (req: any) => { [key: string]: any };
   searchColumns?: string[];
   match?: ObjectType;
+  /** Dynamic match function - receives request object and returns match query for aggregation */
+  getMatch?: (req: any) => ObjectType;
   aggregations?: any[];
   searchLimit?: number;
 };

@@ -54,6 +54,10 @@ routes
     widgetController.getCollectionData
   )
   .descriptor(`${descriptorPrefix}widget.getCollectionData`);
+// Get blog categories
+routes
+  .get('/blog-categories', widgetController.getBlogCategories)
+  .descriptor(`${descriptorPrefix}widget.getBlogCategories`);
 // Tabs
 routes
   .post('/tabs', validate(tabValidation.create), tabController.createTab)
@@ -73,5 +77,5 @@ routes.get(`/languages`, widgetController.getLanguages);
 routes
   .get(`/:id`, widgetController.getSingleWidget)
   .descriptor(`${descriptorPrefix}widget.getOne`);
-    
+
 export default routes;

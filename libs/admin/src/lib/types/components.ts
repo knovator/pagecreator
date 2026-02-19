@@ -22,6 +22,8 @@ export interface DNDItemsListProps {
   items: OptionType[];
   listCode?: string;
   formatItem?: (code: string, data: any) => JSX.Element;
+  onFilterClick?: (item?: any) => void;
+  disableSettings?: boolean;
 }
 export interface DrawerProps {
   children?: React.ReactNode;
@@ -124,6 +126,7 @@ export interface ReactSelectProps {
   selectedOptions?: { value: string; label: string }[];
   isLoading?: boolean;
   isSearchable?: boolean;
+  isClearable?: boolean;
   placeholder?: string;
   formatOptionLabel?: (code: string, data: any) => JSX.Element;
   listCode?: string;
@@ -131,8 +134,9 @@ export interface ReactSelectProps {
   customStyles?: any;
   loadOptions?: (
     value?: string,
-    callback?: (options: OptionType[]) => void
-  ) => Promise<OptionType[]>;
+    callback?: (options: OptionType[]) => void,
+    collectionName?: string
+  ) => Promise<OptionType[]> | void;
   selectKey?: string;
 }
 export interface CustomInputType {
@@ -141,8 +145,14 @@ export interface CustomInputType {
   setError: (msg: string) => void;
 }
 export interface FormProps {
+  onFilterClick?: (pageData?: any) => void;
+  filterQuery?: string;
   formRef: MutableRefObject<HTMLFormElement | null>;
   customInputs?: Record<string, (props: InputRendererProps) => JSX.Element>;
+  onPrimaryButtonClick?: (
+    e?: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    data?: any
+  ) => void;
 }
 export interface InputRendererProps {
   field: import('react-hook-form').ControllerRenderProps;
@@ -216,6 +226,10 @@ export interface WidgetProps {
   imageBaseUrl?: string;
   imageMaxSize?: number;
   translations?: WidgetTranslationPairs;
+  onPrimaryButtonClick?: (
+    e?: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    data?: any
+  ) => void;
 }
 export interface DerivedTableProps {
   extraActions?: (item: any) => JSX.Element;
@@ -225,6 +239,7 @@ export interface DerivedTableProps {
       Cell: (item: any) => JSX.Element;
     }
   ];
+  onEditClick?: (item: any) => void;
 }
 
 export interface FormWrapperProps {
@@ -236,6 +251,10 @@ export interface FormWrapperProps {
 }
 export interface FormActionWrapperProps {
   formRef: MutableRefObject<HTMLFormElement | null>;
+  onPrimaryButtonClick?: (
+    e?: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    data?: any
+  ) => void;
 }
 
 export interface SchemaType extends ReactSelectProps {
@@ -246,17 +265,17 @@ export interface SchemaType extends ReactSelectProps {
   editable?: boolean;
   onInput?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?:
-    | 'text'
-    | 'number'
-    | 'select'
-    | 'checkbox'
-    | 'textarea'
-    | 'file'
-    | 'url'
-    | 'ReactSelect'
-    // | 'srcset'
-    | 'color'
-    | 'html';
+  | 'text'
+  | 'number'
+  | 'select'
+  | 'checkbox'
+  | 'textarea'
+  | 'file'
+  | 'url'
+  | 'ReactSelect'
+  // | 'srcset'
+  | 'color'
+  | 'html';
   options?: { value: string; label: string }[];
   selectedOptions?: { value: string; label: string }[];
   isMulti?: boolean;
@@ -285,6 +304,10 @@ export interface PageProps {
   permissions?: PermissionsObj;
   translations?: PageTranslationPairs;
   preConfirmDelete?: (data: { row: ObjectType }) => Promise<boolean>;
+  onPrimaryButtonClick?: (
+    e?: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
+  onEditClick?: (data: any) => void;
 }
 export interface PaginationProps {
   totalPages: number;
@@ -351,8 +374,9 @@ export interface TabsProps {
   languages?: LanguageType[];
   loadOptions?: (
     value?: string,
-    callback?: (options: OptionType[]) => void
-  ) => Promise<OptionType[]>;
+    callback?: (options: OptionType[]) => void,
+    collectionName?: string
+  ) => Promise<OptionType[]> | void;
 }
 
 export interface ImageUploadProps {

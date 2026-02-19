@@ -10,7 +10,7 @@ const PagePagination = () => {
   return (
     <Pagination
       ofText={commonTranslations.of}
-      pageText={commonTranslations.confirm}
+      pageText={commonTranslations.page}
       showingText={commonTranslations.showing}
       nextContent={commonTranslations.next}
       previousContent={commonTranslations.previous}

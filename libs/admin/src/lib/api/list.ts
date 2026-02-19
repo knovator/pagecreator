@@ -45,6 +45,10 @@ const apiList = {
     url: `${prefix}/languages`,
     method: 'GET',
   }),
+  BLOG_CATEGORIES: ({ prefix }: API_INPUT_TYPE) => ({
+    url: `${prefix}/blog-categories`,
+    method: 'GET',
+  }),
   // Image Upload API
   IMAGE_UPLOAD: ({ prefix }: API_INPUT_TYPE) => ({
     url: `${prefix}/upload`,

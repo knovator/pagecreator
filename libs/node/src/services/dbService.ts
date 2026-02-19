@@ -6,55 +6,56 @@ import {
   HydratedDocument,
   QueryWithHelpers,
 } from 'mongoose';
-import { EntityType, IModel, ReturnDocument } from '../types';
+import { EntityType, IModel } from '../types';
 
 // create
-export async function create<T extends EntityType>(
+export async function create<T>(
   Modal: Model<T>,
   data: Partial<T>
-): Promise<ReturnDocument> {
+): Promise<HydratedDocument<T>> {
   const modalInstance = new Modal(data);
-  return await modalInstance.save();
+  return (await modalInstance.save()) as unknown as HydratedDocument<T>;
 }
 // update
-export async function update<T extends EntityType>(
+export async function update<T>(
   Modal: Model<T>,
-  query: FilterQuery<EntityType>,
+  query: FilterQuery<T>,
   data: Partial<T>
-): Promise<T | undefined> {
+): Promise<HydratedDocument<T> | undefined> {
   await getOne(Modal, query);
-  const result = await Modal.findOneAndUpdate(query, data, { new: true });
+  const result = (await Modal.findOneAndUpdate(query, data, {
+    new: true,
+  })) as HydratedDocument<T> | null;
   return result || undefined;
 }
 // soft-delete
-export async function remove<T extends EntityType>(
+export async function remove<T>(
   Modal: Model<T>,
-  query: FilterQuery<EntityType>
-): Promise<T | undefined> {
+  query: FilterQuery<T>
+): Promise<HydratedDocument<T>> {
   const modalInstance = await getOne(Modal, query);
-  await modalInstance.remove();
-  return modalInstance;
+  return (await modalInstance.remove()) as unknown as HydratedDocument<T>;
 }
 // delete-all
-export async function deleteAll<T extends EntityType>(Modal: Model<T>, query: FilterQuery<T>) {
+export async function deleteAll<T>(Modal: Model<T>, query: FilterQuery<T>) {
   return Modal.deleteMany(query);
 }
 // get-all
-export function getAll<T extends EntityType>(
+export function getAll<T>(
   Modal: Model<T>,
-  query: FilterQuery<EntityType> = {},
-  options?: QueryOptions<EntityType>,
-  projection?: ProjectionType<EntityType>
+  query: FilterQuery<T> = {},
+  options?: QueryOptions<T>,
+  projection?: ProjectionType<T>
   // eslint-disable-next-line @typescript-eslint/ban-types
-): QueryWithHelpers<Array<T>, T, {}, T> {
+): QueryWithHelpers<Array<HydratedDocument<T>>, HydratedDocument<T>, {}, T> {
   return Modal.find(query, projection, options);
 }
 // list
-export async function list<T extends EntityType>(
+export async function list<T>(
   Modal: IModel<T>,
   where: FilterQuery<T>,
   options: QueryOptions<T>
-): Promise<ReturnDocument[]> {
+): Promise<any> {
   try {
     const documents = Modal.paginate(where, options);
     return documents;
@@ -63,40 +64,49 @@ export async function list<T extends EntityType>(
   }
 }
 // get-one
-export async function getOne<T extends EntityType>(
+export async function getOne<T>(
   Modal: Model<T>,
-  query: FilterQuery<EntityType>,
-  projection?: ProjectionType<EntityType>
+  query: FilterQuery<T>,
+  projection?: ProjectionType<T>
 ): Promise<HydratedDocument<T>> {
-  const modalInstance: HydratedDocument<T> | null = await Modal.findOne(
-    query,
-    projection
-  );
+  const modalInstance = (await Modal.findOne(query, projection)) as
+    | HydratedDocument<T>
+    | null;
   if (!modalInstance)
     throw new Error(`Record not found ${Modal.name ? `in ${Modal.name}` : ''}`);
 
   return modalInstance;
 }
 // bulk-insert
-export async function bulkInsert<T extends EntityType>(Modal: Model<T>, docs: T[]): Promise<ReturnDocument[]> {
-  return await Modal.insertMany(docs);
+export async function bulkInsert<T>(
+  Modal: Model<T>,
+  docs: T[]
+): Promise<Array<HydratedDocument<T>>> {
+  return (await Modal.insertMany(docs)) as Array<HydratedDocument<T>>;
 }
 
 export async function checkUnique<T extends EntityType>({
-Modal,
-uniqueField,
-errorMessage,
-value
+  Modal,
+  uniqueField,
+  errorMessage,
+  value,
+  query: additionalQuery
 }: {
   Modal: Model<T>,
   uniqueField: keyof T,
   value: any,
-  errorMessage: string
+  errorMessage: string,
+  query?: Record<string, any>
 }): Promise<void> {
-  const query: FilterQuery<T> = { [uniqueField]: value } as FilterQuery<T>;
+  const query: FilterQuery<T> = { 
+    [uniqueField]: value,
+    ...additionalQuery 
+  } as FilterQuery<T>;
   let result;
   try {
     result = await getOne(Modal, query);
-  } catch (error) {}
+  } catch (error) {
+    // eslint-disable-next-line no-empty
+  }
   if(result) throw new Error(errorMessage)
 }

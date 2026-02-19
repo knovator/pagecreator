@@ -7,6 +7,11 @@ const PageSchema = new Schema<IPageSchema>({
   name: String,
   code: String,
   slug: String,
+  filterQuery: String,
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
   canDel: {
     type: Boolean,
     default: true,

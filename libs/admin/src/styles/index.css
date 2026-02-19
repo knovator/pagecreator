@@ -131,7 +131,7 @@
     @apply text-sm p-2;
 }
 .khb_input-base {
-    @apply text-base p-2.5;
+    @apply text-base p-1.5;
 }
 .khb_input-label {
     @apply block mb-1 text-sm font-medium text-gray-900;
@@ -416,6 +416,21 @@ input:checked + .slider:before {
 }
 .khb_DND-item-text {
     @apply text-base font-medium leading-6 text-black truncate;
+}
+.khb_DND-item-content {
+    @apply flex items-center justify-between gap-3;
+}
+.khb_DND-item-settings {
+    @apply flex items-center text-slate-500 bg-transparent border-0 p-0 cursor-pointer;
+}
+.khb_DND-item-settings:disabled {
+    @apply text-slate-300 cursor-not-allowed;
+}
+.khb_DND-item-settings:disabled .khb_DND-item-settings-icon {
+    @apply text-slate-300 cursor-not-allowed;
+}
+.khb_DND-item-settings-icon {
+    @apply w-5 h-5 text-black;
 }
 .khb_DND-item {
     @apply p-3 overflow-hidden bg-white border rounded-md cursor-pointer border-slate-500 hover:shadow hover:border-blue-400 transition-colors duration-200 ease-in-out;

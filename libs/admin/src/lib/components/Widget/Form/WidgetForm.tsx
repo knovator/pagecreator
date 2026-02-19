@@ -8,6 +8,7 @@ import ItemsAccordian from './ItemsAccordian';
 
 import { useWidgetState } from '../../../context/WidgetContext';
 import { useProviderState } from '../../../context/ProviderContext';
+import request from '../../../api';
 import {
   capitalizeFirstLetter,
   changeToCode,
@@ -33,13 +34,15 @@ const constants = {
   imageItemsTypeValue: 'Image',
   textWidgetTypeValue: 'Text',
   htmlWidgetTypeValue: 'HTML',
+  linksWidgetTypeValue: 'Links',
+  pagesItemsTypeValue: 'pages',
   tabsAccessor: 'tabs',
   webItems: 'webItems',
   mobileItems: 'mobileItems',
   tabCollectionItemsAccessor: 'collectionItems',
 };
 
-const WidgetForm = ({ formRef, customInputs }: FormProps) => {
+const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) => {
   const {
     register,
     formState: { errors },
@@ -51,10 +54,13 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     clearErrors,
     setError,
     getValues,
-  } = useForm({
+  } = useForm<any>({
     shouldUnregister: false,
+    defaultValues: {
+      backgroundColor: '#ffffff',
+    },
   });
-  const { switchClass, commonTranslations } = useProviderState();
+  const { switchClass, commonTranslations, baseUrl, token, widgetRoutesPrefix } = useProviderState();
   const {
     data,
     canAdd,
@@ -91,6 +97,12 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
   const [tabCollectionItemsUpdated, setTabCollectionItemsUpdated] = useState<
     boolean[]
   >([]);
+  const [blogCategory, setBlogCategory] = useState<OptionType | null>(null);
+  const [blogLimit, setBlogLimit] = useState<number | undefined>(undefined);
+  const [blogCategories, setBlogCategories] = useState<OptionType[]>([]);
+  const [blogCategoriesLoading, setBlogCategoriesLoading] = useState(false);
+  const pagesLoadedRef = useRef(false);
+  const blogCategoryInitialized = useRef(false);
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
@@ -116,7 +128,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       }
       if (
         data?.widgetType === constants.textWidgetTypeValue ||
-        data?.widgetType === constants.htmlWidgetTypeValue
+        data?.widgetType === constants.htmlWidgetTypeValue ||
+        data?.widgetType === constants.linksWidgetTypeValue
       ) {
         setItemsEnabled(false);
       }
@@ -137,9 +150,116 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     }
   }, [data, reset]);
 
+  // Watch itemsType for blog category feature
+  const currentItemsType = watch(constants.itemTypeAccessor);
+
+  // Fetch blog categories when itemsType is 'blogs'
+  useEffect(() => {
+    if (currentItemsType === 'blog' && blogCategories.length === 0) {
+      const fetchBlogCategories = async () => {
+        try {
+          setBlogCategoriesLoading(true);
+          const response = await request({
+            baseUrl,
+            token,
+            method: 'GET',
+            url: `${widgetRoutesPrefix}/blog-categories`,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onError: (error: any) => console.error('Error fetching blog categories:', error),
+          });
+          if (response?.code === 'SUCCESS' && Array.isArray(response.data?.docs)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const categories = response.data.docs.map((cat: any) => ({
+              value: cat._id || cat.id,
+              label: cat.name || cat.nm || cat.label,
+              slug: cat.slug,
+            }));
+            setBlogCategories(categories);
+          }
+        } catch (error) {
+          console.error('Error fetching blog categories:', error);
+        } finally {
+          setBlogCategoriesLoading(false);
+        }
+      };
+      fetchBlogCategories();
+    }
+  }, [currentItemsType, baseUrl, token, widgetRoutesPrefix, blogCategories.length]);
+
+  // Set blog category and limit when editing a widget
+  useEffect(() => {
+    if (formState === 'UPDATE' && data && currentItemsType === 'blog' && blogCategories.length > 0 && !blogCategoryInitialized.current) {
+      // Set blog category if it exists in the data
+      if (data.blogCategory) {
+        const savedCategory = blogCategories.find(cat => cat.value === data.blogCategory);
+        if (savedCategory) {
+          setBlogCategory(savedCategory);
+          blogCategoryInitialized.current = true;
+        }
+      }
+      // Set blog limit if it exists in the data
+      if (data.blogLimit) {
+        setBlogLimit(data.blogLimit);
+      }
+    }
+  }, [formState, data, currentItemsType, blogCategories]);
+
+  // Clear collectionItems when using blog category/limit (server will handle fetching latest blogs)
+  useEffect(() => {
+    if (currentItemsType === 'blog') {
+      if (blogCategory || (blogLimit && blogLimit > 0)) {
+        // Clear selected collection items since server will fetch latest blogs based on category/limit
+        setSelectedCollectionItems([]);
+        setCollectionItemsUpdated(true);
+      }
+    }
+  }, [blogCategory, blogLimit, currentItemsType]);
+
+  // Reset blog category and limit when itemsType changes away from 'blogs'
+  useEffect(() => {
+    if (currentItemsType !== 'blog') {
+      setBlogCategory(null);
+      setBlogLimit(undefined);
+      setBlogCategories([]);
+      blogCategoryInitialized.current = false;
+    }
+  }, [currentItemsType]);
+
+  // Reset initialization flag when opening a different widget or changing form state
+  useEffect(() => {
+    blogCategoryInitialized.current = false;
+  }, [data?._id, formState]);
+
+  // Watch blogLimit form value and update state
+  const watchedBlogLimit = watch('blogLimit');
+  useEffect(() => {
+    if (watchedBlogLimit && currentItemsType === 'blog') {
+      const limit = parseInt(watchedBlogLimit) || 10;
+      setBlogLimit(limit);
+    }
+  }, [watchedBlogLimit, currentItemsType]);
+
+  // Load pages data when Links widget type is selected
+  useEffect(() => {
+    if (
+      selectedWidgetType?.value === constants.linksWidgetTypeValue &&
+      selectedCollectionType?.value === constants.pagesItemsTypeValue &&
+      !pagesLoadedRef.current
+    ) {
+      // Trigger initial load of pages
+      pagesLoadedRef.current = true;
+      getCollectionData(constants.pagesItemsTypeValue, '');
+    }
+    // Reset ref when widget type changes away from Links
+    if (selectedWidgetType?.value !== constants.linksWidgetTypeValue) {
+      pagesLoadedRef.current = false;
+    }
+  }, [selectedWidgetType, selectedCollectionType, getCollectionData]);
+
   const onChangeSearch = (
     str?: string,
-    callback?: (options: OptionType[]) => void
+    callback?: (options: OptionType[]) => void,
+    collectionName?: string
   ): any => {
     let collectionItems: any[] = [];
     let valueToSet = '';
@@ -149,8 +269,8 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       ) {
         collectionItems = data[constants.tabsAccessor][activeTab]
           ? data[constants.tabsAccessor][activeTab][
-              constants.collectionItemsAccessor
-            ]
+          constants.collectionItemsAccessor
+          ]
           : [];
         valueToSet = `${constants.tabsAccessor}.${activeTab}.${constants.tabCollectionItemsAccessor}`;
       } else if (
@@ -170,18 +290,21 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     if (callerRef.current) clearTimeout(callerRef.current);
     let item: any;
 
+    // Use passed collectionName or fall back to selectedCollectionType
+    const collectionToUse = collectionName || selectedCollectionType?.value;
+
     callerRef.current = setTimeout(() => {
-      if (selectedCollectionType)
+      if (collectionToUse)
         getCollectionData(
-          selectedCollectionType.value,
+          collectionToUse,
           str,
           (options) => {
             if (typeof callback === 'function')
               callback(
                 options.map((item: ObjectType) => ({
-                  value: item['_id'] || item['id'],
-                  label: item['name'],
                   ...item,
+                  value: item['_id'] || item['id'],
+                  label: item['name'] || item['title'],
                 }))
               );
             if (formState === 'UPDATE') {
@@ -192,10 +315,10 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
                   );
                   return item
                     ? {
-                        label: item.name,
-                        value: item._id || item.id,
-                        ...item,
-                      }
+                      ...item,
+                      value: item._id || item.id,
+                      label: item.name || item.title,
+                    }
                     : {};
                 }) || [];
               selectedOptions = selectedOptions.filter((obj) => !!obj.value);
@@ -232,16 +355,16 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       const derivedItemTypes =
         widgetType === constants.tabsWidgetTypeValue
           ? itemsTypes.filter(
-              (item) => item.label !== constants.imageItemsTypeValue
-            )
+            (item) => item.label !== constants.imageItemsTypeValue
+          )
           : itemsTypes;
       const firstItemType = derivedItemTypes[0];
-      setValue(constants.itemTypeAccessor, firstItemType?.value);  
+      setValue(constants.itemTypeAccessor, firstItemType?.value);
       return firstItemType;
     },
     [itemsTypes, setValue]
   );
-  
+
 
   const getFirstWidgetTypeValue = useCallback(() => {
     return widgetTypes[0].value;
@@ -261,17 +384,25 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
           widgetType?.value === constants.htmlWidgetTypeValue
         ) {
           setItemsEnabled(false);
+        } else if (widgetType?.value === constants.linksWidgetTypeValue) {
+          setItemsEnabled(false);
+          setValue(constants.itemTypeAccessor, constants.pagesItemsTypeValue);
+          setValue(constants.collectionNameAccessor, constants.pagesItemsTypeValue);
+          const pagesOption = itemsTypes.find(
+            (item) => item.value === constants.pagesItemsTypeValue
+          );
+          if (pagesOption) setSelectedCollectionType(pagesOption);
         } else {
           setItemsEnabled(true);
         }
-  
+
         if (
           widgetType?.value === constants.carouselWidgetTypeValue ||
           widgetType?.value === constants.fixedCardWidgetTypeValue
         ) {
           setValue(constants.itemTypeAccessor, "Image");
         }
-  
+
         if (widgetType?.value === constants.tabsWidgetTypeValue) {
           const firstItemType = getFirstItemTypeValue(value[name]);
           if (firstItemType) {
@@ -301,7 +432,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
             (tabItem) => tabItem[constants.tabCollectionItemsAccessor]
           )
         );
-      }  
+      }
     },
     [getFirstItemTypeValue, itemsTypes, setValue, widgetTypes, selectedCollectionType]
   );
@@ -338,6 +469,25 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     if (!formData[constants.widgetTypeAccessor] && formState === 'ADD') {
       formData[constants.widgetTypeAccessor] = getFirstWidgetTypeValue();
     }
+
+    // Validate blogLimit is required when itemsType is 'blog'
+    const widgetTypeValue = formData[constants.widgetTypeAccessor] || selectedWidgetType?.value;
+    if (
+      currentItemsType === 'blog' &&
+      !itemsEnabled &&
+      (widgetTypeValue === constants.carouselWidgetTypeValue ||
+        widgetTypeValue === constants.fixedCardWidgetTypeValue) &&
+      !!selectedCollectionType?.value
+    ) {
+      if (!formData['blogLimit'] || formData['blogLimit'] === '') {
+        setError('blogLimit', {
+          type: 'manual',
+          message: 'Number of blogs is required',
+        });
+        return;
+      }
+    }
+
     // setting tabs data if widgetType tab is selected
     const tabsData = getValues(constants.tabsAccessor);
     if (Array.isArray(tabsData) && tabsData.length > 0) {
@@ -365,16 +515,21 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         formData[constants.widgetTypeAccessor] as string
       )?.value;
     }
+    // Force collectionName and itemsType for Links widget
+    if (formData[constants.widgetTypeAccessor] === constants.linksWidgetTypeValue) {
+      formData[constants.collectionNameAccessor] = constants.pagesItemsTypeValue;
+      formData[constants.itemTypeAccessor] = constants.pagesItemsTypeValue;
+    }
     // setting collectionName if widgetType is FixedCard or Carousel and FormState
-    if (
+    else if (
       formData[constants.itemTypeAccessor] !== constants.imageItemsTypeValue &&
       formState === 'ADD'
     ) {
       formData[constants.collectionNameAccessor] = selectedCollectionType
         ? selectedCollectionType.value
         : getFirstItemTypeValue(
-            formData[constants.widgetTypeAccessor] as string
-          )?.value;
+          formData[constants.widgetTypeAccessor] as string
+        )?.value;
     }
     // setting colleciton items if collectionItems are there
     if (
@@ -409,10 +564,24 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       }
       return item;
     });
-    onWidgetFormSubmit({
+    // Clean up fields based on widget type
+    const currentWidgetType = formData['widgetType'] || selectedWidgetType?.value;
+    if (currentWidgetType !== constants.htmlWidgetTypeValue) {
+      delete formData['htmlContent'];
+    }
+    if (currentWidgetType !== constants.textWidgetTypeValue) {
+      delete formData['textContent'];
+    }
+
+    const submitPayload = {
       ...formData,
       items,
-    });
+      // Include blog category and limit if set
+      ...(blogCategory && { blogCategory: blogCategory.value }),
+      ...(blogLimit && { blogLimit }),
+    };
+    onPrimaryButtonClick?.(undefined, submitPayload);
+    onWidgetFormSubmit(submitPayload);
   };
   const onCollectionIndexChange = (result: DropResult) => {
     const { destination, source } = result;
@@ -473,36 +642,36 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
     },
     Array.isArray(languages) && languages.length > 0
       ? {
-          label: commonTranslations.title,
-          accessor: 'widgetTitles',
-          required: false,
-          type:
-            customInputs && customInputs['widgetTitles'] ? undefined : 'text',
-          info: widgetTranslations.widgetTitleInfo,
-          placeholder: commonTranslations.titlePlaceholder,
-          onInput: handleCapitalize,
-          Input:
-            customInputs && customInputs['widgetTitles']
-              ? customInputs['widgetTitles']
-              : undefined,
-        }
+        label: commonTranslations.title,
+        accessor: 'widgetTitles',
+        required: false,
+        type:
+          customInputs && customInputs['widgetTitles'] ? undefined : 'text',
+        info: widgetTranslations.widgetTitleInfo,
+        placeholder: commonTranslations.titlePlaceholder,
+        onInput: handleCapitalize,
+        Input:
+          customInputs && customInputs['widgetTitles']
+            ? customInputs['widgetTitles']
+            : undefined,
+      }
       : {
-          label: commonTranslations.title,
-          accessor: 'widgetTitle',
-          required: true,
-          type:
-            customInputs && customInputs['widgetTitle'] ? undefined : 'text',
-          onInput: handleCapitalize,
-          placeholder: commonTranslations.titlePlaceholder,
-          validations: {
-            required: commonTranslations.titleRequired,
-          },
-          info: widgetTranslations.widgetTitleInfo,
-          Input:
-            customInputs && customInputs['widgetTitle']
-              ? customInputs['widgetTitle']
-              : undefined,
+        label: commonTranslations.title,
+        accessor: 'widgetTitle',
+        required: true,
+        type:
+          customInputs && customInputs['widgetTitle'] ? undefined : 'text',
+        onInput: handleCapitalize,
+        placeholder: commonTranslations.titlePlaceholder,
+        validations: {
+          required: commonTranslations.titleRequired,
         },
+        info: widgetTranslations.widgetTitleInfo,
+        Input:
+          customInputs && customInputs['widgetTitle']
+            ? customInputs['widgetTitle']
+            : undefined,
+      },
     {
       label: widgetTranslations.widgetType,
       required: true,
@@ -548,6 +717,7 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         required: widgetTranslations.htmlContentRequired,
       },
       show: selectedWidgetType?.value === constants.htmlWidgetTypeValue,
+      wrapperClassName: 'khb_html-content-field',
       Input:
         customInputs && customInputs['htmlContent']
           ? customInputs['htmlContent']
@@ -566,23 +736,110 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
         required: widgetTranslations.itemsTypePlaceholder,
       },
       options:
-        selectedWidgetType?.value === constants.tabsWidgetTypeValue ||
-        selectedWidgetType?.collectionsOnly
+        selectedWidgetType?.value === constants.linksWidgetTypeValue
           ? itemsTypes.filter(
-              (item) => item.label !== constants.imageItemsTypeValue
+            (item) => item.value === constants.pagesItemsTypeValue
+          )
+          : selectedWidgetType?.value === constants.tabsWidgetTypeValue ||
+            selectedWidgetType?.collectionsOnly
+            ? itemsTypes.filter(
+              (item) =>
+                item.label !== constants.imageItemsTypeValue &&
+                item.value !== constants.pagesItemsTypeValue &&
+                item.value !== 'blog'
             )
-          : selectedWidgetType?.imageOnly
-          ? itemsTypes.filter(
-              (item) => item.label === constants.imageItemsTypeValue
-            )
-          : itemsTypes,
+            : selectedWidgetType?.imageOnly
+              ? itemsTypes.filter(
+                (item) => item.label === constants.imageItemsTypeValue
+              )
+              : itemsTypes.filter(
+                (item) => item.value !== constants.pagesItemsTypeValue
+              ),
     },
     {
-      label: widgetTranslations.color,
-      accessor: 'backgroundColor',
-      type: 'color',
-      className: 'khb_input-color',
+      label: 'Blog Category',
+      accessor: 'blogCategory',
+      type: 'ReactSelect',
+      selectedOptions: blogCategory ? [blogCategory] : [],
+      isMulti: false,
+      isSearchable: true,
+      isClearable: true,
+      onChange: (selected: OptionType | OptionType[] | null) => {
+        setBlogCategory(Array.isArray(selected) ? selected[0] : selected);
+      },
+      loadOptions: (searchStr?: string, callback?: (options: OptionType[]) => void) => {
+        // Filter categories based on search string
+        if (!callback) return;
+        const filtered = searchStr
+          ? blogCategories.filter(cat =>
+            cat.label.toLowerCase().includes(searchStr.toLowerCase())
+          )
+          : blogCategories;
+        callback(filtered);
+      },
+      isLoading: blogCategoriesLoading,
+      show:
+        currentItemsType === 'blog' &&
+        !itemsEnabled &&
+        (selectedWidgetType?.value === constants.carouselWidgetTypeValue ||
+          selectedWidgetType?.value === constants.fixedCardWidgetTypeValue ||
+          !selectedWidgetType) &&
+        !!selectedCollectionType?.value,
+      placeholder: 'Select blog category...',
+      customStyles: reactSelectStyles || {},
+      selectKey: `blog-category-select-${blogCategories.length}`,
     },
+    {
+      label: 'No. of Blogs',
+      accessor: 'blogLimit',
+      type: 'ReactSelect',
+      selectedOptions: blogLimit ? [{ value: blogLimit.toString(), label: blogLimit.toString() }] : [],
+      isMulti: false,
+      isSearchable: false,
+      required: true,
+      isClearable: false,
+      onChange: (selected: OptionType | OptionType[] | null) => {
+        const selectedValue = Array.isArray(selected) ? selected[0] : selected;
+        if (selectedValue) {
+          setBlogLimit(parseInt(selectedValue.value));
+          setValue('blogLimit', selectedValue.value);
+          // Clear any existing error when a value is selected
+          clearErrors('blogLimit');
+        } else {
+          // Set error if cleared
+          setError('blogLimit', {
+            type: 'manual',
+            message: 'Number of blogs is required',
+          });
+        }
+      },
+      loadOptions: (_searchStr?: string, callback?: (options: OptionType[]) => void) => {
+        if (!callback) return;
+        const options = [
+          { value: '1', label: '1' },
+          { value: '2', label: '2' },
+          { value: '3', label: '3' },
+          { value: '4', label: '4' },
+          { value: '5', label: '5' },
+          { value: '6', label: '6' },
+        ];
+        callback(options);
+      },
+      show:
+        currentItemsType === 'blog' &&
+        !itemsEnabled &&
+        (selectedWidgetType?.value === constants.carouselWidgetTypeValue ||
+          selectedWidgetType?.value === constants.fixedCardWidgetTypeValue ||
+          !selectedWidgetType) &&
+        !!selectedCollectionType?.value,
+      placeholder: 'Select number of blogs',
+      customStyles: reactSelectStyles || {},
+      selectKey: `blog-limit-select-${blogLimit}`,
+      validations: {
+        required: 'Number of blogs is required',
+      },
+    },
+
     {
       label: widgetTranslations.webPerRow,
       accessor: 'webPerRow',
@@ -650,14 +907,24 @@ const WidgetForm = ({ formRef, customInputs }: FormProps) => {
       onChange: setSelectedCollectionItems,
       loadOptions: onChangeSearch,
       isLoading: collectionDataLoading,
+      disabled: currentItemsType === 'blog' && !!blogCategory,
       show:
         !itemsEnabled &&
+        currentItemsType !== 'blog' &&
         (selectedWidgetType?.value === constants.carouselWidgetTypeValue ||
-          selectedWidgetType?.value === constants.fixedCardWidgetTypeValue || !selectedWidgetType) && !!selectedCollectionType?.value,
+          selectedWidgetType?.value === constants.fixedCardWidgetTypeValue ||
+          selectedWidgetType?.value === constants.linksWidgetTypeValue ||
+          !selectedWidgetType) && !!selectedCollectionType?.value,
       formatOptionLabel: formatOptionLabel,
       listCode: selectedCollectionType?.value,
       customStyles: reactSelectStyles || {},
       selectKey: selectedCollectionType?.value,
+    },
+    {
+      label: widgetTranslations.color,
+      accessor: 'backgroundColor',
+      type: 'color',
+      className: 'khb_input-color',
     },
   ];
 

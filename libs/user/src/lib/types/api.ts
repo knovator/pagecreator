@@ -46,7 +46,7 @@ export interface WidgetData {
   mobilePerRow: number;
   tabletPerRow: number;
   itemsType: 'Image' | string;
-  widgetType: 'FixedCard' | 'Carousel' | 'Tabs';
+  widgetType: 'FixedCard' | 'Carousel' | 'Tabs' | 'Links';
   items: ItemData[];
   tabs: TabData[];
   collectionItems: CollectionItemType[];

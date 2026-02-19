@@ -11,7 +11,8 @@ export type ACTION_TYPES =
   | 'SELECTION_TYPES'
   | 'COLLECTION_DATA'
   | 'GET_ONE'
-  | 'LANGUAGES';
+  | 'LANGUAGES'
+  | 'BLOG_CATEGORIES';
 
 export type API_TYPE = {
   url: string;

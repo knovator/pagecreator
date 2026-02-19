@@ -20,6 +20,8 @@ const Input = ({
   onChange,
   wrapperClassName,
 }: InputProps) => {
+  const isTextarea = type === 'textarea';
+
   return (
     <div className={classNames('khb_input-wrapper', wrapperClassName)}>
       {label && (
@@ -30,18 +32,33 @@ const Input = ({
           ) : null}
         </label>
       )}
-      <input
-        className={classNames('khb_input', `khb_input-${size}`, className)}
-        type={type}
-        placeholder={placeholder}
-        disabled={disabled}
-        id={id}
-        value={value}
-        onChange={onChange}
-        {...rest}
-        onInput={onInput}
-        onBlur={onBlur}
-      />
+      {isTextarea ? (
+        <textarea
+          className={classNames('khb_input', `khb_input-${size}`, className)}
+          placeholder={placeholder}
+          disabled={disabled}
+          id={id}
+          value={value}
+          onChange={onChange}
+          rows={10}
+          {...rest}
+          onInput={onInput}
+          onBlur={onBlur}
+        />
+      ) : (
+        <input
+          className={classNames('khb_input', `khb_input-${size}`, className)}
+          type={type}
+          placeholder={placeholder}
+          disabled={disabled}
+          id={id}
+          value={value}
+          onChange={onChange}
+          {...rest}
+          onInput={onInput}
+          onBlur={onBlur}
+        />
+      )}
       {error && <p className="khb_input-error ">{error}</p>}
       {info && <p className="khb_input-info">{info}</p>}
     </div>

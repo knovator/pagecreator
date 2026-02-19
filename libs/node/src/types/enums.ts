@@ -1,5 +1,7 @@
 export enum ItemsType {
   Image = 'Image',
+  Pages = 'pages',
+  Links = 'links',
 }
 
 export enum WidgetTypes {
@@ -7,7 +9,8 @@ export enum WidgetTypes {
   Carousel = 'Carousel',
   Tabs = 'Tabs',
   Text = 'Text',
-  HTML = 'HTML'
+  HTML = 'HTML',
+  Links = 'Links',
 }
 
 export enum ItemTypes {

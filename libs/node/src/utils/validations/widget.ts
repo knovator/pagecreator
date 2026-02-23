@@ -33,7 +33,7 @@ const item = joi.object({
     .string()
     .valid(...Object.values(ItemTypes))
     .default(ItemTypes.Web),
-});
+}).unknown(true);
 
 export const create = joi.object<ItemValidation>({
   name: joi.string().required(),

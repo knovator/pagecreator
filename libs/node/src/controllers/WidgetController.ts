@@ -50,11 +50,13 @@ const deleteItems = async (widgetId: string, models: Models) => {
 const createItems = async (
   itemsData: any[],
   widgetId: string,
-  models: Models
+  models: Models,
+  defaultStoreFields: Record<string, unknown> = {}
 ) => {
   const { Item, SrcSet } = models;
   itemsData = itemsData.map((item: any) => ({
     ...item,
+    ...defaultStoreFields,
     _id: new Types.ObjectId(),
     widgetId,
   }));
@@ -97,7 +99,7 @@ export const createWidget = catchAsync(
     }
     const widget = await create(models['Widget'], data);
     if (items.length > 0) {
-      await createItems(items, widget._id, models);
+      await createItems(items, widget._id, models, req.defaultStoreFields);
     }
 
     const widgetData = widget.toJSON ? widget.toJSON() : widget;
@@ -147,7 +149,7 @@ export const updateWidget = catchAsync(
     let updatedWidget = await update(models['Widget'], query, data);
     if (items.length > 0 && updatedWidget) {
       await deleteItems(_id, models);
-      await createItems(items, updatedWidget._id, models);
+      await createItems(items, updatedWidget._id, models, req.defaultStoreFields);
     }
     if (updatedWidget) {
       if (updatedWidget.toJSON) {

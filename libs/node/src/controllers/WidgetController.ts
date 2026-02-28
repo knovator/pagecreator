@@ -482,7 +482,9 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
       orOptions.push({ _id: { $in: formatCollectionItems(collectionItems) } });
     }
 
+    const pageBaseFilters = filterDefinedFields(req.defaultQueryFields);
     const query: any = {
+      ...pageBaseFilters,
       isDeleted: false,
       $or: orOptions,
     };
@@ -510,11 +512,12 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     limit = Math.max(collectionItems.length, limit);
   // setting up mongoose model
   const TempModel = getCollectionModal(collectionName, models);
-  // Base filters to apply at the START of the pipeline (for multi-tenant support)
-  const baseFilters: any = filterDefinedFields(req.defaultQueryFields);
 
   // fetching data
-  let query: any = collectionItem.filters || {};
+  let query: any = {
+    ...(collectionItem.filters || {}),
+    ...filterDefinedFields(req?.defaultQueryFields),
+  };
   const orOptions: any = [];
   let addFieldOptions: any = {};
   if (
@@ -553,10 +556,6 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     };
   }
   const collectionData = await TempModel.aggregate([
-    // FIRST: Apply base filters (multi-tenant context)
-    {
-      $match: baseFilters,
-    },
     ...(Array.isArray(collectionItem.aggregations)
       ? collectionItem.aggregations
       : []),
@@ -594,13 +593,17 @@ export const getBlogCategories = catchAsync(async (req: IRequest, res: IResponse
       $match: {
         isActive: true,
         isDeleted: { $ne: true },
+        ...filterDefinedFields(req.defaultQueryFields),
       },
     },
     {
       $project: {
         _id: 1,
-        name: '$nm',  // Map 'nm' field to 'name' for admin UI
+        name: { $ifNull: ['$nm', '$name'] },  // Fallback to 'name' if 'nm' is missing
+        nm: 1,
         slug: 1,
+        clientId: 1,
+        clientDomainName: 1,
       },
     },
     {

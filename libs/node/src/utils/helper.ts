@@ -8,6 +8,31 @@ import {
   SrcSetItem,
 } from '../types';
 
+export function buildAggregations(aggregations: any[] | undefined, req?: IRequest) {
+  if (!Array.isArray(aggregations) || !aggregations.length) {
+    return [];
+  }
+
+  const clientId = req?.defaultQueryFields?.clientId;
+  if (!clientId) {
+    return aggregations;
+  }
+
+  return aggregations.map((agg) => {
+    if (agg.$match) {
+      return {
+        ...agg,
+        $match: {
+          ...agg.$match,
+          clientId,
+        },
+      };
+    }
+    return agg;
+  });
+}
+
+
 export async function appendCollectionData(widgetData: IWidgetSchema[], models: Models, req?: IRequest) {
   const { Widget } = models;
   // reduce widget data to optimize query
@@ -38,11 +63,9 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
           const aggregateQueryItem: any[] = [];
 
           // Add custom aggregations from config
-          if (
-            Array.isArray(collectionConfig?.aggregations) &&
-            collectionConfig?.aggregations.length
-          ) {
-            aggregateQueryItem.push(...collectionConfig.aggregations);
+          const aggregations = buildAggregations(collectionConfig?.aggregations, req);
+          if (aggregations.length) {
+            aggregateQueryItem.push(...aggregations);
           }
 
           // Build match conditions
@@ -239,11 +262,9 @@ function buildCollectionItemsQuery(
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
       );
-      if (
-        Array.isArray(collectionConfig?.aggregations) &&
-        collectionConfig?.aggregations.length
-      ) {
-        aggregationQueryPiplelines.push(...collectionConfig.aggregations);
+      const aggregations = buildAggregations(collectionConfig?.aggregations, req);
+      if (aggregations.length) {
+        aggregationQueryPiplelines.push(...aggregations);
       }
       // Build piplelines with config
       aggregationQueryPiplelines.push(
@@ -343,11 +364,9 @@ function buildTabCollectionItemsQuery(
       collectionConfig = defaults.collections.find(
         (c) => c.collectionName === formattedWidgetData[key].collectionName
       );
-      if (
-        Array.isArray(collectionConfig?.aggregations) &&
-        collectionConfig?.aggregations.length
-      ) {
-        aggregationQueryPiplelines.push(...collectionConfig.aggregations);
+      const aggregations = buildAggregations(collectionConfig?.aggregations, req);
+      if (aggregations.length) {
+        aggregationQueryPiplelines.push(...aggregations);
       }
       // Build piplelines with config
       aggregationQueryPiplelines.push(

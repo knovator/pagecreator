@@ -4,6 +4,7 @@ import {
   appendCollectionData,
   getCollectionModal,
   formatCollectionItems,
+  buildAggregations,
 } from '../utils/helper';
 import { setRedisValue, deleteRedisValue } from '../utils/redis';
 import { defaults, commonExcludedFields } from '../utils/defaults';
@@ -48,11 +49,9 @@ const getAggregationQuery = ({
     (c) => c.collectionName === collectionName
   );
   const aggregateQueryItem: AggregateOptions[] = [];
-  if (
-    Array.isArray(collectionConfig?.aggregations) &&
-    collectionConfig?.aggregations.length
-  ) {
-    aggregateQueryItem.push(...collectionConfig.aggregations);
+  const aggregations = buildAggregations(collectionConfig?.aggregations, req);
+  if (aggregations.length) {
+    aggregateQueryItem.push(...aggregations);
   }
   aggregateQueryItem.push(
     {
@@ -74,10 +73,12 @@ const getLatestBlogsQuery = ({
   collectionName,
   category,
   limit,
+  req,
 }: {
   collectionName: string;
   category?: any;
   limit?: number;
+  req?: IRequest;
 }) => {
   const collectionConfig = defaults.collections.find(
     (c) => c.collectionName === collectionName
@@ -85,11 +86,9 @@ const getLatestBlogsQuery = ({
   const aggregateQueryItem: AggregateOptions[] = [];
 
   // Add custom aggregations from config
-  if (
-    Array.isArray(collectionConfig?.aggregations) &&
-    collectionConfig?.aggregations.length
-  ) {
-    aggregateQueryItem.push(...collectionConfig.aggregations);
+  const aggregations = buildAggregations(collectionConfig?.aggregations, req);
+  if (aggregations.length) {
+    aggregateQueryItem.push(...aggregations);
   }
 
   // Build match conditions
@@ -289,6 +288,7 @@ export const getWidgetDataDB = async (
       collectionName: widgetData.collectionName,
       category: widgetData.blogCategory,
       limit: widgetData.blogLimit,
+      req,
     });
 
     const collectionModal: any = getCollectionModal(widgetData.collectionName, models);
@@ -402,12 +402,15 @@ export const getPageDataDB = async (
     {
       $lookup: {
         from: 'widgets',
-        let: { widgets: '$widgets' },
+        let: { widgets: '$widgets', pageClientId: '$clientId' },
         pipeline: [
           {
             $match: {
               $expr: {
-                $in: ['$_id', '$$widgets'],
+                $and: [
+                  { $in: ['$_id', '$$widgets'] },
+                  { $eq: ['$clientId', '$$pageClientId'] },
+                ],
               },
               isDeleted: false,
               isActive: true,

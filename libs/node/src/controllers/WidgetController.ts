@@ -16,7 +16,7 @@ import {
 } from './../utils/responseHandlers';
 
 import { commonExcludedFields, defaults } from '../utils/defaults';
-import { formatCollectionItems, getCollectionModal } from '../utils/helper';
+import { formatCollectionItems, getCollectionModal, buildAggregations } from '../utils/helper';
 import {
   CollectionItem,
   IRequest,
@@ -556,9 +556,7 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     };
   }
   const collectionData = await TempModel.aggregate([
-    ...(Array.isArray(collectionItem.aggregations)
-      ? collectionItem.aggregations
-      : []),
+    ...buildAggregations(collectionItem.aggregations, req),
     {
       $match: query,
     },

@@ -71,6 +71,7 @@ export async function appendCollectionData(widgetData: IWidgetSchema[], models: 
           // Build match conditions
           const matchConditions: any = {
             ...(collectionConfig?.match || {}),
+            ...(req?.defaultQueryFields || {}),
           };
 
           // Add category filter if provided

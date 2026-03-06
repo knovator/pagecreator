@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm publish --access public --tag latest)",
+      "Bash(npm view @knovator/pagecreator-node --json)",
+      "Bash(npm view @knovator/pagecreator-node versions --json)",
+      "Bash(npm whoami)",
+      "Bash(npm view @knovator/pagecreator-node dist-tags)"
+    ]
+  }
+}

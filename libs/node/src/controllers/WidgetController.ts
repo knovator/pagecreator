@@ -105,7 +105,7 @@ export const createWidget = catchAsync(
     const widgetData = widget.toJSON ? widget.toJSON() : widget;
 
     // Update Redis cache for the new widget
-    updateRedisWidget(widgetData.code, models);
+    updateRedisWidget(widgetData.code, models, req);
 
     // Populate collectionItems if it's a 'pages' collection widget
     if (
@@ -155,8 +155,8 @@ export const updateWidget = catchAsync(
       if (updatedWidget.toJSON) {
         updatedWidget = updatedWidget.toJSON();
       }
-      updateRedisWidget(updatedWidget.code, models);
-      updateWidgetPagesData([updatedWidget.id], models);
+      updateRedisWidget(updatedWidget.code, models, req);
+      updateWidgetPagesData([updatedWidget.id], models, req?.defaultQueryFields?.clientId);
 
       // Populate collectionItems if it's a 'pages' collection widget
       if (
@@ -194,8 +194,8 @@ export const deleteWidget = catchAsync(
     };
     const deletedWidget = await remove(models['Widget'], query);
     if (deletedWidget) {
-      updateRedisWidget(deletedWidget.code, models);
-      updateWidgetPagesData([deletedWidget.id], models);
+      updateRedisWidget(deletedWidget.code, models, req);
+      updateWidgetPagesData([deletedWidget.id], models, req?.defaultQueryFields?.clientId);
     }
     res.message = req?.i18n?.t('widget.delete');
     return successResponse(deletedWidget, res);
@@ -401,8 +401,8 @@ export const partialUpdateWidget = catchAsync(
     };
     const updatedWidget = await update(models['Widget'], query, data);
     if (updatedWidget) {
-      updateRedisWidget(updatedWidget.code, models);
-      updateWidgetPagesData([updatedWidget.id], models);
+      updateRedisWidget(updatedWidget.code, models, req);
+      updateWidgetPagesData([updatedWidget.id], models, req?.defaultQueryFields?.clientId);
     }
     res.message = req?.i18n?.t('widget.partialUpdate');
     return successResponse(updatedWidget, res);

@@ -16,7 +16,9 @@ export const getWidgetData = catchAsync(
     const models = getModals(req);
     const { fresh } = req.query;
     const { code } = req.body;
-    let widgetData = await getRedisValue(`widgetData_${code}`);
+    const clientId = req?.defaultQueryFields?.clientId;
+    const cacheKey = clientId ? `widgetData_${clientId}_${code}` : `widgetData_${code}`;
+    let widgetData = await getRedisValue(cacheKey);
     if (widgetData && fresh !== 'true') {
       return successResponse(widgetData, res);
     }
@@ -27,7 +29,7 @@ export const getWidgetData = catchAsync(
       return recordNotFound(res);
     }
 
-    await setRedisValue(`widgetData_${code}`, widgetData);
+    await setRedisValue(cacheKey, widgetData);
 
     return successResponse(widgetData, res);
   }
@@ -39,6 +41,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
   const { fresh } = req.query;
   let code = req.body.code;
   const slug = req.body.slug;
+  const clientId = req?.defaultQueryFields?.clientId;
   const { Page } = models;
   if (slug) {
     const page = await Page.findOne({
@@ -51,7 +54,8 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
     }
     code = page.code;
   }
-  let pageData = await getRedisValue(`pageData_${code}`);
+  const cacheKey = clientId ? `pageData_${clientId}_${code}` : `pageData_${code}`;
+  let pageData = await getRedisValue(cacheKey);
   if (pageData && fresh !== 'true') {
     return successResponse(pageData, res);
   }
@@ -66,7 +70,7 @@ export const getPageData = catchAsync(async (req: IRequest, res: IResponse) => {
     res.message = req?.i18n?.t('user.pageNotFound');
     return recordNotFound(res);
   }
-  await setRedisValue(`pageData_${code}`, pageData);
+  await setRedisValue(cacheKey, pageData);
 
   return successResponse(pageData, res);
 });

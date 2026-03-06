@@ -94,6 +94,7 @@ const getLatestBlogsQuery = ({
   // Build match conditions
   const matchConditions: any = {
     ...(collectionConfig?.match || {}),
+    ...(req?.defaultQueryFields || {}),
   };
 
   // Add category filter if provided
@@ -351,16 +352,19 @@ export const getWidgetDataDB = async (
   return widgetData;
 };
 
-export const updateRedisWidget = async (code: string, models: Models) => {
-  const widgetData = await getWidgetDataDB(code, models);
+export const updateRedisWidget = async (code: string, models: Models, req?: IRequest) => {
+  const widgetData = await getWidgetDataDB(code, models, req);
   if (widgetData) {
-    await setRedisValue(`widgetData_${code}`, widgetData as unknown as JSON);
+    const clientId = req?.defaultQueryFields?.clientId;
+    const cacheKey = clientId ? `widgetData_${clientId}_${code}` : `widgetData_${code}`;
+    await setRedisValue(cacheKey, widgetData as unknown as JSON);
   }
 };
 
 export const updateWidgetPagesData = async (
   widgetIds: string[],
-  models: Models
+  models: Models,
+  clientId?: string
 ) => {
   const { Page } = models;
   const pageCodes = await Page.find(
@@ -373,7 +377,8 @@ export const updateWidgetPagesData = async (
   ).distinct('code');
   if (pageCodes.length) {
     pageCodes.forEach((code) => {
-      deleteRedisValue(`pageData_${code}`);
+      const cacheKey = clientId ? `pageData_${clientId}_${code}` : `pageData_${code}`;
+      deleteRedisValue(cacheKey);
     });
   }
 };
@@ -570,17 +575,20 @@ export const getPageDataDB = async (
   return pageData[0];
 };
 
-export const updateRedisPage = async (code: string, models: Models) => {
-  const pageData = await getPageDataDB(code, models);
+export const updateRedisPage = async (code: string, models: Models, req?: IRequest) => {
+  const pageData = await getPageDataDB(code, models, req);
   if (pageData) {
-    await setRedisValue(`pageData_${code}`, pageData);
+    const clientId = req?.defaultQueryFields?.clientId;
+    const cacheKey = clientId ? `pageData_${clientId}_${code}` : `pageData_${code}`;
+    await setRedisValue(cacheKey, pageData);
   }
 };
 
 export const handleUpdateData = async (
   collectionName: string,
   itemId: string | string[],
-  models: Models
+  models: Models,
+  clientId?: string
 ) => {
   if (!models) throw new Error('models is required');
   const { Widget } = models;
@@ -596,10 +604,12 @@ export const handleUpdateData = async (
   if (widgets.length) {
     updateWidgetPagesData(
       widgets.map((widget: any) => widget._id),
-      models
+      models,
+      clientId
     );
     widgets.forEach((widget) => {
-      deleteRedisValue(`widgetData_${widget['code']}`);
+      const cacheKey = clientId ? `widgetData_${clientId}_${widget['code']}` : `widgetData_${widget['code']}`;
+      deleteRedisValue(cacheKey);
     });
   }
 };

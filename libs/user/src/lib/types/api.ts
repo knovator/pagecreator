@@ -42,11 +42,13 @@ export interface WidgetData {
   isActive: boolean;
   widgetTitle: string;
   widgetTitles?: Record<string, string>;
+  widgetSubtitle?: string;
+  widgetSubtitles?: Record<string, string>;
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;
   itemsType: 'Image' | string;
-  widgetType: 'FixedCard' | 'Carousel' | 'Tabs' | 'Links';
+  widgetType: 'FixedCard' | 'Carousel' | 'Tabs' | 'Links' | string;
   items: ItemData[];
   tabs: TabData[];
   collectionItems: CollectionItemType[];
@@ -56,6 +58,13 @@ export interface ItemData {
   _id: string;
   title: string;
   subtitle?: string;
+  quote?: string;
+  question?: string;
+  answer?: string;
+  personName?: string;
+  personRole?: string;
+  personOrganization?: string;
+  rating?: number;
   altText: string;
   link: string;
   itemType: 'Web' | 'Mobile';

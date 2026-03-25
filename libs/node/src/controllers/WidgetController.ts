@@ -16,7 +16,7 @@ import {
 } from './../utils/responseHandlers';
 
 import { commonExcludedFields, defaults } from '../utils/defaults';
-import { formatCollectionItems, getCollectionModal, buildAggregations } from '../utils/helper';
+import { formatCollectionItems, getCollectionModal } from '../utils/helper';
 import {
   CollectionItem,
   IRequest,
@@ -51,7 +51,7 @@ const createItems = async (
   itemsData: any[],
   widgetId: string,
   models: Models,
-  defaultStoreFields: Record<string, unknown> = {}
+  defaultStoreFields: Record<string, any> = {}
 ) => {
   const { Item, SrcSet } = models;
   itemsData = itemsData.map((item: any) => ({
@@ -65,6 +65,7 @@ const createItems = async (
       acc.push(
         ...item.srcset.map((srcSetItem: any) => ({
           ...srcSetItem,
+          ...defaultStoreFields,
           itemId: item._id,
         }))
       );
@@ -105,7 +106,7 @@ export const createWidget = catchAsync(
     const widgetData = widget.toJSON ? widget.toJSON() : widget;
 
     // Update Redis cache for the new widget
-    updateRedisWidget(widgetData.code, models, req);
+    updateRedisWidget(widgetData.code, models);
 
     // Populate collectionItems if it's a 'pages' collection widget
     if (
@@ -155,8 +156,8 @@ export const updateWidget = catchAsync(
       if (updatedWidget.toJSON) {
         updatedWidget = updatedWidget.toJSON();
       }
-      updateRedisWidget(updatedWidget.code, models, req);
-      updateWidgetPagesData([updatedWidget.id], models, req?.defaultQueryFields?.clientId);
+      updateRedisWidget(updatedWidget.code, models);
+      updateWidgetPagesData([updatedWidget.id], models);
 
       // Populate collectionItems if it's a 'pages' collection widget
       if (
@@ -194,8 +195,8 @@ export const deleteWidget = catchAsync(
     };
     const deletedWidget = await remove(models['Widget'], query);
     if (deletedWidget) {
-      updateRedisWidget(deletedWidget.code, models, req);
-      updateWidgetPagesData([deletedWidget.id], models, req?.defaultQueryFields?.clientId);
+      updateRedisWidget(deletedWidget.code, models);
+      updateWidgetPagesData([deletedWidget.id], models);
     }
     res.message = req?.i18n?.t('widget.delete');
     return successResponse(deletedWidget, res);
@@ -401,8 +402,8 @@ export const partialUpdateWidget = catchAsync(
     };
     const updatedWidget = await update(models['Widget'], query, data);
     if (updatedWidget) {
-      updateRedisWidget(updatedWidget.code, models, req);
-      updateWidgetPagesData([updatedWidget.id], models, req?.defaultQueryFields?.clientId);
+      updateRedisWidget(updatedWidget.code, models);
+      updateWidgetPagesData([updatedWidget.id], models);
     }
     res.message = req?.i18n?.t('widget.partialUpdate');
     return successResponse(updatedWidget, res);
@@ -444,6 +445,20 @@ export const getWidgetTypes = catchAsync(
     ) {
       widgetTypes.push(...defaults.customWidgetTypes);
     }
+    if (!widgetTypes.some((item) => item?.value === 'Testimonial')) {
+      widgetTypes.push({
+        label: 'Testimonial',
+        value: 'Testimonial',
+        imageOnly: true,
+      });
+    }
+    if (!widgetTypes.some((item) => item?.value === 'FAQ')) {
+      widgetTypes.push({
+        label: 'FAQ',
+        value: 'FAQ',
+        imageOnly: true,
+      });
+    }
     res.message = req?.i18n?.t('widget.getWidgetTypes');
     return successResponse(widgetTypes, res);
   }
@@ -482,9 +497,7 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
       orOptions.push({ _id: { $in: formatCollectionItems(collectionItems) } });
     }
 
-    const pageBaseFilters = filterDefinedFields(req.defaultQueryFields);
     const query: any = {
-      ...pageBaseFilters,
       isDeleted: false,
       $or: orOptions,
     };
@@ -512,12 +525,11 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     limit = Math.max(collectionItems.length, limit);
   // setting up mongoose model
   const TempModel = getCollectionModal(collectionName, models);
+  // Base filters to apply at the START of the pipeline (for multi-tenant support)
+  const baseFilters: any = filterDefinedFields(req.defaultQueryFields);
 
   // fetching data
-  let query: any = {
-    ...(collectionItem.filters || {}),
-    ...filterDefinedFields(req?.defaultQueryFields),
-  };
+  let query: any = collectionItem.filters || {};
   const orOptions: any = [];
   let addFieldOptions: any = {};
   if (
@@ -556,7 +568,13 @@ export const getCollectionData = catchAsync(async (req: IRequest, res: IResponse
     };
   }
   const collectionData = await TempModel.aggregate([
-    ...buildAggregations(collectionItem.aggregations, req),
+    // FIRST: Apply base filters (multi-tenant context)
+    {
+      $match: baseFilters,
+    },
+    ...(Array.isArray(collectionItem.aggregations)
+      ? collectionItem.aggregations
+      : []),
     {
       $match: query,
     },
@@ -591,17 +609,13 @@ export const getBlogCategories = catchAsync(async (req: IRequest, res: IResponse
       $match: {
         isActive: true,
         isDeleted: { $ne: true },
-        ...filterDefinedFields(req.defaultQueryFields),
       },
     },
     {
       $project: {
         _id: 1,
-        name: { $ifNull: ['$nm', '$name'] },  // Fallback to 'name' if 'nm' is missing
-        nm: 1,
+        name: '$nm',  // Map 'nm' field to 'name' for admin UI
         slug: 1,
-        clientId: 1,
-        clientDomainName: 1,
       },
     },
     {

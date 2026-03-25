@@ -43,6 +43,9 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
     },
     ref
   ) => {
+    const isMultilingualWidgetField = (accessor: string) =>
+      accessor === 'widgetTitles' || accessor === 'widgetSubtitles';
+
     const inputRenderer = (schema: SchemaType) => {
       let input;
       if (typeof schema.show !== 'undefined' && !schema.show) return null;
@@ -147,7 +150,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
             if (
               Array.isArray(languages) &&
               languages.length > 0 &&
-              schema.accessor === 'widgetTitles'
+              isMultilingualWidgetField(schema.accessor)
             ) {
               input = languages.map((lang) => (
                 <Input
@@ -199,7 +202,7 @@ const SimpleForm = forwardRef<HTMLFormElement | null, SimpleFormProps>(
         if (
           Array.isArray(languages) &&
           languages.length > 0 &&
-          schema.accessor === 'widgetTitles'
+          isMultilingualWidgetField(schema.accessor)
         ) {
           input = languages.map((lang) => (
             <div

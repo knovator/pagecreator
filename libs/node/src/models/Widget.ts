@@ -23,6 +23,8 @@ const WidgetSchema = new Schema<IWidgetSchema>({
   },
   widgetTitle: String,
   widgetTitles: languageTitlesSchema,
+  widgetSubtitle: String,
+  widgetSubtitles: languageTitlesSchema,
   webPerRow: Number,
   mobilePerRow: Number,
   tabletPerRow: Number,

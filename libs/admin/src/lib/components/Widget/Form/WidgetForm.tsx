@@ -35,6 +35,8 @@ const constants = {
   textWidgetTypeValue: 'Text',
   htmlWidgetTypeValue: 'HTML',
   linksWidgetTypeValue: 'Links',
+  testimonialWidgetTypeValue: 'Testimonial',
+  faqWidgetTypeValue: 'FAQ',
   pagesItemsTypeValue: 'pages',
   tabsAccessor: 'tabs',
   webItems: 'webItems',
@@ -42,7 +44,11 @@ const constants = {
   tabCollectionItemsAccessor: 'collectionItems',
 };
 
-const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) => {
+const WidgetForm = ({
+  formRef,
+  customInputs,
+  onPrimaryButtonClick,
+}: FormProps) => {
   const {
     register,
     formState: { errors },
@@ -103,6 +109,8 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
   const [blogCategoriesLoading, setBlogCategoriesLoading] = useState(false);
   const pagesLoadedRef = useRef(false);
   const blogCategoryInitialized = useRef(false);
+  const selectedWidgetTypeValue =
+    selectedWidgetType?.value || getValues(constants.widgetTypeAccessor);
 
   useEffect(() => {
     if (data && formState === 'UPDATE') {
@@ -132,6 +140,10 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
         data?.widgetType === constants.linksWidgetTypeValue
       ) {
         setItemsEnabled(false);
+      } else if (data?.widgetType === constants.faqWidgetTypeValue) {
+        setItemsEnabled(true);
+        setSelectedCollectionType(undefined);
+        setSelectedCollectionItems([]);
       }
     }
   }, [data, formState, itemsTypes, widgetTypes]);
@@ -392,6 +404,21 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
             (item) => item.value === constants.pagesItemsTypeValue
           );
           if (pagesOption) setSelectedCollectionType(pagesOption);
+        } else if (widgetType?.value === constants.testimonialWidgetTypeValue) {
+          setItemsEnabled(true);
+          setSelectedCollectionType(undefined);
+          setSelectedCollectionItems([]);
+          setValue(constants.itemTypeAccessor, constants.imageItemsTypeValue);
+          setValue(constants.collectionNameAccessor, constants.imageItemsTypeValue);
+        } else if (widgetType?.value === constants.faqWidgetTypeValue) {
+          setItemsEnabled(true);
+          setSelectedCollectionType(undefined);
+          setSelectedCollectionItems([]);
+          setValue(constants.itemTypeAccessor, constants.imageItemsTypeValue);
+          setValue(constants.collectionNameAccessor, constants.imageItemsTypeValue);
+          setValue('webPerRow', 1);
+          setValue('tabletPerRow', 1);
+          setValue('mobilePerRow', 1);
         } else {
           setItemsEnabled(true);
         }
@@ -515,10 +542,16 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
         formData[constants.widgetTypeAccessor] as string
       )?.value;
     }
-    // Force collectionName and itemsType for Links widget
+    // Force collectionName and itemsType for Links/FAQ widgets
     if (formData[constants.widgetTypeAccessor] === constants.linksWidgetTypeValue) {
       formData[constants.collectionNameAccessor] = constants.pagesItemsTypeValue;
       formData[constants.itemTypeAccessor] = constants.pagesItemsTypeValue;
+    } else if (formData[constants.widgetTypeAccessor] === constants.faqWidgetTypeValue) {
+      formData[constants.collectionNameAccessor] = constants.imageItemsTypeValue;
+      formData[constants.itemTypeAccessor] = constants.imageItemsTypeValue;
+      formData['webPerRow'] = 1;
+      formData['tabletPerRow'] = 1;
+      formData['mobilePerRow'] = 1;
     }
     // setting collectionName if widgetType is FixedCard or Carousel and FormState
     else if (
@@ -672,6 +705,33 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
             ? customInputs['widgetTitle']
             : undefined,
       },
+    Array.isArray(languages) && languages.length > 0
+      ? {
+        label: widgetTranslations.subtitle,
+        accessor: 'widgetSubtitles',
+        required: false,
+        type:
+          customInputs && customInputs['widgetSubtitles'] ? undefined : 'text',
+        placeholder: widgetTranslations.subTitlePlaceholder,
+        onInput: handleCapitalize,
+        Input:
+          customInputs && customInputs['widgetSubtitles']
+            ? customInputs['widgetSubtitles']
+            : undefined,
+      }
+      : {
+        label: widgetTranslations.subtitle,
+        accessor: 'widgetSubtitle',
+        required: false,
+        type:
+          customInputs && customInputs['widgetSubtitle'] ? undefined : 'text',
+        onInput: handleCapitalize,
+        placeholder: widgetTranslations.subTitlePlaceholder,
+        Input:
+          customInputs && customInputs['widgetSubtitle']
+            ? customInputs['widgetSubtitle']
+            : undefined,
+      },
     {
       label: widgetTranslations.widgetType,
       required: true,
@@ -728,8 +788,10 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
       required: true,
       editable: false,
       show:
-        selectedWidgetType?.value !== constants.textWidgetTypeValue &&
-        selectedWidgetType?.value !== constants.htmlWidgetTypeValue,
+        selectedWidgetTypeValue !== constants.textWidgetTypeValue &&
+        selectedWidgetTypeValue !== constants.htmlWidgetTypeValue &&
+        selectedWidgetTypeValue !== constants.testimonialWidgetTypeValue &&
+        selectedWidgetTypeValue !== constants.faqWidgetTypeValue,
       accessor: constants.itemTypeAccessor,
       type: 'select',
       validations: {
@@ -846,7 +908,8 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
       type: 'number',
       show:
         selectedWidgetType?.value !== constants.textWidgetTypeValue &&
-        selectedWidgetType?.value !== constants.htmlWidgetTypeValue,
+        selectedWidgetType?.value !== constants.htmlWidgetTypeValue &&
+        selectedWidgetType?.value !== constants.faqWidgetTypeValue,
       required: true,
       placeholder: widgetTranslations.webPerRowPlaceholder,
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-right-1',
@@ -864,7 +927,8 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
       type: 'number',
       show:
         selectedWidgetType?.value !== constants.textWidgetTypeValue &&
-        selectedWidgetType?.value !== constants.htmlWidgetTypeValue,
+        selectedWidgetType?.value !== constants.htmlWidgetTypeValue &&
+        selectedWidgetType?.value !== constants.faqWidgetTypeValue,
       required: true,
       placeholder: widgetTranslations.tabletPerRowPlaceholder,
       wrapperClassName: 'khb_grid-item-1of3 khb_padding-left-1',
@@ -881,8 +945,9 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
       accessor: 'mobilePerRow',
       type: 'number',
       show:
-        selectedWidgetType?.value !== 'Text' &&
-        selectedWidgetType?.value !== 'HTML',
+        selectedWidgetType?.value !== constants.textWidgetTypeValue &&
+        selectedWidgetType?.value !== constants.htmlWidgetTypeValue &&
+        selectedWidgetType?.value !== constants.faqWidgetTypeValue,
       required: true,
       placeholder: widgetTranslations.mobilePerRowPlaceholder,
       wrapperClassName:
@@ -1005,6 +1070,7 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
               loading={loading}
               addText={commonTranslations.add}
               deleteText={commonTranslations.delete}
+              widgetType={selectedWidgetTypeValue}
             />
 
             {/* Mobile Items */}
@@ -1028,6 +1094,7 @@ const WidgetForm = ({ formRef, customInputs, onPrimaryButtonClick }: FormProps) 
               register={register}
               addText={commonTranslations.add}
               deleteText={commonTranslations.delete}
+              widgetType={selectedWidgetTypeValue}
             />
           </>
         )}

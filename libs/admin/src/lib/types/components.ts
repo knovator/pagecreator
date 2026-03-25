@@ -191,6 +191,20 @@ export interface WidgetTranslationPairs {
 
   subtitle: string;
   subTitlePlaceholder: string;
+  quote: string;
+  quotePlaceholder: string;
+  question: string;
+  questionPlaceholder: string;
+  answer: string;
+  answerPlaceholder: string;
+  personName: string;
+  personNamePlaceholder: string;
+  personRole: string;
+  personRolePlaceholder: string;
+  personOrganization: string;
+  personOrganizationPlaceholder: string;
+  rating: string;
+  ratingPlaceholder: string;
   altText: string;
   altTextPlaceholder: string;
   link: string;
@@ -339,6 +353,7 @@ export interface ItemsAccordianProps {
   register: any;
   setError: any;
   clearError: (key: string) => void;
+  widgetType?: string;
 }
 export interface TabItemProps {
   showDelete?: boolean;

@@ -89,6 +89,7 @@ const ItemsAccordian = ({
   itemType,
   languages,
   clearError,
+  widgetType,
   addText = 'Add',
   deleteText = 'Delete',
 }: ItemsAccordianProps) => {
@@ -106,6 +107,8 @@ const ItemsAccordian = ({
     append: appendItem,
     remove: removeItem,
   } = useFieldArray({ name, control });
+  const isTestimonialWidget = widgetType === 'Testimonial';
+  const isFaqWidget = widgetType === 'FAQ';
 
   const onItemsToggleClick = (index: number, status?: boolean) => {
     const newItemsShow: boolean[] = [...itemsShow];
@@ -128,6 +131,28 @@ const ItemsAccordian = ({
   }, [errors, name, errors?.[name]]);
 
   const addTab = (index: number) => {
+    if (isTestimonialWidget) {
+      appendItem({
+        quote: '',
+        personName: '',
+        personRole: '',
+        personOrganization: '',
+        rating: 5,
+        itemType,
+        sequence: index,
+      });
+      return;
+    }
+    if (isFaqWidget) {
+      appendItem({
+        question: '',
+        answer: '',
+        itemType,
+        sequence: index,
+      });
+      return;
+    }
+
     appendItem({
       altText: '',
       link: '',
@@ -178,6 +203,79 @@ const ItemsAccordian = ({
             }
           >
             <div className="khb-form-items">
+              {isTestimonialWidget ? (
+                <>
+                  <Input
+                    rest={register(`${name}.${index}.quote`)}
+                    label={widgetTranslations.quote}
+                    error={errors[name]?.[index]?.['quote']?.message?.toString()}
+                    type="text"
+                    className="w-full p-2"
+                    placeholder={widgetTranslations.quotePlaceholder}
+                  />
+                  <Input
+                    rest={register(`${name}.${index}.personName`)}
+                    label={widgetTranslations.personName}
+                    error={errors[name]?.[index]?.['personName']?.message?.toString()}
+                    type="text"
+                    className="w-full p-2"
+                    placeholder={widgetTranslations.personNamePlaceholder}
+                  />
+                  <Input
+                    rest={register(`${name}.${index}.personRole`)}
+                    label={widgetTranslations.personRole}
+                    error={errors[name]?.[index]?.['personRole']?.message?.toString()}
+                    type="text"
+                    className="w-full p-2"
+                    placeholder={widgetTranslations.personRolePlaceholder}
+                  />
+                  <Input
+                    rest={register(`${name}.${index}.personOrganization`)}
+                    label={widgetTranslations.personOrganization}
+                    error={errors[name]?.[index]?.['personOrganization']?.message?.toString()}
+                    type="text"
+                    className="w-full p-2"
+                    placeholder={widgetTranslations.personOrganizationPlaceholder}
+                  />
+                  <Input
+                    rest={register(`${name}.${index}.rating`, {
+                      min: {
+                        value: 0,
+                        message: 'Rating should be greater than or equal to 0',
+                      },
+                      max: {
+                        value: 5,
+                        message: 'Rating should be less than or equal to 5',
+                      },
+                    })}
+                    label={widgetTranslations.rating}
+                    error={errors[name]?.[index]?.['rating']?.message?.toString()}
+                    type="number"
+                    className="w-full p-2"
+                    placeholder={widgetTranslations.ratingPlaceholder}
+                  />
+                </>
+              ) : isFaqWidget ? (
+                <>
+                  <Input
+                    rest={register(`${name}.${index}.question`)}
+                    label={widgetTranslations.question}
+                    error={errors[name]?.[index]?.['question']?.message?.toString()}
+                    type="text"
+                    className="w-full p-2"
+                    placeholder={widgetTranslations.questionPlaceholder}
+                  />
+                  <Input
+                    rest={register(`${name}.${index}.answer`)}
+                    label={widgetTranslations.answer}
+                    error={errors[name]?.[index]?.['answer']?.message?.toString()}
+                    type="textarea"
+                    className="w-full p-2"
+                    placeholder={widgetTranslations.answerPlaceholder}
+                  />
+                </>
+              ) : (
+                <>
               {Array.isArray(languages) && languages.length > 0 ? (
                 <>
                   {languages.map((lang) => (
@@ -342,6 +440,8 @@ const ItemsAccordian = ({
                     </>
                   }
                 />
+              )}
+                </>
               )}
             </div>
           </Accordian>

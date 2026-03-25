@@ -22,6 +22,13 @@ const item = joi.object({
   titles: joi.object().optional(),
   subtitle: joi.string().optional().allow(''),
   subtitles: joi.object().optional(),
+  quote: joi.string().optional().allow(''),
+  question: joi.string().optional().allow(''),
+  answer: joi.string().optional().allow(''),
+  personName: joi.string().optional().allow(''),
+  personRole: joi.string().optional().allow(''),
+  personOrganization: joi.string().optional().allow(''),
+  rating: joi.number().min(0).max(5).optional(),
   altText: joi.string().optional().allow(''),
   altTexts: joi.object().optional(),
   link: joi.string().optional().allow(''),
@@ -29,16 +36,20 @@ const item = joi.object({
   srcset: joi.array().items(srcset),
   img: joi.string().allow(null).optional(),
   imgs: joi.object().optional(),
+  clientId: joi.string().optional().allow(''),
+  clientDomainName: joi.string().optional().allow(''),
   itemType: joi
     .string()
     .valid(...Object.values(ItemTypes))
     .default(ItemTypes.Web),
-}).unknown(true);
+});
 
 export const create = joi.object<ItemValidation>({
   name: joi.string().required(),
   widgetTitle: joi.string().optional(),
   widgetTitles: joi.object().optional(),
+  widgetSubtitle: joi.string().optional().allow(''),
+  widgetSubtitles: joi.object().optional(),
   code: joi
     .string()
     .uppercase()
@@ -97,6 +108,8 @@ export const update = joi.object<ItemValidation>({
   name: joi.string().required(),
   widgetTitle: joi.string().optional(),
   widgetTitles: joi.object().optional(),
+  widgetSubtitle: joi.string().optional().allow(''),
+  widgetSubtitles: joi.object().optional(),
   isActive: joi.boolean().optional(),
   webPerRow: joi.number().allow(null).optional(),
   mobilePerRow: joi.number().allow(null).optional(),

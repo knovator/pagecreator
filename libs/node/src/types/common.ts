@@ -51,11 +51,13 @@ export interface IWidgetSchema extends Document {
   isActive: boolean;
   widgetTitle: string;
   widgetTitles: LanguageSchemaFieldType;
+  widgetSubtitle?: string;
+  widgetSubtitles?: LanguageSchemaFieldType;
   webPerRow: number;
   mobilePerRow: number;
   tabletPerRow: number;
   itemsType: ItemsType;
-  widgetType: WidgetTypes;
+  widgetType: WidgetTypes | string;
   collectionName: string;
   collectionItems: string[];
   blogCategory?: string;
@@ -76,6 +78,13 @@ export interface IItemSchema extends Document {
   titles: LanguageSchemaFieldType;
   subtitle: string;
   subtitles: LanguageSchemaFieldType;
+  quote?: string;
+  question?: string;
+  answer?: string;
+  personName?: string;
+  personRole?: string;
+  personOrganization?: string;
+  rating?: number;
   altText: string;
   altTexts: LanguageSchemaFieldType;
   link: string;

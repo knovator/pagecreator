@@ -63,7 +63,7 @@ const WidgetForm = ({
   } = useForm<any>({
     shouldUnregister: false,
     defaultValues: {
-      backgroundColor: '#ffffff',
+      backgroundColor: '#f9fafb',
     },
   });
   const { switchClass, commonTranslations, baseUrl, token, widgetRoutesPrefix } = useProviderState();

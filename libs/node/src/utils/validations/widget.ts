@@ -15,6 +15,8 @@ const srcset = joi.object().keys({
   screenSize: joi.number().required(),
   width: joi.number().required(),
   height: joi.number().required(),
+  clientId: joi.string().optional().allow(''),
+  clientDomainName: joi.string().optional().allow(''),
 });
 
 const item = joi.object({
